@@ -31,6 +31,7 @@ class Config
 
     public readonly string $domain;
     public readonly bool $https;
+    public readonly string $timezone;
 
     /**
      * @param array $config
@@ -52,6 +53,12 @@ class Config
             throw new AppConfigException('Invalid type for "https" boolean');
         }
 
+        $timezone = $config["timezone"] ?? null;
+        if (!is_string($timezone) || !in_array($timezone, \DateTimeZone::listIdentifiers())) {
+            throw new AppConfigException('Invalid timezone');
+        }
+
+        $this->timezone = $timezone;
         $this->domain = $domain;
         $this->https = $https;
     }
