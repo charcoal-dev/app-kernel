@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Apps\Kernel;
 
+use Charcoal\Apps\Kernel\Errors\ErrorLoggerInterface;
 use Charcoal\Apps\Kernel\Errors\ErrorMsg;
 use Charcoal\OOP\Traits\NoDumpTrait;
 use Charcoal\OOP\Traits\NotCloneableTrait;
@@ -39,8 +40,12 @@ class Errors implements \IteratorAggregate
 
     /**
      * @param \Charcoal\Apps\Kernel\AppKernel $aK
+     * @param \Charcoal\Apps\Kernel\Errors\ErrorLoggerInterface $logger
      */
-    public function __construct(private readonly AppKernel $aK)
+    public function __construct(
+        private readonly AppKernel  $aK,
+        public ErrorLoggerInterface $logger
+    )
     {
         $this->pathOffset = strlen($this->aK->dir->root->path);
 
