@@ -49,7 +49,6 @@ class FileErrorLogger implements ErrorLoggerInterface
     /**
      * @param \Charcoal\Apps\Kernel\Errors\ErrorMsg|\Throwable $error
      * @return void
-     * @throws \Charcoal\Apps\Kernel\Exception\AppKernelException
      */
     public function write(ErrorMsg|\Throwable $error): void
     {
@@ -64,7 +63,6 @@ class FileErrorLogger implements ErrorLoggerInterface
     /**
      * @param \Throwable $t
      * @return void
-     * @throws \Charcoal\Apps\Kernel\Exception\AppKernelException
      */
     private function writeException(\Throwable $t): void
     {
@@ -86,7 +84,6 @@ class FileErrorLogger implements ErrorLoggerInterface
     /**
      * @param \Charcoal\Apps\Kernel\Errors\ErrorMsg $error
      * @return void
-     * @throws \Charcoal\Apps\Kernel\Exception\AppKernelException
      */
     private function writeError(ErrorMsg $error): void
     {
@@ -107,7 +104,6 @@ class FileErrorLogger implements ErrorLoggerInterface
     /**
      * @param array $buffer
      * @return void
-     * @throws \Charcoal\Apps\Kernel\Exception\AppKernelException
      */
     private function writeToFile(array $buffer): void
     {
@@ -117,7 +113,7 @@ class FileErrorLogger implements ErrorLoggerInterface
         }
 
         if (!file_put_contents($this->logFilePath, implode($this->eolChar, $buffer))) {
-            throw new AppKernelException('Failed to write to error log file');
+            throw new \RuntimeException('Failed to write to error log file');
         }
     }
 
