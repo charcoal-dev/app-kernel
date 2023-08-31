@@ -41,7 +41,7 @@ class Config
     {
         $this->databases = new DbConfig($config["databases"] ?? null);
         $this->cache = new CacheConfig($config["cache"] ?? null);
-        $this->security = new SecurityConfig($config["cache"] ?? null);
+        $this->security = new SecurityConfig($config["security"] ?? null);
 
         $domain = $config["domain"] ?? null;
         if (!is_string($domain) || !preg_match('/^[a-z\d\-]+(\.[a-z\d\-]+)*$/', $domain)) {
