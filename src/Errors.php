@@ -31,8 +31,8 @@ class Errors implements \IteratorAggregate
     public int $backtraceOffset = 3;
     public bool $exceptionHandlerShowTrace = true;
 
-    private array $errorLog = [];
-    private int $errorLogCount = 0;
+    private array $errorLog;
+    private int $errorLogCount;
 
     use NoDumpTrait;
     use NotSerializableTrait;
@@ -48,9 +48,44 @@ class Errors implements \IteratorAggregate
     )
     {
         $this->pathOffset = strlen($this->aK->dir->root->path);
+        $this->init();
+    }
 
+    /**
+     * @return void
+     */
+    private function init(): void
+    {
+        $this->errorLog = [];
+        $this->errorLogCount = 0;
         set_error_handler([$this, "errorHandler"]);
         set_exception_handler([$this, "exceptionHandler"]);
+    }
+
+    /**
+     * @return array
+     */
+    public function __serialize(): array
+    {
+        return [
+            "pathOffset" => $this->pathOffset,
+            "debugBacktraceLevel" => $this->debugBacktraceLevel,
+            "backtraceOffset" => $this->backtraceOffset,
+            "exceptionHandlerShowTrace" => $this->exceptionHandlerShowTrace
+        ];
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->pathOffset = $data["pathOffset"];
+        $this->debugBacktraceLevel = $data["debugBacktraceLevel"];
+        $this->backtraceOffset = $data["backtraceOffset"];
+        $this->exceptionHandlerShowTrace = $data["exceptionHandlerShowTrace"];
+        $this->init();
     }
 
     /**
