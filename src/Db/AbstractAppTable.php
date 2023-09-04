@@ -35,16 +35,6 @@ abstract class AbstractAppTable extends AbstractOrmTable
     )
     {
         parent::__construct();
-        $this->init();
-    }
-
-    /**
-     * @return void
-     */
-    private function init(): void
-    {
-        $this->dbInstance = $this->resolveDbInstance();
-        $this->dbInstance->tables->register($this);
     }
 
     /**
@@ -54,6 +44,7 @@ abstract class AbstractAppTable extends AbstractOrmTable
     {
         $data = parent::__serialize();
         $data["dbInstanceKey"] = $this->dbInstanceKey;
+        $data["module"] = $this->module;
         return $data;
     }
 
@@ -64,8 +55,8 @@ abstract class AbstractAppTable extends AbstractOrmTable
     public function __unserialize(array $object): void
     {
         $this->dbInstanceKey = $object["dbInstanceKey"];
+        $this->module = $object["module"];
         parent::__unserialize($object);
-        $this->init();
     }
 
     /**
@@ -83,6 +74,7 @@ abstract class AbstractAppTable extends AbstractOrmTable
         }
 
         $this->dbInstance = $this->module->app->kernel->db->getDb($this->dbInstanceKey);
+        $this->dbInstance->tables->register($this);
         return $this->dbInstance;
     }
 

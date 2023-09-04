@@ -38,6 +38,7 @@ class ObjectsRegistry extends AbstractInstanceRegistry
      */
     public function get(string $registryKey): ?AbstractAppObject
     {
+        $registryKey = strtolower($registryKey);
         if (isset($this->instances[$registryKey])) {
             return $this->instances[$registryKey];
         }
@@ -52,7 +53,7 @@ class ObjectsRegistry extends AbstractInstanceRegistry
      */
     public function getFromCache(string $cacheKey): ?AbstractAppObject
     {
-        $object = $this->module->app->kernel->cache->get($cacheKey);
+        $object = $this->module->app->kernel->cache->get(strtolower($cacheKey));
         if ($object instanceof CachedReferenceKey) {
             $object = $object->resolve($this->module->app->kernel->cache);
         }
@@ -68,7 +69,7 @@ class ObjectsRegistry extends AbstractInstanceRegistry
     {
         $bindingKeys = $object->getRegistryKeys();
         foreach ($bindingKeys as $bindingKey) {
-            $this->registrySet($bindingKey, $object);
+            $this->registrySet(strtolower($bindingKey), $object);
         }
     }
 
@@ -81,11 +82,11 @@ class ObjectsRegistry extends AbstractInstanceRegistry
     {
         $bindingKeys = $object->getRegistryKeys();
         $primaryKey = array_shift($bindingKeys);
-        $this->module->app->kernel->cache->set($primaryKey, $object);
+        $this->module->app->kernel->cache->set(strtolower($primaryKey), $object);
 
         if ($bindingKeys) {
             foreach ($bindingKeys as $referenceKey) {
-                $this->module->app->kernel->cache->createReferenceKey($referenceKey, $primaryKey);
+                $this->module->app->kernel->cache->createReferenceKey(strtolower($referenceKey), $primaryKey);
             }
         }
     }

@@ -20,7 +20,7 @@ use Charcoal\OOP\DependencyInjection\AbstractInstanceRegistry;
  * Class Modules
  * @package Charcoal\Apps\Kernel\Modules
  */
-class ModulesRegistry extends AbstractInstanceRegistry
+class ModulesRegistry extends AbstractInstanceRegistry implements \IteratorAggregate
 {
     public function __construct()
     {
@@ -48,5 +48,13 @@ class ModulesRegistry extends AbstractInstanceRegistry
         }
 
         return $this->instances[$key];
+    }
+
+    /**
+     * @return \Traversable
+     */
+    public function getIterator(): \Traversable
+    {
+        return new \ArrayIterator($this->instances);
     }
 }

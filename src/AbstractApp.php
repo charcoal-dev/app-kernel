@@ -89,6 +89,17 @@ abstract class AbstractApp
     }
 
     /**
+     * @return void
+     */
+    public function bootstrap(): void
+    {
+        /** @var \Charcoal\Apps\Kernel\Modules\AbstractModule $module */
+        foreach ($this->modules as $module) {
+            $module->bootstrap($this);
+        }
+    }
+
+    /**
      * @return array
      */
     public function __serialize(): array

@@ -22,16 +22,23 @@ use Charcoal\Apps\Kernel\AbstractApp;
  */
 abstract class AbstractModule
 {
+    public readonly AbstractApp $app;
     public readonly ObjectsRegistry $objectsRegistry;
     public readonly ComponentsRegistry $components;
 
-    /**
-     * @param \Charcoal\Apps\Kernel\AbstractApp $app
-     */
-    public function __construct(public readonly AbstractApp $app)
+    public function __construct()
     {
         $this->objectsRegistry = new ObjectsRegistry($this);
         $this->components = new ComponentsRegistry();
+    }
+
+    /**
+     * @param \Charcoal\Apps\Kernel\AbstractApp $app
+     * @return void
+     */
+    public function bootstrap(AbstractApp $app): void
+    {
+        $this->app = $app;
     }
 
     /**
@@ -40,7 +47,6 @@ abstract class AbstractModule
     public function __serialize(): array
     {
         return [
-            "app" => $this->app,
             "components" => $this->components
         ];
     }
@@ -51,7 +57,6 @@ abstract class AbstractModule
      */
     public function __unserialize(array $object): void
     {
-        $this->app = $object["app"];
         $this->components = $object["components"];
         $this->objectsRegistry = new ObjectsRegistry($this);
     }
