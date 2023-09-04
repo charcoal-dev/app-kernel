@@ -45,7 +45,7 @@ class CacheConfig
 
         $this->use = $status;
 
-        $hostname = $config["hostname"] ?? null;
+        $hostname = $config["host"] ?? null;
         if (!is_string($hostname) || !filter_var($hostname, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             throw new AppConfigException('Invalid cache server IPv4 address');
         }

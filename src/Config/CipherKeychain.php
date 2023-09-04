@@ -45,7 +45,7 @@ class CipherKeychain extends AbstractInstanceRegistry
             if (preg_match('/^\w{2,16}$/', $label)) {
                 if (is_string($entropy) && $entropy) {
                     $entropy = preg_match('/^(0x)?[a-f0-9]{64}$/i', $entropy) ?
-                        Bytes32::fromBase16($label) : new Bytes32(hash("sha256", $entropy, true));
+                        Bytes32::fromBase16($entropy) : new Bytes32(hash("sha256", $entropy, true));
                     if ($entropy->equals($defaultEntropy)) {
                         throw new AppConfigException(sprintf('Insecure entropy for cipher key "%s"', $label));
                     }

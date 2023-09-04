@@ -23,8 +23,6 @@ use Charcoal\Apps\Kernel\Exception\AppConfigException;
 class SecurityConfig
 {
     public readonly CipherKeychain $keychain;
-    public readonly int $minimumIterations;
-    public readonly int $maximumIterations;
 
     /**
      * @param mixed $config
@@ -42,15 +40,5 @@ class SecurityConfig
         }
 
         $this->keychain = new CipherKeychain($keychain);
-
-        $this->minimumIterations = intval($config["minimum_iterations"] ?? 0);
-        if ($this->minimumIterations < 1 || $this->minimumIterations >= 0xffff) {
-            throw new AppConfigException('Invalid value for minimum PBKDF2 iterations');
-        }
-
-        $this->maximumIterations = intval($config["maximum_iterations"] ?? 0);
-        if ($this->maximumIterations < $this->minimumIterations) {
-            throw new AppConfigException('Invalid value for maximum PBKDF2 iterations');
-        }
     }
 }

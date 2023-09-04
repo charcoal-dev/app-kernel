@@ -50,27 +50,27 @@ class DbConfig
                 throw new AppConfigException('Unsupported or invalid database driver');
             }
 
-            $hostname = $config["host"] ?? null;
+            $hostname = $dbConfig["host"] ?? null;
             if (!is_string($hostname) || !filter_var($hostname, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
                 throw new AppConfigException(sprintf('Invalid database "%s" server IPv4 address', $label));
             }
 
-            $port = intval($config["port"] ?? 0);
+            $port = intval($dbConfig["port"] ?? 0);
             if ($port <= 0x3e8 || $port >= 0xffff) {
                 throw new AppConfigException(sprintf('Invalid database "%s" server port', $label));
             }
 
-            $name = $config["name"] ?? null;
+            $name = $dbConfig["name"] ?? null;
             if (!is_string($name) || !preg_match('/^[\w.\-]{3,32}$/', $name)) {
                 throw new AppConfigException(sprintf('Invalid database "%s" dbname', $label));
             }
 
-            $username = $config["username"] ?? null;
+            $username = $dbConfig["username"] ?? null;
             if (!is_string($username) && !is_null($username)) {
                 throw new AppConfigException(sprintf('Invalid database "%s" username', $label));
             }
 
-            $password = $config["password"] ?? null;
+            $password = $dbConfig["password"] ?? null;
             if (!is_string($password) && !is_null($password)) {
                 throw new AppConfigException(sprintf('Invalid database "%s" password', $label));
             }
