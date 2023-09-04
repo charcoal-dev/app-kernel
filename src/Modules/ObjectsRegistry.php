@@ -89,4 +89,12 @@ class ObjectsRegistry extends AbstractInstanceRegistry
             }
         }
     }
+
+    /**
+     * @return array
+     */
+    public function getAllRuntime(): array
+    {
+        return $this->instances;
+    }
 }
