@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Apps\Kernel;
 
+use Charcoal\Apps\Kernel\Db\Databases;
 use Charcoal\Apps\Kernel\Errors\ErrorLoggerInterface;
 use Charcoal\Apps\Kernel\Errors\NullErrorLogger;
 use Charcoal\Apps\Kernel\Polyfill\NullCache;
@@ -21,6 +22,7 @@ use Charcoal\Cache\Cache;
 use Charcoal\Cache\Drivers\RedisClient;
 use Charcoal\Filesystem\Directory;
 use Charcoal\Semaphore\FilesystemSemaphore;
+use Charcoal\Yaml\Parser;
 
 /**
  * Class AppKernel
@@ -36,7 +38,6 @@ class AppKernel
     public readonly FilesystemSemaphore $semaphore;
 
     /**
-     * @param \Charcoal\Apps\Kernel\Lifecycle $lifecycle
      * @param \Charcoal\Filesystem\Directory $rootDirectory
      * @param \Charcoal\Apps\Kernel\Errors\ErrorLoggerInterface $errorLogger
      * @param string $configClass
@@ -44,19 +45,22 @@ class AppKernel
      * @param string $dbClass
      * @throws \Charcoal\Filesystem\Exception\FilesystemException
      * @throws \Charcoal\Semaphore\Exception\SemaphoreException
+     * @throws \Charcoal\Yaml\Exception\YamlParseException
      */
     public function __construct(
-        public readonly Lifecycle $lifecycle,
-        Directory                 $rootDirectory,
-        ErrorLoggerInterface      $errorLogger = new NullErrorLogger(),
-        string                    $configClass = Config::class,
-        string                    $dirClass = Directories::class,
-        string                    $dbClass = Databases::class,
+        Directory            $rootDirectory,
+        ErrorLoggerInterface $errorLogger = new NullErrorLogger(),
+        string               $configClass = Config::class,
+        string               $dirClass = Directories::class,
+        string               $dbClass = Databases::class,
     )
     {
         $this->errors = new Errors($this, $errorLogger);
-        $this->config = new $configClass();
         $this->dir = new $dirClass($rootDirectory);
+
+        $configObject = (new Parser(evaluateBooleans: true, evaluateNulls: true))
+            ->getParsed($this->dir->config->pathToChild("/config.yml", false));
+        $this->config = new $configClass($configObject);
         $this->db = new $dbClass($this);
         $this->semaphore = new FilesystemSemaphore($this->dir->semaphore);
 
@@ -115,6 +119,5 @@ class AppKernel
 
         // All set!
         $this->errors->exceptionHandlerShowTrace = false;
-        $this->lifecycle->log("AppKernelInitialized");
     }
 }
