@@ -35,7 +35,16 @@ abstract class AbstractAppTable extends AbstractOrmTable
     )
     {
         parent::__construct();
+        $this->init();
+    }
+
+    /**
+     * @return void
+     */
+    private function init(): void
+    {
         $this->dbInstance = $this->resolveDbInstance();
+        $this->dbInstance->tables->register($this);
     }
 
     /**
@@ -56,12 +65,12 @@ abstract class AbstractAppTable extends AbstractOrmTable
     {
         $this->dbInstanceKey = $object["dbInstanceKey"];
         parent::__unserialize($object);
-        $this->dbInstance = $this->resolveDbInstance();
+        $this->init();
     }
 
     /**
      * @param \Charcoal\Database\Database|null $dbArg
-     * @return \Charcoal\Database\Database
+     * @return \Charcoal\Apps\Kernel\Db\AppDatabase
      */
     protected function resolveDbInstance(?Database $dbArg = null): Database
     {
