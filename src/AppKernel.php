@@ -55,8 +55,8 @@ class AppKernel
         string               $dbClass = Databases::class,
     )
     {
-        $this->errors = new Errors($this, $errorLogger);
         $this->dir = new $dirClass($rootDirectory);
+        $this->errors = new Errors($this, $errorLogger);
 
         $configObject = (new Parser(evaluateBooleans: true, evaluateNulls: true))
             ->getParsed($this->dir->config->pathToChild("/config.yml", false));

@@ -31,7 +31,7 @@ abstract class AbstractApp
      * @param string $name
      * @return static
      */
-    protected static function Load(Directory $rootDirectory, string $name): static
+    public static function Load(Directory $rootDirectory, string $name): static
     {
         $app = unserialize(file_get_contents($rootDirectory->pathToChild("charcoalAppBuild_" . $name . ".bin", false)));
         if (!$app instanceof AbstractApp) {
@@ -46,7 +46,7 @@ abstract class AbstractApp
      * @param string $name
      * @return void
      */
-    protected static function CreateBuild(AbstractApp $app, string $name): void
+    public static function CreateBuild(AbstractApp $app, string $name): void
     {
         if (!file_put_contents(
             $app->kernel->dir->root->pathToChild("charcoalAppBuild_" . $name . ".bin", false),
