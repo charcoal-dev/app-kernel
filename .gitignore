@@ -9,3 +9,11 @@ phpunit.phar
 /coverage/
 /coverage.xml
 /coverage.clover.xml
+
+*.sqlite
+test/*.sqlite
+tests/DemoApp/config/*
+tests/DemoApp/log/*
+tests/DemoApp/tmp/semaphore/*
+tests/DemoApp/tmp/*
+tests/DemoApp/storage/*
