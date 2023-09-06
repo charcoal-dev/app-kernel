@@ -115,6 +115,7 @@ abstract class AbstractApp
         return [
             "kernel" => $this->kernel,
             "modules" => $this->modules,
+            "ciphers" => $this->ciphers,
             "io" => $this->io,
             "lifecycle" => null
         ];
@@ -128,6 +129,7 @@ abstract class AbstractApp
     {
         $this->kernel = $object["kernel"];
         $this->modules = $object["modules"];
+        $this->ciphers = $object["ciphers"];
         $this->io = $object["io"];
         $this->lifecycle = new Lifecycle();
         $this->lifecycle->log("Restore app states successful");
