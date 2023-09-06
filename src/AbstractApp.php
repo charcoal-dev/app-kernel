@@ -29,11 +29,14 @@ abstract class AbstractApp
     /**
      * @param \Charcoal\Filesystem\Directory $rootDirectory
      * @param string $name
+     * @param string ...$childDirs
      * @return static
      */
-    public static function Load(Directory $rootDirectory, string $name): static
+    public static function Load(Directory $rootDirectory, string $name, array $childDirs = []): static
     {
-        $app = unserialize(file_get_contents($rootDirectory->pathToChild("charcoalAppBuild_" . $name . ".bin", false)));
+        $app = unserialize(file_get_contents($rootDirectory->pathToChild(
+            implode(DIRECTORY_SEPARATOR, $childDirs) . DIRECTORY_SEPARATOR .
+            "charcoalAppBuild_" . $name . ".bin", false)));
         if (!$app instanceof AbstractApp) {
             throw new \RuntimeException('Cannot restore charcoal app');
         }
@@ -43,13 +46,14 @@ abstract class AbstractApp
 
     /**
      * @param \Charcoal\Apps\Kernel\AbstractApp $app
+     * @param \Charcoal\Filesystem\Directory $directory
      * @param string $name
      * @return void
      */
-    public static function CreateBuild(AbstractApp $app, string $name): void
+    public static function CreateBuild(AbstractApp $app, Directory $directory, string $name): void
     {
         if (!file_put_contents(
-            $app->kernel->dir->root->pathToChild("charcoalAppBuild_" . $name . ".bin", false),
+            $directory->pathToChild("charcoalAppBuild_" . $name . ".bin", false),
             serialize($app)
         )) {
             throw new \LogicException('Failed to create charcoal application build');
@@ -69,6 +73,7 @@ abstract class AbstractApp
      * @param string $configClass
      * @param string $dirClass
      * @param string $dbClass
+     * @param string $ciphersClass
      * @param string $ioClass
      */
     public function __construct(
