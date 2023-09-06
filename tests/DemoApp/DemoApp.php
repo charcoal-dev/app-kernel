@@ -16,6 +16,7 @@ namespace Charcoal\Tests\Apps\Objects;
 
 use Charcoal\Apps\Kernel\AbstractApp;
 use Charcoal\Apps\Kernel\AppKernel;
+use Charcoal\Apps\Kernel\Ciphers;
 use Charcoal\Apps\Kernel\Config;
 use Charcoal\Apps\Kernel\Db\Databases;
 use Charcoal\Apps\Kernel\Directories;
@@ -37,10 +38,11 @@ class DemoApp extends AbstractApp
         string               $configClass = Config::class,
         string               $dirClass = Directories::class,
         string               $dbClass = Databases::class,
+        string               $ciphersClass = Ciphers::class,
         string               $ioClass = IO::class
     )
     {
-        parent::__construct($rootDirectory, $errorLogger, $kernelClass, $configClass, $dirClass, $dbClass, $ioClass);
+        parent::__construct($rootDirectory, $errorLogger, $kernelClass, $configClass, $dirClass, $dbClass, $ciphersClass, $ioClass);
         $this->modules->register("users", new UsersModule());
     }
 
