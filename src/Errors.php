@@ -65,8 +65,31 @@ class Errors implements \IteratorAggregate
     /**
      * @return array
      */
+    public function flushClean(): array
+    {
+        $errorLog = $this->errorLog;
+        $this->flush();
+        return $errorLog;
+    }
+
+    /**
+     * @return void
+     */
+    public function flush(): void
+    {
+        $this->errorLog = [];
+        $this->errorLogCount = 0;
+    }
+
+    /**
+     * @return array
+     */
     public function __serialize(): array
     {
+        if ($this->errorLogCount > 0) {
+            throw new \LogicException('App instance cannot be serialized with errors logged');
+        }
+
         return [
             "pathOffset" => $this->pathOffset,
             "debugBacktraceLevel" => $this->debugBacktraceLevel,
