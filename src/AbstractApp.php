@@ -58,6 +58,7 @@ abstract class AbstractApp
 
     public readonly AppKernel $kernel;
     public readonly ModulesRegistry $modules;
+    public readonly Ciphers $ciphers;
     public readonly IO $io;
     public readonly Lifecycle $lifecycle;
 
@@ -77,6 +78,7 @@ abstract class AbstractApp
         string               $configClass = Config::class,
         string               $dirClass = Directories::class,
         string               $dbClass = Databases::class,
+        string               $ciphersClass = Ciphers::class,
         string               $ioClass = IO::class,
     )
     {
@@ -85,6 +87,7 @@ abstract class AbstractApp
         $this->lifecycle->log("New kernel instantiated");
         $this->modules = new ModulesRegistry();
         $this->io = new $ioClass($this);
+        $this->ciphers = new $ciphersClass($this->kernel);
         $this->lifecycle->log("New abstract app instantiated");
     }
 
