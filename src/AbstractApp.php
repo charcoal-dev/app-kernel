@@ -92,7 +92,7 @@ abstract class AbstractApp
         $this->lifecycle->log("New kernel instantiated");
         $this->modules = new ModulesRegistry();
         $this->io = new $ioClass($this);
-        $this->ciphers = new $ciphersClass($this->kernel);
+        $this->ciphers = new $ciphersClass($this);
         $this->lifecycle->log("New abstract app instantiated");
     }
 
