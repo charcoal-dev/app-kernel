@@ -30,18 +30,19 @@ use Composer\InstalledVersions;
  */
 class CLI extends \Charcoal\CLI\CLI
 {
-    public readonly AbstractApp $app;
     public readonly StdoutPrinter $stdout;
 
     use NotSerializableTrait;
 
     /**
+     * @param \Charcoal\Apps\Kernel\AbstractApp $app
      * @param \Charcoal\Filesystem\Directory $scriptsDirectory
      * @param array $args
      */
     public function __construct(
-        Directory $scriptsDirectory,
-        array     $args
+        public readonly AbstractApp $app,
+        Directory                   $scriptsDirectory,
+        array                       $args
     )
     {
         parent::__construct($scriptsDirectory, $args);
