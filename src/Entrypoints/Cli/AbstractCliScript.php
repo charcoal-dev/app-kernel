@@ -28,10 +28,11 @@ abstract class AbstractCliScript extends \Charcoal\CLI\AbstractCliScript
 
     /**
      * @param \Charcoal\Apps\Kernel\Entrypoints\Cli\CLI $cli
+     * @param int $timeLimit
      */
-    public function __construct(CLI $cli)
+    public function __construct(CLI $cli, int $timeLimit = 30)
     {
-        parent::__construct($cli);
+        parent::__construct($cli, $timeLimit);
         $this->options = new CliScriptOptions();
         $this->scriptClassname = OOP::baseClassName(static::class);
 
@@ -57,6 +58,7 @@ abstract class AbstractCliScript extends \Charcoal\CLI\AbstractCliScript
                 SIGQUIT => "SIGQUIT",
                 SIGINT => "SIGINT",
                 SIGHUP => "SIGHUP",
+                SIGALRM => "SIGALRM",
                 default => strval($sigId)
             }));
     }
