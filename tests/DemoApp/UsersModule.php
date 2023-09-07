@@ -14,9 +14,9 @@ declare(strict_types=1);
 
 namespace Charcoal\Tests\Apps\Objects;
 
-use Charcoal\Apps\Kernel\Modules\AbstractModule;
+use Charcoal\Apps\Kernel\Modules\AbstractComponentsModule;
 
-class UsersModule extends AbstractModule
+class UsersModule extends AbstractComponentsModule
 {
     public function __construct()
     {
