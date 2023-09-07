@@ -101,10 +101,7 @@ abstract class AbstractApp
      */
     public function bootstrap(): void
     {
-        /** @var \Charcoal\Apps\Kernel\Modules\AbstractModule $module */
-        foreach ($this->modules as $module) {
-            $module->bootstrap($this);
-        }
+        $this->modules->bootstrap($this);
     }
 
     /**

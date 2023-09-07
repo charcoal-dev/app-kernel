@@ -26,7 +26,7 @@ use Charcoal\Database\Queries\DbExecutedQuery;
 abstract class AbstractAppTable extends AbstractOrmTable
 {
     /**
-     * @param \Charcoal\Apps\Kernel\Modules\AbstractModule $module
+     * @param \Charcoal\Apps\Kernel\Modules\AbstractComponentsModule $module
      * @param string $dbInstanceKey
      */
     public function __construct(

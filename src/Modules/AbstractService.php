@@ -14,22 +14,10 @@ declare(strict_types=1);
 
 namespace Charcoal\Apps\Kernel\Modules;
 
-use Charcoal\Apps\Kernel\AbstractApp;
-
 /**
- * Class AbstractModule
+ * Class AbstractService
  * @package Charcoal\Apps\Kernel\Modules
  */
-abstract class AbstractModule
+abstract class AbstractService extends AbstractModule
 {
-    public readonly AbstractApp $app;
-
-    /**
-     * @param \Charcoal\Apps\Kernel\AbstractApp $app
-     * @return void
-     */
-    public function bootstrap(AbstractApp $app): void
-    {
-        $this->app = $app;
-    }
 }

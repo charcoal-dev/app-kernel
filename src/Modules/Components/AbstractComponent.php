@@ -23,7 +23,7 @@ use Charcoal\Apps\Kernel\Modules\AbstractModule;
 abstract class AbstractComponent
 {
     /**
-     * @param \Charcoal\Apps\Kernel\Modules\AbstractModule $module
+     * @param \Charcoal\Apps\Kernel\Modules\AbstractComponentsModule $module
      */
     public function __construct(
         public readonly AbstractModule $module

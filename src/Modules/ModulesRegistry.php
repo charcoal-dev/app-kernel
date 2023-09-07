@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Apps\Kernel\Modules;
 
+use Charcoal\Apps\Kernel\AbstractApp;
 use Charcoal\OOP\DependencyInjection\AbstractInstanceRegistry;
 
 /**
@@ -48,6 +49,18 @@ class ModulesRegistry extends AbstractInstanceRegistry implements \IteratorAggre
         }
 
         return $this->instances[$key];
+    }
+
+    /**
+     * @param \Charcoal\Apps\Kernel\AbstractApp $app
+     * @return void
+     */
+    public function bootstrap(AbstractApp $app): void
+    {
+        /** @var \Charcoal\Apps\Kernel\Modules\AbstractComponentsModule $instance */
+        foreach ($this->instances as $instance) {
+            $instance->bootstrap($app);
+        }
     }
 
     /**

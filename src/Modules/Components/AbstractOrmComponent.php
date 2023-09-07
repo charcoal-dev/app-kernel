@@ -31,7 +31,7 @@ abstract class AbstractOrmComponent extends AbstractComponent
      * @param \Charcoal\Apps\Kernel\Db\AbstractAppTable $table
      */
     public function __construct(
-        AbstractModule                   $module,
+        AbstractModule         $module,
         public readonly AbstractAppTable $table
     )
     {
