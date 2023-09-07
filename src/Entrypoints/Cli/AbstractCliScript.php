@@ -35,4 +35,25 @@ abstract class AbstractCliScript extends \Charcoal\CLI\AbstractCliScript
         $this->options = new CliScriptOptions();
         $this->scriptClassname = OOP::baseClassName(static::class);
     }
+
+    /**
+     * @param int $sigId
+     * @return void
+     */
+    public function onSignalCloseCallback(int $sigId): void
+    {
+        if (!extension_loaded("pcntl")) {
+            return;
+        }
+
+        $this->print("");
+        $this->print(sprintf("{red}Closing due to process-control signal {invert} %s {/}{red} received{/}",
+            match ($sigId) {
+                SIGTERM => "SIGTERM",
+                SIGQUIT => "SIGQUIT",
+                SIGINT => "SIGINT",
+                SIGHUP => "SIGHUP",
+                default => strval($sigId)
+            }));
+    }
 }
