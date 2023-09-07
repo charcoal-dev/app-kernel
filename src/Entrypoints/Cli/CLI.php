@@ -70,6 +70,13 @@ class CLI extends \Charcoal\CLI\CLI
             }
         });
 
+        // Event: BeforeExec
+        $this->events->beforeExec()->listen(function (self $cli) {
+            if (!extension_loaded("pcntl")) {
+                $cli->print("{red}{b}PCNTL{/}{red} extension is not loaded.");
+            }
+        });
+
         // Event: AfterExec
         $this->events->afterExec()->listen(function (self $cli, bool $isSuccess, ?AbstractCliScript $script) {
             $displayErrors = $script?->options->displayTriggeredErrors ?? true;

@@ -28,17 +28,12 @@ abstract class AbstractCliScript extends \Charcoal\CLI\AbstractCliScript
 
     /**
      * @param \Charcoal\Apps\Kernel\Entrypoints\Cli\CLI $cli
-     * @param int $timeLimit
      */
-    public function __construct(CLI $cli, int $timeLimit = 30)
+    public function __construct(CLI $cli)
     {
-        parent::__construct($cli, $timeLimit);
+        parent::__construct($cli);
         $this->options = new CliScriptOptions();
         $this->scriptClassname = OOP::baseClassName(static::class);
-
-        if (!extension_loaded("pcntl")) {
-            $this->print("{red}{b}PCNTL{/}{red} extension is not loaded.");
-        }
     }
 
     /**
