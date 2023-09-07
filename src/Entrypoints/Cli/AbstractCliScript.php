@@ -34,6 +34,10 @@ abstract class AbstractCliScript extends \Charcoal\CLI\AbstractCliScript
         parent::__construct($cli);
         $this->options = new CliScriptOptions();
         $this->scriptClassname = OOP::baseClassName(static::class);
+
+        if (!extension_loaded("pcntl")) {
+            $this->print("{red}{b}PCNTL{/}{red} extension is not loaded.");
+        }
     }
 
     /**
