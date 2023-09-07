@@ -34,9 +34,14 @@ abstract class AbstractApp
      */
     public static function Load(Directory $rootDirectory, string $name, array $childDirs = []): static
     {
-        $app = unserialize(file_get_contents($rootDirectory->pathToChild(
+        $buildFilepath = $rootDirectory->pathToChild(
             implode(DIRECTORY_SEPARATOR, $childDirs) . DIRECTORY_SEPARATOR .
-            "charcoalAppBuild_" . $name . ".bin", false)));
+            "charcoalAppBuild_" . $name . ".bin", false);
+        if (!is_file($buildFilepath) || !is_readable($buildFilepath)) {
+            throw new \RuntimeException(sprintf('Charcoal app build file "%s" not found/readable', basename($buildFilepath)));
+        }
+
+        $app = unserialize(file_get_contents($buildFilepath));
         if (!$app instanceof AbstractApp) {
             throw new \RuntimeException('Cannot restore charcoal app');
         }
