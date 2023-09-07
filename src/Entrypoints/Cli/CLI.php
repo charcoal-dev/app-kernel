@@ -167,7 +167,7 @@ class CLI extends \Charcoal\CLI\CLI
     public function printAppHeaders(): void
     {
         $this->print(sprintf("{yellow}{invert}Charcoal App Kernel{/} {grey}%s{/}", InstalledVersions::getPrettyVersion("charcoal-dev/app-kernel")), 200);
-        $this->print(sprintf("{yellow}{invert}Charcoal CLI{/} {grey}%s{/}", InstalledVersions::getPrettyVersion("charcoal-dev/cli")), 200);
+        $this->print(sprintf("{cyan}{invert}Charcoal CLI{/} {grey}%s{/}", InstalledVersions::getPrettyVersion("charcoal-dev/cli")), 200);
 
         // App Introduction
         $this->print("");
