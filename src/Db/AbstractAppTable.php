@@ -25,15 +25,17 @@ use Charcoal\Database\ORM\AbstractOrmTable;
 abstract class AbstractAppTable extends AbstractOrmTable
 {
     /**
-     * @param \Charcoal\Apps\Kernel\Modules\AbstractComponentsModule $module
+     * @param \Charcoal\Apps\Kernel\Modules\AbstractModule $module
      * @param string $dbInstanceKey
+     * @param string $name
      */
     public function __construct(
         private readonly AbstractModule $module,
-        public readonly string          $dbInstanceKey
+        public readonly string          $dbInstanceKey,
+        string                          $name,
     )
     {
-        parent::__construct();
+        parent::__construct($name);
     }
 
     /**

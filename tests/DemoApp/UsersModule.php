@@ -21,7 +21,7 @@ class UsersModule extends AbstractComponentsModule
     public function __construct()
     {
         parent::__construct();
-        $this->components->register("users", new UsersComponent($this, new UsersTable($this, "primary")));
+        $this->components->register("users", new UsersComponent($this, new UsersTable($this, "primary", "users")));
     }
 
     public function users(): UsersComponent
