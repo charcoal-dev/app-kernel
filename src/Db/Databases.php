@@ -90,4 +90,46 @@ class Databases extends AbstractDIResolver
     {
         return $this->getOrResolve($key);
     }
+
+    /**
+     * @return array
+     */
+    public function getAllQueries(): array
+    {
+        $queries = [];
+
+        /**
+         * @var string $dbTag
+         * @var \Charcoal\Apps\Kernel\Db\AppDatabase $dbInstance
+         */
+        foreach ($this->instances as $dbTag => $dbInstance) {
+            foreach ($dbInstance->queries as $dbQuery) {
+                $queries[] = [
+                    "db" => $dbTag,
+                    "query" => $dbQuery
+                ];
+            }
+        }
+
+        return $queries;
+    }
+
+    /**
+     * @return int
+     */
+    public function flushAllQueries(): int
+    {
+        $flushed = 0;
+
+        /**
+         * @var string $name
+         * @var \Charcoal\Apps\Kernel\Db\AppDatabase $db
+         */
+        foreach ($this->instances as $db) {
+            $flushed += $db->queries->count();
+            $db->queries->flush();
+        }
+
+        return $flushed;
+    }
 }
