@@ -79,18 +79,6 @@ abstract class AbstractAppTable extends AbstractOrmTable
     }
 
     /**
-     * @param object|array $model
-     * @param bool $ignoreDuplicate
-     * @param \Charcoal\Database\Database|null $db
-     * @return \Charcoal\Database\Queries\DbExecutedQuery
-     * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
-     */
-    public function insert(object|array $model, bool $ignoreDuplicate = false, ?Database $db = null): DbExecutedQuery
-    {
-        return $this->queryInsert($model, $ignoreDuplicate, $db);
-    }
-
-    /**
      * @param string $col
      * @param int|string $value
      * @return \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject
