@@ -21,4 +21,18 @@ namespace Charcoal\Apps\Kernel\Modules\Components;
 abstract class AbstractAppObject
 {
     abstract public function getRegistryKeys(): array;
+
+    /**
+     * @param string ...$props
+     * @return array
+     */
+    public function extractValues(string ...$props): array
+    {
+        $data = [];
+        foreach ($props as $prop) {
+            $data[$prop] = $this->$prop;
+        }
+
+        return $data;
+    }
 }
