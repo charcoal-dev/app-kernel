@@ -17,7 +17,6 @@ namespace Charcoal\Apps\Kernel\Db;
 use Charcoal\Apps\Kernel\Modules\AbstractModule;
 use Charcoal\Database\Database;
 use Charcoal\Database\ORM\AbstractOrmTable;
-use Charcoal\Database\Queries\DbExecutedQuery;
 
 /**
  * Class AbstractAppTable
