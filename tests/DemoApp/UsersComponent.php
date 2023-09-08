@@ -31,11 +31,11 @@ class UsersComponent extends AbstractOrmComponent
 
     /**
      * @param int $id
-     * @return \Charcoal\Tests\Apps\Objects\User|null
+     * @return \Charcoal\Tests\Apps\Objects\User
      * @throws \Charcoal\Apps\Kernel\Exception\AppRegistryObjectNotFound
      * @throws \Charcoal\Database\ORM\Exception\OrmException
      */
-    public function findById(int $id): ?User
+    public function findById(int $id): User
     {
         /** @var \Charcoal\Tests\Apps\Objects\User */
         return $this->getObject("users_id:" . $id, "id", $id, false);
@@ -43,11 +43,11 @@ class UsersComponent extends AbstractOrmComponent
 
     /**
      * @param string $username
-     * @return \Charcoal\Tests\Apps\Objects\User|null
+     * @return \Charcoal\Tests\Apps\Objects\User
      * @throws \Charcoal\Apps\Kernel\Exception\AppRegistryObjectNotFound
      * @throws \Charcoal\Database\ORM\Exception\OrmException
      */
-    public function findByUsername(string $username): ?User
+    public function findByUsername(string $username): User
     {
         /** @var \Charcoal\Tests\Apps\Objects\User */
         return $this->getObject("users_username:" . $username, "username", $username, false);
