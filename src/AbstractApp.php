@@ -75,6 +75,7 @@ abstract class AbstractApp
      * @param \Charcoal\Filesystem\Directory $rootDirectory
      * @param \Charcoal\Apps\Kernel\Errors\ErrorLoggerInterface $errorLogger
      * @param string $kernelClass
+     * @param string $kernelEventsClass
      * @param string $configClass
      * @param string $dirClass
      * @param string $dbClass
@@ -85,6 +86,7 @@ abstract class AbstractApp
         Directory            $rootDirectory,
         ErrorLoggerInterface $errorLogger = new NullErrorLogger(),
         string               $kernelClass = AppKernel::class,
+        string               $kernelEventsClass = Events::class,
         string               $configClass = Config::class,
         string               $dirClass = Directories::class,
         string               $dbClass = Databases::class,
@@ -93,7 +95,7 @@ abstract class AbstractApp
     )
     {
         $this->lifecycle = new Lifecycle();
-        $this->kernel = new $kernelClass($rootDirectory, $errorLogger, $configClass, $dirClass, $dbClass);
+        $this->kernel = new $kernelClass($rootDirectory, $errorLogger, $configClass, $dirClass, $dbClass, $kernelEventsClass);
         $this->lifecycle->log("New kernel instantiated");
         $this->modules = new ModulesRegistry();
         $this->io = new $ioClass($this);

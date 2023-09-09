@@ -22,6 +22,7 @@ use Charcoal\Apps\Kernel\Db\Databases;
 use Charcoal\Apps\Kernel\Directories;
 use Charcoal\Apps\Kernel\Errors\ErrorLoggerInterface;
 use Charcoal\Apps\Kernel\Errors\NullErrorLogger;
+use Charcoal\Apps\Kernel\Events;
 use Charcoal\Apps\Kernel\IO;
 use Charcoal\Filesystem\Directory;
 
@@ -35,6 +36,7 @@ class DemoApp extends AbstractApp
         Directory            $rootDirectory,
         ErrorLoggerInterface $errorLogger = new NullErrorLogger(),
         string               $kernelClass = AppKernel::class,
+        string               $kernelEventsClass = Events::class,
         string               $configClass = Config::class,
         string               $dirClass = Directories::class,
         string               $dbClass = Databases::class,
@@ -42,7 +44,7 @@ class DemoApp extends AbstractApp
         string               $ioClass = IO::class
     )
     {
-        parent::__construct($rootDirectory, $errorLogger, $kernelClass, $configClass, $dirClass, $dbClass, $ciphersClass, $ioClass);
+        parent::__construct($rootDirectory, $errorLogger, $kernelClass, $kernelEventsClass, $configClass, $dirClass, $dbClass, $ciphersClass, $ioClass);
         $this->modules->register("users", new UsersModule());
     }
 

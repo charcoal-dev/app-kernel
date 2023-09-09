@@ -30,6 +30,7 @@ use Charcoal\Yaml\Parser;
  */
 class AppKernel
 {
+    public readonly Events $events;
     public readonly Errors $errors;
     public readonly Config $config;
     public readonly Directories $dir;
@@ -43,6 +44,7 @@ class AppKernel
      * @param string $configClass
      * @param string $dirClass
      * @param string $dbClass
+     * @param string $eventsClass
      * @throws \Charcoal\Filesystem\Exception\FilesystemException
      * @throws \Charcoal\Semaphore\Exception\SemaphoreException
      * @throws \Charcoal\Yaml\Exception\YamlParseException
@@ -53,10 +55,12 @@ class AppKernel
         string               $configClass = Config::class,
         string               $dirClass = Directories::class,
         string               $dbClass = Databases::class,
+        string               $eventsClass = Events::class,
     )
     {
         $this->dir = new $dirClass($rootDirectory);
         $this->errors = new Errors($this, $errorLogger);
+        $this->events = new $eventsClass();
 
         $configObject = (new Parser(evaluateBooleans: true, evaluateNulls: true))
             ->getParsed($this->dir->config->pathToChild("/config.yml", false));
@@ -75,6 +79,7 @@ class AppKernel
     {
         return [
             "errors" => $this->errors,
+            "events" => $this->events,
             "config" => $this->config,
             "dir" => $this->dir,
             "db" => $this->db,
