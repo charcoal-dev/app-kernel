@@ -107,6 +107,11 @@ abstract class AbstractApp
     public function bootstrap(): void
     {
         $this->modules->bootstrap($this);
+        $this->lifecycle->bootstrappedOn = microtime(true);
+        if (isset($this->lifecycle->startedOn)) {
+            $this->lifecycle->loadTime = number_format($this->lifecycle->bootstrappedOn - $this->lifecycle->startedOn, 4);
+            $this->lifecycle->log("App bootstrapped", $this->lifecycle->loadTime . "s", true);
+        }
     }
 
     /**
