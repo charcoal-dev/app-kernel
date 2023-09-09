@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Apps\Kernel\Polyfill;
 
+use Charcoal\Cache\Cache;
 use Charcoal\Cache\CacheDriverInterface;
 
 /**
@@ -22,6 +23,10 @@ use Charcoal\Cache\CacheDriverInterface;
  */
 class NullCache implements CacheDriverInterface
 {
+    public function createLink(Cache $cache): void
+    {
+    }
+
     public function isConnected(): bool
     {
         return true;

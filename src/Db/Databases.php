@@ -61,6 +61,7 @@ class Databases extends AbstractDIResolver
      * @param array $args
      * @return \Charcoal\Apps\Kernel\Db\AppDatabase
      * @throws \Charcoal\Database\Exception\DbConnectionException
+     * @throws \Throwable
      */
     protected function resolve(string $key, array $args): AppDatabase
     {
@@ -71,7 +72,9 @@ class Databases extends AbstractDIResolver
             }
         }
 
-        return new AppDatabase($cred);
+        $db = new AppDatabase($cred);
+        $this->aK->events->onDbConnection()->trigger([$db]);
+        return $db;
     }
 
     /**

@@ -19,6 +19,7 @@ use Charcoal\Apps\Kernel\Errors\ErrorLoggerInterface;
 use Charcoal\Apps\Kernel\Errors\NullErrorLogger;
 use Charcoal\Apps\Kernel\Polyfill\NullCache;
 use Charcoal\Cache\Cache;
+use Charcoal\Cache\CacheDriverInterface;
 use Charcoal\Cache\Drivers\RedisClient;
 use Charcoal\Filesystem\Directory;
 use Charcoal\Semaphore\FilesystemSemaphore;
@@ -32,10 +33,10 @@ class AppKernel
 {
     public readonly Events $events;
     public readonly Errors $errors;
+    public readonly Cache $cache;
     public readonly Config $config;
     public readonly Directories $dir;
     public readonly Databases $db;
-    public readonly Cache $cache;
     public readonly FilesystemSemaphore $semaphore;
 
     /**
@@ -68,6 +69,19 @@ class AppKernel
         $this->db = new $dbClass($this);
         $this->semaphore = new FilesystemSemaphore($this->dir->semaphore);
 
+
+        // Cache Engine
+        $cacheConfig = $this->config->cache;
+        $cacheDriver = $cacheConfig->use && $cacheConfig->storageDriver === "redis" ?
+            new RedisClient($cacheConfig->hostname, $cacheConfig->port, $cacheConfig->timeOut) : new NullCache();
+
+        $this->cache = new Cache(
+            $cacheDriver,
+            useChecksumsByDefault: false,
+            nullIfExpired: true,
+            deleteIfExpired: true
+        );
+
         // Actual runtime initialization happens here:
         $this->init();
     }
@@ -83,7 +97,7 @@ class AppKernel
             "config" => $this->config,
             "dir" => $this->dir,
             "db" => $this->db,
-            "cache" => null,
+            "cache" => $this->cache,
             "semaphore" => $this->semaphore,
         ];
     }
@@ -98,6 +112,7 @@ class AppKernel
         $this->config = $data["config"];
         $this->dir = $data["dir"];
         $this->db = $data["db"];
+        $this->cache = $data["cache"];
         $this->semaphore = $data["semaphore"];
         $this->init(); // Runtime initialization
     }
@@ -110,17 +125,10 @@ class AppKernel
         // Timezone
         date_default_timezone_set($this->config->timezone);
 
-        // Cache Engine
-        $cacheConfig = $this->config->cache;
-        $cacheDriver = $cacheConfig->use && $cacheConfig->storageDriver === "redis" ?
-            new RedisClient($cacheConfig->hostname, $cacheConfig->port, $cacheConfig->timeOut) : new NullCache();
-
-        $this->cache = new Cache(
-            $cacheDriver,
-            useChecksumsByDefault: false,
-            nullIfExpired: true,
-            deleteIfExpired: true
-        );
+        // Cache Events
+        $this->cache->events->onConnected()->listen(function (CacheDriverInterface $cacheDriver) {
+            $this->events->onCacheConnection()->trigger([$cacheDriver]);
+        });
 
         // All set!
         $this->errors->exceptionHandlerShowTrace = false;
