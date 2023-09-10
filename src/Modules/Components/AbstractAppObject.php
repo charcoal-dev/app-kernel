@@ -14,6 +14,8 @@ declare(strict_types=1);
 
 namespace Charcoal\Apps\Kernel\Modules\Components;
 
+use Charcoal\OOP\Vectors\StringVector;
+
 /**
  * Class AbstractAppObject
  * @package Charcoal\Apps\Kernel\Modules\Components
@@ -25,6 +27,29 @@ abstract class AbstractAppObject
     public bool $metaObjectRuntime;
 
     abstract public function getRegistryKeys(): array;
+
+    /**
+     * This method sets public property value, if changed, returns true otherwise false
+     * (and also optionally appends argument StringVector $changeLog with property name)
+     * @param string $prop
+     * @param mixed $value
+     * @param \Charcoal\OOP\Vectors\StringVector|null $changeLog
+     * @return bool
+     */
+    public function changeValue(string $prop, mixed $value, ?StringVector $changeLog): bool
+    {
+        if (!property_exists($this, $prop)) {
+            throw new \OutOfRangeException(sprintf('Class "%s" does not have "%s" property', static::class, $prop));
+        }
+
+        if (!isset($this->$prop) || $this->$prop !== $value) {
+            $this->$prop = $value;
+            $changeLog?->append($prop);
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * @param string ...$props
