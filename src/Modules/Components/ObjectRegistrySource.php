@@ -15,28 +15,11 @@ declare(strict_types=1);
 namespace Charcoal\Apps\Kernel\Modules\Components;
 
 /**
- * Class AbstractAppObject
+ * Class ObjectRegistrySource
  * @package Charcoal\Apps\Kernel\Modules\Components
  */
-abstract class AbstractAppObject
+enum ObjectRegistrySource: string
 {
-    public ObjectRegistrySource $metaObjectSource;
-    public int $metaObjectCachedOn;
-    public bool $metaObjectRuntime;
-
-    abstract public function getRegistryKeys(): array;
-
-    /**
-     * @param string ...$props
-     * @return array
-     */
-    public function extractValues(string ...$props): array
-    {
-        $data = [];
-        foreach ($props as $prop) {
-            $data[$prop] = $this->$prop;
-        }
-
-        return $data;
-    }
+    case DB = "db";
+    case CACHE = "cache";
 }

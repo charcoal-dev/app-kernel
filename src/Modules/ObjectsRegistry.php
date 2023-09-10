@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace Charcoal\Apps\Kernel\Modules;
 
 use Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject;
+use Charcoal\Apps\Kernel\Modules\Components\ObjectRegistrySource;
 use Charcoal\Cache\CachedReferenceKey;
 use Charcoal\OOP\DependencyInjection\AbstractInstanceRegistry;
 
@@ -58,7 +59,12 @@ class ObjectsRegistry extends AbstractInstanceRegistry
             $object = $object->resolve($this->module->app->kernel->cache);
         }
 
-        return $object instanceof AbstractAppObject ? $object : null;
+        if ($object instanceof AbstractAppObject) {
+            $object->metaObjectSource = ObjectRegistrySource::CACHE;
+            return $object;
+        }
+
+        return null;
     }
 
     /**
@@ -67,6 +73,7 @@ class ObjectsRegistry extends AbstractInstanceRegistry
      */
     public function store(AbstractAppObject $object): void
     {
+        $object->metaObjectRuntime = true;
         $bindingKeys = $object->getRegistryKeys();
         foreach ($bindingKeys as $bindingKey) {
             $this->registrySet(strtolower($bindingKey), $object);
@@ -81,6 +88,10 @@ class ObjectsRegistry extends AbstractInstanceRegistry
      */
     public function storeInCache(AbstractAppObject $object, ?int $ttl = null): void
     {
+        $object = clone $object;
+        unset($object->metaObjectSource, $object->metaObjectRuntime);
+        $object->metaObjectCachedOn = time();
+
         $bindingKeys = $object->getRegistryKeys();
         $primaryKey = array_shift($bindingKeys);
         $this->module->app->kernel->cache->set(strtolower($primaryKey), $object, $ttl);

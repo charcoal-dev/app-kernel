@@ -64,10 +64,13 @@ abstract class AbstractOrmComponent extends AbstractComponent
 
         if ($useCache) {
             try {
-                return $this->module->objectsRegistry->getFromCache($registryKey);
+                $cached = $this->module->objectsRegistry->getFromCache($registryKey);
+                if ($cached) {
+                    return $cached;
+                }
             } catch (CacheException $e) {
-                // If cache is not available, generate warning but keep execution
-                $this->module->app->triggerError($e, E_USER_WARNING);
+                $this->module->app->lifecycle->exception($e);
+                $this->module->app->triggerError('An error occurred while retrieving object from cache', E_USER_WARNING);
             }
         }
 
@@ -77,12 +80,14 @@ abstract class AbstractOrmComponent extends AbstractComponent
             throw new AppRegistryObjectNotFound();
         }
 
+        $object->metaObjectSource = ObjectRegistrySource::DB;
         $this->module->objectsRegistry->store($object);
         if ($useCache) {
             try {
                 $this->module->objectsRegistry->storeInCache($object, $cacheTtl);
             } catch (CacheException $e) {
-                $this->module->app->triggerError($e, E_USER_WARNING);
+                $this->module->app->lifecycle->exception($e);
+                $this->module->app->triggerError('An error occurred while storing object in cache', E_USER_WARNING);
             }
         }
 
