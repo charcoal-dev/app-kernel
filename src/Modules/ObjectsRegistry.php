@@ -75,14 +75,15 @@ class ObjectsRegistry extends AbstractInstanceRegistry
 
     /**
      * @param \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject $object
+     * @param int|null $ttl
      * @return void
      * @throws \Charcoal\Cache\Exception\CacheException
      */
-    public function storeInCache(AbstractAppObject $object): void
+    public function storeInCache(AbstractAppObject $object, ?int $ttl = null): void
     {
         $bindingKeys = $object->getRegistryKeys();
         $primaryKey = array_shift($bindingKeys);
-        $this->module->app->kernel->cache->set(strtolower($primaryKey), $object);
+        $this->module->app->kernel->cache->set(strtolower($primaryKey), $object, $ttl);
 
         if ($bindingKeys) {
             foreach ($bindingKeys as $referenceKey) {

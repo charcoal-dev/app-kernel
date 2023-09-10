@@ -31,7 +31,7 @@ abstract class AbstractOrmComponent extends AbstractComponent
      * @param \Charcoal\Apps\Kernel\Db\AbstractAppTable $table
      */
     public function __construct(
-        AbstractModule         $module,
+        AbstractModule                   $module,
         public readonly AbstractAppTable $table
     )
     {
@@ -43,15 +43,18 @@ abstract class AbstractOrmComponent extends AbstractComponent
      * @param string $tableColumn
      * @param int|string $tableValue
      * @param bool $useCache
+     * @param int|null $cacheTtl
      * @return \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject
      * @throws \Charcoal\Apps\Kernel\Exception\AppRegistryObjectNotFound
      * @throws \Charcoal\Database\ORM\Exception\OrmException
+     * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
      */
     protected function getObject(
         string     $registryKey,
         string     $tableColumn,
         int|string $tableValue,
-        bool       $useCache
+        bool       $useCache,
+        ?int       $cacheTtl = null
     ): AbstractAppObject
     {
         $object = $this->module->objectsRegistry->get($registryKey);
@@ -77,7 +80,7 @@ abstract class AbstractOrmComponent extends AbstractComponent
         $this->module->objectsRegistry->store($object);
         if ($useCache) {
             try {
-                $this->module->objectsRegistry->storeInCache($object);
+                $this->module->objectsRegistry->storeInCache($object, $cacheTtl);
             } catch (CacheException $e) {
                 $this->module->app->triggerError($e, E_USER_WARNING);
             }
