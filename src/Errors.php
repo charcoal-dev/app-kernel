@@ -91,6 +91,7 @@ class Errors implements \IteratorAggregate
         }
 
         return [
+            "appKernel" => $this->aK,
             "pathOffset" => $this->pathOffset,
             "debugBacktraceLevel" => $this->debugBacktraceLevel,
             "backtraceOffset" => $this->backtraceOffset,
@@ -104,6 +105,7 @@ class Errors implements \IteratorAggregate
      */
     public function __unserialize(array $data): void
     {
+        $this->aK = $data["appKernel"];
         $this->pathOffset = $data["pathOffset"];
         $this->debugBacktraceLevel = $data["debugBacktraceLevel"];
         $this->backtraceOffset = $data["backtraceOffset"];

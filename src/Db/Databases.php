@@ -44,7 +44,10 @@ class Databases extends AbstractDIResolver
      */
     public function __serialize(): array
     {
-        return ["mysqlRootPassword" => $this->mysqlRootPassword];
+        return [
+            "appKernel" => $this->aK,
+            "mysqlRootPassword" => $this->mysqlRootPassword
+        ];
     }
 
     /**
@@ -53,6 +56,7 @@ class Databases extends AbstractDIResolver
      */
     public function __unserialize(array $data): void
     {
+        $this->aK = $data["appKernel"];
         $this->mysqlRootPassword = $data["mysqlRootPassword"];
     }
 
