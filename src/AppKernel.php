@@ -109,6 +109,7 @@ class AppKernel
     public function __unserialize(array $data): void
     {
         $this->errors = $data["errors"];
+        $this->events = $data["events"];
         $this->config = $data["config"];
         $this->dir = $data["dir"];
         $this->db = $data["db"];
