@@ -76,5 +76,11 @@ class DemoAppTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(spl_object_id($app), spl_object_id($app->users()->users()->module->app));
         $this->assertEquals(spl_object_id($app->users()), spl_object_id($app->users()->users()->module->app->modules->get("users")));
         $this->assertCount(0, $app->users()->objectsRegistry->getAllRuntime(), "Objects repositories are created a new");
+
+        // Check a table instance id matches one stored in registry
+        $this->assertEquals(
+            spl_object_id($app->users()->users()->table),
+            spl_object_id($app->users()->tables->getFor("primary")[0])
+        );
     }
 }

@@ -23,8 +23,6 @@ use Charcoal\Database\DbCredentials;
  */
 class AppDatabase extends Database
 {
-    public readonly TablesRegistry $tables;
-
     /**
      * @param \Charcoal\Database\DbCredentials $credentials
      * @param int $errorMode
@@ -33,6 +31,5 @@ class AppDatabase extends Database
     public function __construct(DbCredentials $credentials, int $errorMode = \PDO::ERRMODE_EXCEPTION)
     {
         parent::__construct($credentials, $errorMode);
-        $this->tables = new TablesRegistry();
     }
 }

@@ -16,7 +16,7 @@ namespace Charcoal\Apps\Kernel\Modules\Components;
 
 use Charcoal\Apps\Kernel\Db\AbstractAppTable;
 use Charcoal\Apps\Kernel\Exception\AppRegistryObjectNotFound;
-use Charcoal\Apps\Kernel\Modules\AbstractModule;
+use Charcoal\Apps\Kernel\Modules\AbstractBaseModule;
 use Charcoal\Cache\Exception\CacheException;
 use Charcoal\Database\ORM\Exception\OrmModelNotFoundException;
 
@@ -27,11 +27,11 @@ use Charcoal\Database\ORM\Exception\OrmModelNotFoundException;
 abstract class AbstractOrmComponent extends AbstractComponent
 {
     /**
-     * @param \Charcoal\Apps\Kernel\Modules\AbstractModule $module
+     * @param \Charcoal\Apps\Kernel\Modules\AbstractBaseModule $module
      * @param \Charcoal\Apps\Kernel\Db\AbstractAppTable $table
      */
     public function __construct(
-        AbstractModule                   $module,
+        AbstractBaseModule               $module,
         public readonly AbstractAppTable $table
     )
     {

@@ -20,7 +20,7 @@ use Charcoal\Apps\Kernel\AbstractApp;
  * Class AbstractModule
  * @package Charcoal\Apps\Kernel\Modules
  */
-abstract class AbstractModule
+abstract class AbstractBaseModule
 {
     public readonly AbstractApp $app;
 

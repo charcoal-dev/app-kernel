@@ -15,11 +15,12 @@ declare(strict_types=1);
 namespace Charcoal\Apps\Kernel\Modules;
 
 /**
- * Class AbstractModule
+ * Class AbstractComponentsModule
  * @package Charcoal\Apps\Kernel\Modules
  */
-abstract class AbstractComponentsModule extends AbstractModule
+abstract class AbstractComponentsModule extends AbstractBaseModule
 {
+    public readonly TablesRegistry $tables;
     public readonly ObjectsRegistry $objectsRegistry;
     public readonly ComponentsRegistry $components;
 
@@ -27,6 +28,7 @@ abstract class AbstractComponentsModule extends AbstractModule
     {
         $this->objectsRegistry = new ObjectsRegistry($this);
         $this->components = new ComponentsRegistry();
+        $this->tables = new TablesRegistry();
     }
 
     /**
@@ -35,7 +37,8 @@ abstract class AbstractComponentsModule extends AbstractModule
     public function __serialize(): array
     {
         return [
-            "components" => $this->components
+            "components" => $this->components,
+            "tables" => $this->tables
         ];
     }
 
@@ -46,6 +49,7 @@ abstract class AbstractComponentsModule extends AbstractModule
     public function __unserialize(array $object): void
     {
         $this->components = $object["components"];
+        $this->tables = $object["tables"];
         $this->objectsRegistry = new ObjectsRegistry($this);
     }
 }

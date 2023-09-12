@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Apps\Kernel\Modules\Components;
 
-use Charcoal\Apps\Kernel\Modules\AbstractModule;
+use Charcoal\Apps\Kernel\Modules\AbstractBaseModule;
 
 /**
  * Class AbstractComponent
@@ -26,7 +26,7 @@ abstract class AbstractComponent
      * @param \Charcoal\Apps\Kernel\Modules\AbstractComponentsModule $module
      */
     public function __construct(
-        public readonly AbstractModule $module
+        public readonly AbstractBaseModule $module
     )
     {
     }

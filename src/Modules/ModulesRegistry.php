@@ -30,19 +30,19 @@ class ModulesRegistry extends AbstractInstanceRegistry implements \IteratorAggre
 
     /**
      * @param string $key
-     * @param \Charcoal\Apps\Kernel\Modules\AbstractModule $module
+     * @param \Charcoal\Apps\Kernel\Modules\AbstractBaseModule $module
      * @return void
      */
-    public function register(string $key, AbstractModule $module): void
+    public function register(string $key, AbstractBaseModule $module): void
     {
         $this->registrySet($key, $module);
     }
 
     /**
      * @param string $key
-     * @return \Charcoal\Apps\Kernel\Modules\AbstractModule
+     * @return \Charcoal\Apps\Kernel\Modules\AbstractBaseModule
      */
-    public function get(string $key): AbstractModule
+    public function get(string $key): AbstractBaseModule
     {
         if (!isset($this->instances[$key])) {
             throw new \LogicException(sprintf('App module "%s" was not registered', $key));

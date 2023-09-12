@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace Charcoal\Tests\Apps\Objects;
 
 use Charcoal\Apps\Kernel\Db\AbstractAppTable;
-use Charcoal\Apps\Kernel\Modules\AbstractModule;
+use Charcoal\Apps\Kernel\Modules\AbstractBaseModule;
 use Charcoal\Apps\Kernel\Modules\Components\AbstractOrmComponent;
 
 /**
@@ -24,7 +24,7 @@ use Charcoal\Apps\Kernel\Modules\Components\AbstractOrmComponent;
  */
 class UsersComponent extends AbstractOrmComponent
 {
-    public function __construct(AbstractModule $module, AbstractAppTable $table)
+    public function __construct(AbstractBaseModule $module, AbstractAppTable $table)
     {
         parent::__construct($module, $table);
     }

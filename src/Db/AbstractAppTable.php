@@ -14,7 +14,8 @@ declare(strict_types=1);
 
 namespace Charcoal\Apps\Kernel\Db;
 
-use Charcoal\Apps\Kernel\Modules\AbstractModule;
+use Charcoal\Apps\Kernel\Modules\AbstractBaseModule;
+use Charcoal\Apps\Kernel\Modules\AbstractComponentsModule;
 use Charcoal\Database\Database;
 use Charcoal\Database\ORM\AbstractOrmTable;
 
@@ -25,17 +26,20 @@ use Charcoal\Database\ORM\AbstractOrmTable;
 abstract class AbstractAppTable extends AbstractOrmTable
 {
     /**
-     * @param \Charcoal\Apps\Kernel\Modules\AbstractModule $module
+     * @param \Charcoal\Apps\Kernel\Modules\AbstractBaseModule $module
      * @param string $dbInstanceKey
      * @param string $name
      */
     public function __construct(
-        private readonly AbstractModule $module,
-        public readonly string          $dbInstanceKey,
-        string                          $name,
+        private readonly AbstractBaseModule $module,
+        public readonly string              $dbInstanceKey,
+        string                              $name,
     )
     {
         parent::__construct($name);
+        if($this->module instanceof AbstractComponentsModule) {
+            $this->module->tables->register($this->dbInstanceKey, $this);
+        }
     }
 
     /**
@@ -75,7 +79,6 @@ abstract class AbstractAppTable extends AbstractOrmTable
         }
 
         $this->dbInstance = $this->module->app->kernel->db->getDb($this->dbInstanceKey);
-        $this->dbInstance->tables->register($this);
         return $this->dbInstance;
     }
 
