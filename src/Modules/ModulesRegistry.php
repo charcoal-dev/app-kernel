@@ -18,7 +18,7 @@ use Charcoal\Apps\Kernel\AbstractApp;
 use Charcoal\OOP\DependencyInjection\AbstractInstanceRegistry;
 
 /**
- * Class Modules
+ * Class ModulesRegistry
  * @package Charcoal\Apps\Kernel\Modules
  */
 class ModulesRegistry extends AbstractInstanceRegistry implements \IteratorAggregate
@@ -30,19 +30,19 @@ class ModulesRegistry extends AbstractInstanceRegistry implements \IteratorAggre
 
     /**
      * @param string $key
-     * @param \Charcoal\Apps\Kernel\Modules\AbstractBaseModule $module
+     * @param \Charcoal\Apps\Kernel\Modules\BaseModule $module
      * @return void
      */
-    public function register(string $key, AbstractBaseModule $module): void
+    public function register(string $key, BaseModule $module): void
     {
         $this->registrySet($key, $module);
     }
 
     /**
      * @param string $key
-     * @return \Charcoal\Apps\Kernel\Modules\AbstractBaseModule
+     * @return \Charcoal\Apps\Kernel\Modules\BaseModule
      */
-    public function get(string $key): AbstractBaseModule
+    public function get(string $key): BaseModule
     {
         if (!isset($this->instances[$key])) {
             throw new \LogicException(sprintf('App module "%s" was not registered', $key));
@@ -57,7 +57,7 @@ class ModulesRegistry extends AbstractInstanceRegistry implements \IteratorAggre
      */
     public function bootstrap(AbstractApp $app): void
     {
-        /** @var \Charcoal\Apps\Kernel\Modules\AbstractComponentsModule $instance */
+        /** @var \Charcoal\Apps\Kernel\Modules\AbstractOrmModule $instance */
         foreach ($this->instances as $instance) {
             $instance->bootstrap($app);
         }
