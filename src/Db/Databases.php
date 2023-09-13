@@ -26,13 +26,11 @@ use Charcoal\OOP\Traits\NoDumpTrait;
 class Databases extends AbstractDIResolver
 {
     protected readonly ?string $mysqlRootPassword;
+    private AppKernel $aK;
 
     use NoDumpTrait;
 
-    /**
-     * @param \Charcoal\Apps\Kernel\AppKernel $aK
-     */
-    public function __construct(private readonly AppKernel $aK)
+    public function __construct()
     {
         parent::__construct(null);
         $mysqlRootPassword = trim(strval(getenv("MYSQL_ROOT_PASSWORD")));
@@ -40,14 +38,23 @@ class Databases extends AbstractDIResolver
     }
 
     /**
+     * @param \Charcoal\Apps\Kernel\AppKernel $aK
+     * @return void
+     */
+    public function bootstrap(AppKernel $aK): void
+    {
+        $this->aK = $aK;
+    }
+
+    /**
      * @return null[]|string[]
      */
     public function __serialize(): array
     {
-        return [
-            "appKernel" => $this->aK,
-            "mysqlRootPassword" => $this->mysqlRootPassword
-        ];
+        $data = parent::__serialize();
+        $data["mysqlRootPassword"] = $this->mysqlRootPassword;
+        $data["instances"] = null;
+        return $data;
     }
 
     /**
@@ -56,8 +63,8 @@ class Databases extends AbstractDIResolver
      */
     public function __unserialize(array $data): void
     {
-        $this->aK = $data["appKernel"];
         $this->mysqlRootPassword = $data["mysqlRootPassword"];
+        parent::__unserialize(["instanceOf" => null, "instances" => []]);
     }
 
     /**

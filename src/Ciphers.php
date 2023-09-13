@@ -37,6 +37,16 @@ class Ciphers extends AbstractInstanceRegistry
     }
 
     /**
+     * @param array $data
+     * @return void
+     */
+    public function __unserialize(array $data): void
+    {
+        parent::__unserialize($data);
+        $this->primary = $this->get("primary");
+    }
+
+    /**
      * @param string $key
      * @return \Charcoal\Cipher\Cipher
      */

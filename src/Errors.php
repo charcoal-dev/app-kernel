@@ -43,11 +43,11 @@ class Errors implements \IteratorAggregate
      * @param \Charcoal\Apps\Kernel\Errors\ErrorLoggerInterface $logger
      */
     public function __construct(
-        private readonly AppKernel  $aK,
+        AppKernel                   $aK,
         public ErrorLoggerInterface $logger
     )
     {
-        $this->pathOffset = strlen($this->aK->dir->root->path);
+        $this->pathOffset = strlen($aK->dir->root->path);
         $this->init();
     }
 
@@ -91,7 +91,6 @@ class Errors implements \IteratorAggregate
         }
 
         return [
-            "appKernel" => $this->aK,
             "pathOffset" => $this->pathOffset,
             "debugBacktraceLevel" => $this->debugBacktraceLevel,
             "backtraceOffset" => $this->backtraceOffset,
@@ -105,7 +104,6 @@ class Errors implements \IteratorAggregate
      */
     public function __unserialize(array $data): void
     {
-        $this->aK = $data["appKernel"];
         $this->pathOffset = $data["pathOffset"];
         $this->debugBacktraceLevel = $data["debugBacktraceLevel"];
         $this->backtraceOffset = $data["backtraceOffset"];

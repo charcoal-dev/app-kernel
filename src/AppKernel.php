@@ -66,7 +66,7 @@ class AppKernel
         $configObject = (new Parser(evaluateBooleans: true, evaluateNulls: true))
             ->getParsed($this->dir->config->pathToChild("/config.yml", false));
         $this->config = new $configClass($configObject);
-        $this->db = new $dbClass($this);
+        $this->db = new $dbClass();
         $this->semaphore = new FilesystemSemaphore($this->dir->semaphore);
 
 
@@ -125,6 +125,9 @@ class AppKernel
     {
         // Timezone
         date_default_timezone_set($this->config->timezone);
+
+        // Databases
+        $this->db->bootstrap($this);
 
         // Cache Events
         $this->cache->events->onConnected()->listen(function (CacheDriverInterface $cacheDriver) {
