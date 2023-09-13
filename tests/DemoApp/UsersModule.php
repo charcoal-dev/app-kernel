@@ -14,19 +14,28 @@ declare(strict_types=1);
 
 namespace Charcoal\Tests\Apps\Objects;
 
-use Charcoal\Apps\Kernel\Modules\AbstractComponentsModule;
+use Charcoal\Apps\Kernel\Modules\AbstractOrmModule;
 
-class UsersModule extends AbstractComponentsModule
+class UsersModule extends AbstractOrmModule
 {
+    public readonly UsersComponent $users;
+
     public function __construct()
     {
         parent::__construct();
-        $this->components->register("users", new UsersComponent($this, new UsersTable($this, "primary", "users")));
+        $this->users = new UsersComponent($this);
     }
 
-    public function users(): UsersComponent
+    public function __serialize(): array
     {
-        /** @var \Charcoal\Tests\Apps\Objects\UsersComponent */
-        return $this->components->get("users");
+        $data = parent::__serialize();
+        $data["users"] = $this->users;
+        return $data;
+    }
+
+    public function __unserialize(array $data): void
+    {
+        $this->users = $data["users"];
+        parent::__unserialize($data);
     }
 }

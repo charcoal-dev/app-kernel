@@ -14,8 +14,9 @@ declare(strict_types=1);
 
 namespace Charcoal\Apps\Kernel\Db;
 
-use Charcoal\Apps\Kernel\Modules\AbstractBaseModule;
-use Charcoal\Apps\Kernel\Modules\AbstractComponentsModule;
+use Charcoal\Apps\Kernel\Modules\BaseModule;
+use Charcoal\Apps\Kernel\Modules\AbstractOrmModule;
+use Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject;
 use Charcoal\Database\Database;
 use Charcoal\Database\ORM\AbstractOrmTable;
 
@@ -26,21 +27,27 @@ use Charcoal\Database\ORM\AbstractOrmTable;
 abstract class AbstractAppTable extends AbstractOrmTable
 {
     /**
-     * @param \Charcoal\Apps\Kernel\Modules\AbstractBaseModule $module
+     * @param \Charcoal\Apps\Kernel\Modules\BaseModule $module
      * @param string $dbInstanceKey
      * @param string $name
      */
     public function __construct(
-        private readonly AbstractBaseModule $module,
-        public readonly string              $dbInstanceKey,
-        string                              $name,
+        private readonly BaseModule $module,
+        public readonly string      $dbInstanceKey,
+        string                      $name,
     )
     {
         parent::__construct($name);
-        if($this->module instanceof AbstractComponentsModule) {
+        if ($this->module instanceof AbstractOrmModule) {
             $this->module->tables->register($this->dbInstanceKey, $this);
         }
     }
+
+    /**
+     * @param array $row
+     * @return \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject|null
+     */
+    abstract public function newChildObject(array $row): AbstractAppObject|null;
 
     /**
      * @return array
@@ -89,7 +96,7 @@ abstract class AbstractAppTable extends AbstractOrmTable
      * @throws \Charcoal\Database\ORM\Exception\OrmException
      * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
      */
-    public function findByCol(string $col, int|string $value): \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject
+    public function findByCol(string $col, int|string $value): AbstractAppObject
     {
         /** @var \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject */
         return $this->queryFind("WHERE `" . $col . "`=?", [$value], limit: 1)->getNext();

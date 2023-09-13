@@ -56,13 +56,13 @@ class DemoAppTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(spl_object_id($u1), spl_object_id($app->users()->objectsRegistry->get("users_id:1")));
         $this->assertEquals(spl_object_id($u1), spl_object_id($app->users()->objectsRegistry->get("users_username:charcoal")));
         $this->assertNotEquals(
-            spl_object_id($app->users()->users()->findByUsername("charcoal")),
-            spl_object_id($app->users()->users()->findByUsername("firstByte")) // Case-sensitivity
+            spl_object_id($app->users()->users->findByUsername("charcoal")),
+            spl_object_id($app->users()->users->findByUsername("firstByte")) // Case-sensitivity
         );
 
         $this->assertEquals(
-            spl_object_id($app->users()->users()->findByUsername("charcoal")),
-            spl_object_id($app->users()->users()->findById(1))
+            spl_object_id($app->users()->users->findByUsername("charcoal")),
+            spl_object_id($app->users()->users->findById(1))
         );
 
         // Serialize Application State
@@ -73,13 +73,13 @@ class DemoAppTest extends \PHPUnit\Framework\TestCase
         $app = unserialize($serialized);
         $app->bootstrap();
         $this->assertEquals(spl_object_id($app), spl_object_id($app->users()->app));
-        $this->assertEquals(spl_object_id($app), spl_object_id($app->users()->users()->module->app));
-        $this->assertEquals(spl_object_id($app->users()), spl_object_id($app->users()->users()->module->app->modules->get("users")));
+        $this->assertEquals(spl_object_id($app), spl_object_id($app->users()->users->module->app));
+        $this->assertEquals(spl_object_id($app->users()), spl_object_id($app->users()->users->module->app->modules->get("users")));
         $this->assertCount(0, $app->users()->objectsRegistry->getAllRuntime(), "Objects repositories are created a new");
 
         // Check a table instance id matches one stored in registry
         $this->assertEquals(
-            spl_object_id($app->users()->users()->table),
+            spl_object_id($app->users()->users->table),
             spl_object_id($app->users()->tables->getFor("primary")[0])
         );
     }

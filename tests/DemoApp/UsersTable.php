@@ -26,7 +26,10 @@ use Charcoal\Database\ORM\Schema\TableMigrations;
  */
 class UsersTable extends AbstractAppTable
 {
-    public const TABLE = "users";
+    public function __construct(UsersModule $module)
+    {
+        parent::__construct($module, "primary", "users");
+    }
 
     protected function structure(Columns $cols, Constraints $constraints): void
     {
@@ -48,7 +51,7 @@ class UsersTable extends AbstractAppTable
     {
     }
 
-    public function newChildObject(array $row): object|null
+    public function newChildObject(array $row): User
     {
         return new User();
     }

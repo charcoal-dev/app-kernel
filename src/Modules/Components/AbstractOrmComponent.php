@@ -16,7 +16,6 @@ namespace Charcoal\Apps\Kernel\Modules\Components;
 
 use Charcoal\Apps\Kernel\Db\AbstractAppTable;
 use Charcoal\Apps\Kernel\Exception\AppRegistryObjectNotFound;
-use Charcoal\Apps\Kernel\Modules\AbstractBaseModule;
 use Charcoal\Cache\Exception\CacheException;
 use Charcoal\Database\ORM\Exception\OrmModelNotFoundException;
 
@@ -24,22 +23,11 @@ use Charcoal\Database\ORM\Exception\OrmModelNotFoundException;
  * Class AbstractOrmComponent
  * @package Charcoal\Apps\Kernel\Modules\Components
  */
-abstract class AbstractOrmComponent extends AbstractComponent
+abstract class AbstractOrmComponent extends BaseComponent
 {
     /**
-     * @param \Charcoal\Apps\Kernel\Modules\AbstractBaseModule $module
-     * @param \Charcoal\Apps\Kernel\Db\AbstractAppTable $table
-     */
-    public function __construct(
-        AbstractBaseModule               $module,
-        public readonly AbstractAppTable $table
-    )
-    {
-        parent::__construct($module);
-    }
-
-    /**
      * @param string $registryKey
+     * @param \Charcoal\Apps\Kernel\Db\AbstractAppTable $table
      * @param string $tableColumn
      * @param int|string $tableValue
      * @param bool $useCache
@@ -50,11 +38,12 @@ abstract class AbstractOrmComponent extends AbstractComponent
      * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
      */
     protected function getObject(
-        string     $registryKey,
-        string     $tableColumn,
-        int|string $tableValue,
-        bool       $useCache,
-        ?int       $cacheTtl = null
+        string           $registryKey,
+        AbstractAppTable $table,
+        string           $tableColumn,
+        int|string       $tableValue,
+        bool             $useCache,
+        ?int             $cacheTtl = null
     ): AbstractAppObject
     {
         $object = $this->module->objectsRegistry->get($registryKey);
@@ -75,7 +64,7 @@ abstract class AbstractOrmComponent extends AbstractComponent
         }
 
         try {
-            $object = $this->table->findByCol($tableColumn, $tableValue);
+            $object = $table->findByCol($tableColumn, $tableValue);
         } catch (OrmModelNotFoundException) {
             throw new AppRegistryObjectNotFound();
         }
@@ -96,27 +85,30 @@ abstract class AbstractOrmComponent extends AbstractComponent
 
     /**
      * @param string $registryKey
+     * @param \Charcoal\Apps\Kernel\Db\AbstractAppTable $table
      * @param string $tableColumn
      * @param int|string $tableValue
      * @param bool $useCache
      * @return \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject
      * @throws \Charcoal\Cache\Exception\CacheException
      * @throws \Charcoal\Database\ORM\Exception\OrmException
+     * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
      */
     protected function resolveOnly(
-        string     $registryKey,
-        string     $tableColumn,
-        int|string $tableValue,
-        bool       $useCache,
+        string           $registryKey,
+        AbstractAppTable $table,
+        string           $tableColumn,
+        int|string       $tableValue,
+        bool             $useCache,
     ): AbstractAppObject
     {
         if ($useCache) {
             return $this->module->objectsRegistry->get($registryKey) ??
                 $this->module->objectsRegistry->getFromCache($registryKey) ??
-                $this->table->findByCol($tableColumn, $tableValue);
+                $table->findByCol($tableColumn, $tableValue);
         }
 
         return $this->module->objectsRegistry->get($registryKey) ??
-            $this->table->findByCol($tableColumn, $tableValue);
+            $table->findByCol($tableColumn, $tableValue);
     }
 }

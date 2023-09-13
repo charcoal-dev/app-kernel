@@ -26,9 +26,9 @@ use Charcoal\OOP\DependencyInjection\AbstractInstanceRegistry;
 class ObjectsRegistry extends AbstractInstanceRegistry
 {
     /**
-     * @param \Charcoal\Apps\Kernel\Modules\AbstractComponentsModule $module
+     * @param \Charcoal\Apps\Kernel\Modules\AbstractOrmModule $module
      */
-    public function __construct(public readonly AbstractComponentsModule $module)
+    public function __construct(public readonly AbstractOrmModule $module)
     {
         parent::__construct(null);
     }

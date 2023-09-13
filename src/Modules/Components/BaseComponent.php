@@ -14,20 +14,37 @@ declare(strict_types=1);
 
 namespace Charcoal\Apps\Kernel\Modules\Components;
 
-use Charcoal\Apps\Kernel\Modules\AbstractBaseModule;
+use Charcoal\Apps\Kernel\Modules\BaseModule;
 
 /**
- * Class AbstractComponent
+ * Class BaseComponent
  * @package Charcoal\Apps\Kernel\Modules\Components
  */
-abstract class AbstractComponent
+abstract class BaseComponent
 {
     /**
-     * @param \Charcoal\Apps\Kernel\Modules\AbstractComponentsModule $module
+     * @param \Charcoal\Apps\Kernel\Modules\BaseModule $module
      */
     public function __construct(
-        public readonly AbstractBaseModule $module
+        public readonly BaseModule $module
     )
     {
+    }
+
+    /**
+     * @return \Charcoal\Apps\Kernel\Modules\BaseModule[]
+     */
+    public function __serialize(): array
+    {
+        return ["module" => $this->module];
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->module = $data["module"];
     }
 }

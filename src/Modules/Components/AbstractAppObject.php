@@ -52,6 +52,7 @@ abstract class AbstractAppObject
     }
 
     /**
+     * Extracts argument properties as associative array
      * @param string ...$props
      * @return array
      */
