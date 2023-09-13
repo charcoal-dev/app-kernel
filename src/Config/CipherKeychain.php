@@ -16,14 +16,13 @@ namespace Charcoal\Apps\Kernel\Config;
 
 use Charcoal\Apps\Kernel\Exception\AppConfigException;
 use Charcoal\Buffers\Frames\Bytes32;
-use Charcoal\OOP\DependencyInjection\AbstractInstanceRegistry;
 use Charcoal\OOP\Traits\NoDumpTrait;
 
 /**
  * Class CipherKeychain
  * @package Charcoal\Apps\Kernel\Config
  */
-class CipherKeychain extends AbstractInstanceRegistry
+class CipherKeychain
 {
     public const DEFAULT_INSECURE_VALUE = "enter some random words or 32 bytes PRNG entropy (hex-encoded) here";
 
@@ -38,7 +37,6 @@ class CipherKeychain extends AbstractInstanceRegistry
      */
     public function __construct(array $keys)
     {
-        parent::__construct(null);
         $defaultEntropy = hash("sha256", self::DEFAULT_INSECURE_VALUE, true);
 
         foreach ($keys as $label => $entropy) {
