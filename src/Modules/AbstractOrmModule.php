@@ -18,38 +18,35 @@ namespace Charcoal\Apps\Kernel\Modules;
  * Class AbstractComponentsModule
  * @package Charcoal\Apps\Kernel\Modules
  */
-abstract class AbstractComponentsModule extends AbstractBaseModule
+abstract class AbstractOrmModule extends BaseModule
 {
     public readonly TablesRegistry $tables;
     public readonly ObjectsRegistry $objectsRegistry;
-    public readonly ComponentsRegistry $components;
 
     public function __construct()
     {
         $this->objectsRegistry = new ObjectsRegistry($this);
-        $this->components = new ComponentsRegistry();
         $this->tables = new TablesRegistry();
     }
 
     /**
-     * @return \Charcoal\Apps\Kernel\Modules\ComponentsRegistry[]
+     * @return \Charcoal\Apps\Kernel\Modules\TablesRegistry[]
      */
     public function __serialize(): array
     {
-        return [
-            "components" => $this->components,
-            "tables" => $this->tables
-        ];
+        $data = parent::__serialize();
+        $data["tables"] = $this->tables;
+        return $data;
     }
 
     /**
-     * @param array $object
+     * @param array $data
      * @return void
      */
-    public function __unserialize(array $object): void
+    public function __unserialize(array $data): void
     {
-        $this->components = $object["components"];
-        $this->tables = $object["tables"];
+        $this->tables = $data["tables"];
         $this->objectsRegistry = new ObjectsRegistry($this);
+        parent::__unserialize($data);
     }
 }

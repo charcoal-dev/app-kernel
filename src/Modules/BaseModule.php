@@ -20,7 +20,7 @@ use Charcoal\Apps\Kernel\AbstractApp;
  * Class AbstractModule
  * @package Charcoal\Apps\Kernel\Modules
  */
-abstract class AbstractBaseModule
+abstract class BaseModule
 {
     public readonly AbstractApp $app;
 
@@ -31,5 +31,14 @@ abstract class AbstractBaseModule
     public function bootstrap(AbstractApp $app): void
     {
         $this->app = $app;
+    }
+
+    public function __serialize(): array
+    {
+        return [];
+    }
+
+    public function __unserialize(array $data): void
+    {
     }
 }

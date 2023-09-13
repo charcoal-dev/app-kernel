@@ -18,6 +18,6 @@ namespace Charcoal\Apps\Kernel\Modules;
  * Class AbstractService
  * @package Charcoal\Apps\Kernel\Modules
  */
-abstract class AbstractService extends AbstractBaseModule
+abstract class AbstractService extends BaseModule
 {
 }
