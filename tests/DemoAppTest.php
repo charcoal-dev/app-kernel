@@ -117,5 +117,9 @@ class DemoAppTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(isset($u2->firstName));
         $this->assertEquals("Charcoal", $u2->firstName);
         $this->assertFalse(isset($u2->lastName));
+
+        $this->assertFalse(isset($u2->metaObjectSource));
+        $this->assertFalse(isset($u2->metaObjectRuntime));
+        $this->assertEquals(123456, $u2->metaObjectCachedOn);
     }
 }
