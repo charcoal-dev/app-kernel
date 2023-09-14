@@ -16,6 +16,7 @@ namespace Charcoal\Apps\Kernel\Modules\Components;
 
 use Charcoal\Apps\Kernel\Db\AbstractAppTable;
 use Charcoal\Apps\Kernel\Exception\AppRegistryObjectNotFound;
+use Charcoal\Apps\Kernel\Modules\BaseModule;
 use Charcoal\Cache\Exception\CacheException;
 use Charcoal\Database\ORM\Exception\OrmModelNotFoundException;
 
@@ -25,6 +26,53 @@ use Charcoal\Database\ORM\Exception\OrmModelNotFoundException;
  */
 abstract class AbstractOrmComponent extends BaseComponent
 {
+    public function __construct(BaseModule $module, public readonly AbstractAppTable $table)
+    {
+        parent::__construct($module);
+    }
+
+    /**
+     * @return array|\Charcoal\Apps\Kernel\Modules\BaseModule[]
+     */
+    public function __serialize(): array
+    {
+        $data = parent::__serialize();
+        $data["table"] = $this->table;
+        return $data;
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->table = $data["table"];
+        parent::__unserialize($data);
+    }
+
+    /**
+     * @param string $registryKey
+     * @param string $tableColumn
+     * @param int|string $tableValue
+     * @param bool $useCache
+     * @param int|null $cacheTtl
+     * @return \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject
+     * @throws \Charcoal\Apps\Kernel\Exception\AppRegistryObjectNotFound
+     * @throws \Charcoal\Database\ORM\Exception\OrmException
+     * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
+     */
+    protected function getObjectFromTable(
+        string     $registryKey,
+        string     $tableColumn,
+        int|string $tableValue,
+        bool       $useCache,
+        ?int       $cacheTtl = null
+    ): AbstractAppObject
+    {
+        return $this->getObject($registryKey, $this->table, $tableColumn, $tableValue, $useCache, $cacheTtl);
+    }
+
     /**
      * @param string $registryKey
      * @param \Charcoal\Apps\Kernel\Db\AbstractAppTable $table

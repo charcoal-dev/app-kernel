@@ -14,36 +14,19 @@ declare(strict_types=1);
 
 namespace Charcoal\Tests\Apps\Objects;
 
-use Charcoal\Apps\Kernel\Db\AbstractAppTable;
-use Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject;
 use Charcoal\Apps\Kernel\Modules\Components\AbstractOrmComponent;
 
 /**
  * Class UsersComponent
  * @package Charcoal\Tests\Apps\Objects
  * @property \Charcoal\Tests\Apps\Objects\UsersModule $module
+ * @property \Charcoal\Tests\Apps\Objects\UsersTable $table
  */
 class UsersComponent extends AbstractOrmComponent
 {
-    public UsersTable $table;
-
     public function __construct(UsersModule $module)
     {
-        parent::__construct($module);
-        $this->table = new UsersTable($module);
-    }
-
-    public function __serialize(): array
-    {
-        $data = parent::__serialize();
-        $data["table"] = $this->table;
-        return $data;
-    }
-
-    public function __unserialize(array $data): void
-    {
-        $this->table = $data["table"];
-        parent::__unserialize($data);
+        parent::__construct($module, new UsersTable($module));
     }
 
     /**
