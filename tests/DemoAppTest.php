@@ -17,7 +17,6 @@ namespace Charcoal\Tests\Apps;
 require_once "loader.php";
 
 use Charcoal\Apps\Kernel\Modules\Objects\ObjectRegistrySource;
-use Charcoal\Buffers\Frames\Bytes20;
 use Charcoal\Buffers\Frames\Bytes20P;
 use Charcoal\Filesystem\Directory;
 use Charcoal\Tests\Apps\Objects\DemoApp;
