@@ -14,9 +14,9 @@ declare(strict_types=1);
 
 namespace Charcoal\Apps\Kernel\Db;
 
-use Charcoal\Apps\Kernel\Modules\BaseModule;
 use Charcoal\Apps\Kernel\Modules\AbstractOrmModule;
-use Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject;
+use Charcoal\Apps\Kernel\Modules\BaseModule;
+use Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject;
 use Charcoal\Database\Database;
 use Charcoal\Database\ORM\AbstractOrmTable;
 
@@ -45,7 +45,7 @@ abstract class AbstractAppTable extends AbstractOrmTable
 
     /**
      * @param array $row
-     * @return \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject|null
+     * @return \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject|null
      */
     abstract public function newChildObject(array $row): AbstractAppObject|null;
 
@@ -92,13 +92,13 @@ abstract class AbstractAppTable extends AbstractOrmTable
     /**
      * @param string $col
      * @param int|string $value
-     * @return \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject
+     * @return \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject
      * @throws \Charcoal\Database\ORM\Exception\OrmException
      * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
      */
     public function findByCol(string $col, int|string $value): AbstractAppObject
     {
-        /** @var \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject */
+        /** @var \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject */
         return $this->queryFind("WHERE `" . $col . "`=?", [$value], limit: 1)->getNext();
     }
 }

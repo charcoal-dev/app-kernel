@@ -14,8 +14,8 @@ declare(strict_types=1);
 
 namespace Charcoal\Apps\Kernel\Modules;
 
-use Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject;
-use Charcoal\Apps\Kernel\Modules\Components\ObjectRegistrySource;
+use Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject;
+use Charcoal\Apps\Kernel\Modules\Objects\ObjectRegistrySource;
 use Charcoal\Cache\CachedReferenceKey;
 use Charcoal\OOP\DependencyInjection\AbstractInstanceRegistry;
 
@@ -35,7 +35,7 @@ class ObjectsRegistry extends AbstractInstanceRegistry
 
     /**
      * @param string $registryKey
-     * @return \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject|null
+     * @return \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject|null
      */
     public function get(string $registryKey): ?AbstractAppObject
     {
@@ -49,7 +49,7 @@ class ObjectsRegistry extends AbstractInstanceRegistry
 
     /**
      * @param string $cacheKey
-     * @return \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject|null
+     * @return \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject|null
      * @throws \Charcoal\Cache\Exception\CacheException
      */
     public function getFromCache(string $cacheKey): ?AbstractAppObject
@@ -68,7 +68,7 @@ class ObjectsRegistry extends AbstractInstanceRegistry
     }
 
     /**
-     * @param \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject $object
+     * @param \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject $object
      * @return void
      */
     public function store(AbstractAppObject $object): void
@@ -81,7 +81,7 @@ class ObjectsRegistry extends AbstractInstanceRegistry
     }
 
     /**
-     * @param \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject $object
+     * @param \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject $object
      * @param int|null $ttl
      * @return void
      * @throws \Charcoal\Cache\Exception\CacheException

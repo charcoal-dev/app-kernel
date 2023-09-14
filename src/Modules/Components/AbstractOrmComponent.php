@@ -17,6 +17,8 @@ namespace Charcoal\Apps\Kernel\Modules\Components;
 use Charcoal\Apps\Kernel\Db\AbstractAppTable;
 use Charcoal\Apps\Kernel\Exception\AppRegistryObjectNotFound;
 use Charcoal\Apps\Kernel\Modules\BaseModule;
+use Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject;
+use Charcoal\Apps\Kernel\Modules\Objects\ObjectRegistrySource;
 use Charcoal\Cache\Exception\CacheException;
 use Charcoal\Database\ORM\Exception\OrmModelNotFoundException;
 
@@ -57,7 +59,7 @@ abstract class AbstractOrmComponent extends BaseComponent
      * @param int|string $tableValue
      * @param bool $useCache
      * @param int|null $cacheTtl
-     * @return \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject
+     * @return \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject
      * @throws \Charcoal\Apps\Kernel\Exception\AppRegistryObjectNotFound
      * @throws \Charcoal\Database\ORM\Exception\OrmException
      * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
@@ -80,7 +82,7 @@ abstract class AbstractOrmComponent extends BaseComponent
      * @param int|string $tableValue
      * @param bool $useCache
      * @param int|null $cacheTtl
-     * @return \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject
+     * @return \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject
      * @throws \Charcoal\Apps\Kernel\Exception\AppRegistryObjectNotFound
      * @throws \Charcoal\Database\ORM\Exception\OrmException
      * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
@@ -137,7 +139,7 @@ abstract class AbstractOrmComponent extends BaseComponent
      * @param string $tableColumn
      * @param int|string $tableValue
      * @param bool $useCache
-     * @return \Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject
+     * @return \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject
      * @throws \Charcoal\Cache\Exception\CacheException
      * @throws \Charcoal\Database\ORM\Exception\OrmException
      * @throws \Charcoal\Database\ORM\Exception\OrmQueryException

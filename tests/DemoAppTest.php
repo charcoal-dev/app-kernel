@@ -16,6 +16,9 @@ namespace Charcoal\Tests\Apps;
 
 require_once "loader.php";
 
+use Charcoal\Apps\Kernel\Modules\Objects\ObjectRegistrySource;
+use Charcoal\Buffers\Frames\Bytes20;
+use Charcoal\Buffers\Frames\Bytes20P;
 use Charcoal\Filesystem\Directory;
 use Charcoal\Tests\Apps\Objects\DemoApp;
 use Charcoal\Tests\Apps\Objects\User;
@@ -82,5 +85,37 @@ class DemoAppTest extends \PHPUnit\Framework\TestCase
             spl_object_id($app->users()->users->table),
             spl_object_id($app->users()->tables->getFor("primary")[0])
         );
+    }
+
+    /**
+     * @return void
+     */
+    public function testObjectSerialize(): void
+    {
+        $u1 = new User();
+        $u1->id = 1;
+        $u1->status = "active";
+        $u1->checksum = new Bytes20P("tba");
+        $u1->username = "charcoal";
+        $u1->firstName = "Charcoal";
+        $u1->lastName = "FirsByte";
+        $u1->metaObjectCachedOn = 123456;
+        $u1->metaObjectSource = ObjectRegistrySource::CACHE;
+
+        $user = serialize(clone $u1);
+        unset($u1);
+
+        $u2 = unserialize($user);
+        $this->assertInstanceOf(User::class, $u2);
+        $this->assertTrue(isset($u2->id));
+        $this->assertEquals(1, $u2->id);
+        $this->assertTrue(isset($u2->username));
+        $this->assertEquals("charcoal", $u2->username);
+        $this->assertTrue(isset($u2->checksum));
+        $this->assertInstanceOf(Bytes20P::class, $u2->checksum);
+        $this->assertEquals("\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0tba", $u2->checksum->raw());
+        $this->assertTrue(isset($u2->firstName));
+        $this->assertEquals("Charcoal", $u2->firstName);
+        $this->assertFalse(isset($u2->lastName));
     }
 }

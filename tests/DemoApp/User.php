@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Tests\Apps\Objects;
 
-use Charcoal\Apps\Kernel\Modules\Components\AbstractAppObject;
+use Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject;
 use Charcoal\Buffers\Frames\Bytes20;
 
 class User extends AbstractAppObject
@@ -38,5 +38,23 @@ class User extends AbstractAppObject
             "users_id:" . $this->id,
             "users_username:" . $this->username
         ];
+    }
+
+    public function __serialize(): array
+    {
+        $data = parent::__serialize();
+        $this->serializeProps($data,
+            "id",
+            "status",
+            "checksum",
+            "username",
+            // "email",
+            "firstName",
+            // "lastName",
+            // "country",
+            // "joinedOn"
+        );
+
+        return $data;
     }
 }

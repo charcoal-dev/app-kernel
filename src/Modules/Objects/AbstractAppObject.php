@@ -12,13 +12,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Apps\Kernel\Modules\Components;
+namespace Charcoal\Apps\Kernel\Modules\Objects;
 
 use Charcoal\OOP\Vectors\StringVector;
 
 /**
  * Class AbstractAppObject
- * @package Charcoal\Apps\Kernel\Modules\Components
+ * @package Charcoal\Apps\Kernel\Modules\Objects
  */
 abstract class AbstractAppObject
 {
@@ -26,6 +26,32 @@ abstract class AbstractAppObject
     public int $metaObjectCachedOn;
     public bool $metaObjectRuntime;
 
+    /**
+     * @return int[]
+     */
+    public function __serialize(): array
+    {
+        return ["metaObjectCachedOn" => $this->metaObjectCachedOn];
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     */
+    public function __unserialize(array $data): void
+    {
+        foreach ($data as $prop => $value) {
+            if (!property_exists($this, $prop)) {
+                continue;
+            }
+
+            $this->$prop = $value;
+        }
+    }
+
+    /**
+     * @return array
+     */
     abstract public function getRegistryKeys(): array;
 
     /**
@@ -64,5 +90,17 @@ abstract class AbstractAppObject
         }
 
         return $data;
+    }
+
+    /**
+     * @param array $data
+     * @param string ...$props
+     * @return void
+     */
+    protected function serializeProps(array &$data, string ...$props): void
+    {
+        foreach ($props as $prop) {
+            $data[$prop] = $this->$prop;
+        }
     }
 }

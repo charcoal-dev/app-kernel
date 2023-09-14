@@ -12,11 +12,11 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\Apps\Kernel\Modules\Components;
+namespace Charcoal\Apps\Kernel\Modules\Objects;
 
 /**
  * Class ObjectRegistrySource
- * @package Charcoal\Apps\Kernel\Modules\Components
+ * @package Charcoal\Apps\Kernel\Modules\Objects
  */
 enum ObjectRegistrySource: string
 {
