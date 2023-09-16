@@ -32,9 +32,9 @@ abstract class AbstractAppTable extends AbstractOrmTable
      * @param string $name
      */
     public function __construct(
-        private readonly BaseModule $module,
-        public readonly string      $dbInstanceKey,
-        string                      $name,
+        protected readonly BaseModule $module,
+        public readonly string        $dbInstanceKey,
+        string                        $name,
     )
     {
         parent::__construct($name);
