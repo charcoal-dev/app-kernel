@@ -16,7 +16,7 @@ namespace Charcoal\Apps\Kernel\Modules\Components;
 
 use Charcoal\Apps\Kernel\Db\AbstractAppTable;
 use Charcoal\Apps\Kernel\Exception\AppRegistryObjectNotFound;
-use Charcoal\Apps\Kernel\Modules\BaseModule;
+use Charcoal\Apps\Kernel\Modules\AbstractOrmModule;
 use Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject;
 use Charcoal\Apps\Kernel\Modules\Objects\ObjectRegistrySource;
 use Charcoal\Cache\Exception\CacheException;
@@ -25,10 +25,11 @@ use Charcoal\Database\ORM\Exception\OrmModelNotFoundException;
 /**
  * Class AbstractOrmComponent
  * @package Charcoal\Apps\Kernel\Modules\Components
+ * @property AbstractOrmModule $module
  */
 abstract class AbstractOrmComponent extends BaseComponent
 {
-    public function __construct(BaseModule $module, public readonly AbstractAppTable $table)
+    public function __construct(AbstractOrmModule $module, public readonly AbstractAppTable $table)
     {
         parent::__construct($module);
     }
@@ -103,7 +104,7 @@ abstract class AbstractOrmComponent extends BaseComponent
         $this->module->objectsRegistry->store($object);
         if ($storeInCache) {
             try {
-                $this->module->objectsRegistry->storeInCache($object, $cacheTtl);
+                $this->storeInCache($object, $cacheTtl);
             } catch (CacheException $e) {
                 $this->module->app->lifecycle->exception($e);
                 $this->module->app->triggerError('An error occurred while storing object in cache', E_USER_WARNING);
@@ -111,6 +112,17 @@ abstract class AbstractOrmComponent extends BaseComponent
         }
 
         return $object;
+    }
+
+    /**
+     * @param \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject $object
+     * @param int|null $cacheTtl
+     * @return void
+     * @throws \Charcoal\Cache\Exception\CacheException
+     */
+    protected function storeInCache(AbstractAppObject $object, ?int $cacheTtl = null): void
+    {
+        $this->module->objectsRegistry->storeInCache($object, $cacheTtl);
     }
 
     /**
