@@ -50,6 +50,15 @@ abstract class AbstractAppObject
     }
 
     /**
+     * @return void
+     */
+    public function beforeCacheStore(): void
+    {
+        unset($this->metaObjectRuntime, $this->metaObjectSource);
+        $this->metaObjectCachedOn = time();
+    }
+
+    /**
      * @return array
      */
     abstract public function getRegistryKeys(): array;

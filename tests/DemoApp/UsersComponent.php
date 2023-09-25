@@ -38,7 +38,7 @@ class UsersComponent extends AbstractOrmComponent
     public function findById(int $id): User
     {
         /** @var \Charcoal\Tests\Apps\Objects\User */
-        return $this->getObject("users_id:" . $id, $this->table, "id", $id, false);
+        return $this->getObject("users_id:" . $id, $this->table, "id", $id, false, false);
     }
 
     /**
@@ -50,6 +50,6 @@ class UsersComponent extends AbstractOrmComponent
     public function findByUsername(string $username): User
     {
         /** @var \Charcoal\Tests\Apps\Objects\User */
-        return $this->getObject("users_username:" . $username, $this->table, "username", $username, false);
+        return $this->getObject("users_username:" . $username, $this->table, "username", $username, false, false);
     }
 }

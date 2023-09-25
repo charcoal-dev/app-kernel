@@ -55,32 +55,11 @@ abstract class AbstractOrmComponent extends BaseComponent
 
     /**
      * @param string $registryKey
-     * @param string $tableColumn
-     * @param int|string $tableValue
-     * @param bool $useCache
-     * @param int|null $cacheTtl
-     * @return \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject
-     * @throws \Charcoal\Apps\Kernel\Exception\AppRegistryObjectNotFound
-     * @throws \Charcoal\Database\ORM\Exception\OrmException
-     * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
-     */
-    protected function getObjectFromTable(
-        string     $registryKey,
-        string     $tableColumn,
-        int|string $tableValue,
-        bool       $useCache,
-        ?int       $cacheTtl = null
-    ): AbstractAppObject
-    {
-        return $this->getObject($registryKey, $this->table, $tableColumn, $tableValue, $useCache, $cacheTtl);
-    }
-
-    /**
-     * @param string $registryKey
      * @param \Charcoal\Apps\Kernel\Db\AbstractAppTable $table
      * @param string $tableColumn
      * @param int|string $tableValue
-     * @param bool $useCache
+     * @param bool $findInCache
+     * @param bool $storeInCache
      * @param int|null $cacheTtl
      * @return \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject
      * @throws \Charcoal\Apps\Kernel\Exception\AppRegistryObjectNotFound
@@ -92,7 +71,8 @@ abstract class AbstractOrmComponent extends BaseComponent
         AbstractAppTable $table,
         string           $tableColumn,
         int|string       $tableValue,
-        bool             $useCache,
+        bool             $findInCache,
+        bool             $storeInCache,
         ?int             $cacheTtl = null
     ): AbstractAppObject
     {
@@ -101,7 +81,7 @@ abstract class AbstractOrmComponent extends BaseComponent
             return $object;
         }
 
-        if ($useCache) {
+        if ($findInCache) {
             try {
                 $cached = $this->module->objectsRegistry->getFromCache($registryKey);
                 if ($cached) {
@@ -121,7 +101,7 @@ abstract class AbstractOrmComponent extends BaseComponent
 
         $object->metaObjectSource = ObjectRegistrySource::DB;
         $this->module->objectsRegistry->store($object);
-        if ($useCache) {
+        if ($storeInCache) {
             try {
                 $this->module->objectsRegistry->storeInCache($object, $cacheTtl);
             } catch (CacheException $e) {

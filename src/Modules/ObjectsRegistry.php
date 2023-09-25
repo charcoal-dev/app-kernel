@@ -89,9 +89,7 @@ class ObjectsRegistry extends AbstractInstanceRegistry
     public function storeInCache(AbstractAppObject $object, ?int $ttl = null): void
     {
         $object = clone $object;
-        unset($object->metaObjectSource, $object->metaObjectRuntime);
-        $object->metaObjectCachedOn = time();
-
+        $object->beforeCacheStore();
         $bindingKeys = $object->getRegistryKeys();
         $primaryKey = array_shift($bindingKeys);
         $this->module->app->kernel->cache->set(strtolower($primaryKey), $object, $ttl);
