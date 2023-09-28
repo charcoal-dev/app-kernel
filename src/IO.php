@@ -80,7 +80,7 @@ class IO
             return false;
         }
 
-        return filter_var($ip, FILTER_VALIDATE_IP, $flags);
+        return (bool)filter_var($ip, FILTER_VALIDATE_IP, $flags);
     }
 
     /**
