@@ -42,7 +42,7 @@ abstract class AbstractController extends \Charcoal\HTTP\Router\Controllers\Abst
     private function bootstrapController(AbstractApp $app, ?string $remoteClientClass = RemoteClient::class): void
     {
         $this->app = $app;
-        $this->userClient = new $remoteClientClass();
+        $this->userClient = new $remoteClientClass($this->request);
     }
 
     /**
