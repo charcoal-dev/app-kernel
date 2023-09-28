@@ -22,7 +22,7 @@ use Charcoal\Apps\Kernel\AbstractApp;
  */
 abstract class AbstractController extends \Charcoal\HTTP\Router\Controllers\AbstractController
 {
-    protected readonly AbstractApp $app;
+    public readonly AbstractApp $app;
     public readonly RemoteClient $userClient;
 
     /**
