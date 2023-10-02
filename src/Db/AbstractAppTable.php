@@ -118,7 +118,7 @@ abstract class AbstractAppTable extends AbstractOrmTable
      * @return \Charcoal\Database\ORM\OrmFetchQuery
      * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
      */
-    public function select(
+    public function _select(
         string    $whereQuery = "1",
         array     $whereData = null,
         ?array    $selectColumns = null,
@@ -139,7 +139,7 @@ abstract class AbstractAppTable extends AbstractOrmTable
      * @return \Charcoal\Database\Queries\DbExecutedQuery
      * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
      */
-    public function update(
+    public function _update(
         array      $changes,
         int|string $primaryValue,
         ?string    $primaryColumn = null
@@ -154,7 +154,7 @@ abstract class AbstractAppTable extends AbstractOrmTable
      * @return \Charcoal\Database\Queries\DbExecutedQuery
      * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
      */
-    public function insert(
+    public function _insert(
         object|array $model,
         bool         $ignoreDuplicate = false
     ): DbExecutedQuery
@@ -168,7 +168,7 @@ abstract class AbstractAppTable extends AbstractOrmTable
      * @return \Charcoal\Database\Queries\DbExecutedQuery
      * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
      */
-    public function save(object|array $model, StringVector $updateCols): DbExecutedQuery
+    public function _save(object|array $model, StringVector $updateCols): DbExecutedQuery
     {
         return $this->querySave($model, $updateCols);
     }
@@ -179,7 +179,7 @@ abstract class AbstractAppTable extends AbstractOrmTable
      * @return \Charcoal\Database\Queries\DbExecutedQuery
      * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
      */
-    public function delete(string $whereQuery = "WHERE ...", array $whereData = []): DbExecutedQuery
+    public function _delete(string $whereQuery = "WHERE ...", array $whereData = []): DbExecutedQuery
     {
         return $this->queryDelete($whereQuery, $whereData);
     }
@@ -189,7 +189,7 @@ abstract class AbstractAppTable extends AbstractOrmTable
      * @return \Charcoal\Database\Queries\DbExecutedQuery
      * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
      */
-    public function deleteWithPrimaryKey(int|string $value): DbExecutedQuery
+    public function _deleteWithPrimaryKey(int|string $value): DbExecutedQuery
     {
         return $this->queryDeletePrimaryKey($value);
     }
