@@ -17,6 +17,7 @@ namespace Charcoal\Apps\Kernel\Modules;
 use Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject;
 use Charcoal\Apps\Kernel\Modules\Objects\ObjectRegistrySource;
 use Charcoal\Cache\CachedReferenceKey;
+use Charcoal\Cache\Exception\CacheException;
 use Charcoal\OOP\DependencyInjection\AbstractInstanceRegistry;
 
 /**
@@ -97,6 +98,23 @@ class ObjectsRegistry extends AbstractInstanceRegistry
         if ($bindingKeys) {
             foreach ($bindingKeys as $referenceKey) {
                 $this->module->app->kernel->cache->createReferenceKey(strtolower($referenceKey), $primaryKey);
+            }
+        }
+    }
+
+    /**
+     * @param \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject $object
+     * @return void
+     */
+    public function deleteFromCache(AbstractAppObject $object): void
+    {
+        $keys = $object->getRegistryKeys();
+        foreach ($keys as $key) {
+            try {
+                $this->module->app->kernel->cache->delete($key);
+            } catch (CacheException $e) {
+                $this->module->app->lifecycle->exception($e);
+                $this->module->app->triggerError('Failed to delete an object in cache store', E_USER_WARNING);
             }
         }
     }
