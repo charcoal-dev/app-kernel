@@ -125,9 +125,24 @@ class Lifecycle
      */
     public function getAll(): array
     {
-        return [
+        $object = [
+            "count" => $this->count,
             "entries" => $this->entries,
             "exceptions" => $this->exceptions
         ];
+
+        if (isset($this->startedOn)) {
+            $object["startedOn"] = $this->startedOn;
+        }
+
+        if (isset($this->bootstrappedOn)) {
+            $object["bootstrappedOn"] = $this->bootstrappedOn;
+        }
+
+        if (isset($this->loadTime)) {
+            $object["loadTime"] = $this->loadTime;
+        }
+
+        return $object;
     }
 }
