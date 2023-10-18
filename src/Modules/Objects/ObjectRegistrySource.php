@@ -22,4 +22,5 @@ enum ObjectRegistrySource: string
 {
     case DB = "db";
     case CACHE = "cache";
+    case RUNTIME = "runtime";
 }

@@ -42,7 +42,10 @@ class ObjectsRegistry extends AbstractInstanceRegistry
     {
         $registryKey = strtolower($registryKey);
         if (isset($this->instances[$registryKey])) {
-            return $this->instances[$registryKey];
+            /** @var AbstractAppObject $instance */
+            $instance = $this->instances[$registryKey];
+            $instance->metaObjectSource = ObjectRegistrySource::RUNTIME;
+            return $instance;
         }
 
         return null;
