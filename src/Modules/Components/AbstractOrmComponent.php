@@ -86,6 +86,7 @@ abstract class AbstractOrmComponent extends BaseComponent
             try {
                 $cached = $this->module->objectsRegistry->getFromCache($registryKey);
                 if ($cached) {
+                    $this->module->objectsRegistry->store($object); // Store in runtime memory
                     return $cached;
                 }
             } catch (CacheException $e) {
