@@ -86,11 +86,11 @@ abstract class AbstractOrmComponent extends BaseComponent
             try {
                 $cached = $this->module->objectsRegistry->getFromCache($registryKey);
                 if ($cached) {
-                    $this->module->objectsRegistry->store($object); // Store in runtime memory
+                    $this->module->objectsRegistry->store($cached); // Store in runtime memory
                     return $cached;
                 }
-            } catch (CacheException $e) {
-                $this->module->app->lifecycle->exception($e);
+            } catch (\Throwable $t) {
+                $this->module->app->lifecycle->exception($t);
                 $this->module->app->triggerError('An error occurred while retrieving object from cache', E_USER_WARNING);
             }
         }
