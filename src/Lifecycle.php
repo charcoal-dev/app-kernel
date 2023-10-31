@@ -33,35 +33,7 @@ class Lifecycle
      */
     public function exception(\Throwable $t): void
     {
-        $this->exceptions[] = $this->sanitizeExceptionObject($t);
-    }
-
-    /**
-     * @param \Throwable $t
-     * @return array
-     */
-    private function sanitizeExceptionObject(\Throwable $t): array
-    {
-        $exception = [
-            "class" => get_class($t),
-            "message" => $t->getMessage(),
-            "code" => $t->getCode(),
-            "file" => $t->getFile(),
-            "line" => $t->getLine(),
-            "previous" => $t->getPrevious() ? $this->sanitizeExceptionObject($t->getPrevious()) : null,
-        ];
-
-        $exception["trace"] = array_map(function (array $trace) {
-            unset($trace["args"]);
-            return $trace;
-        }, $t->getTrace());
-
-        // Charcoal libs-spec error
-        if (property_exists($t, "error") && $t->error instanceof \BackedEnum) {
-            $exception["errorCode"] = $t->error->name;
-        }
-
-        return $exception;
+        $this->exceptions[] = Errors::Exception2Array($t);
     }
 
     /**

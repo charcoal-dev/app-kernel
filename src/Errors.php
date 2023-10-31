@@ -16,6 +16,7 @@ namespace Charcoal\Apps\Kernel;
 
 use Charcoal\Apps\Kernel\Errors\ErrorLoggerInterface;
 use Charcoal\Apps\Kernel\Errors\ErrorMsg;
+use Charcoal\Apps\Kernel\Errors\StaticErrorHelpers;
 use Charcoal\OOP\Traits\NoDumpTrait;
 use Charcoal\OOP\Traits\NotCloneableTrait;
 use Charcoal\OOP\Traits\NotSerializableTrait;
@@ -37,6 +38,8 @@ class Errors implements \IteratorAggregate
     use NoDumpTrait;
     use NotSerializableTrait;
     use NotCloneableTrait;
+
+    use StaticErrorHelpers;
 
     /**
      * @param \Charcoal\Apps\Kernel\AppKernel $aK
@@ -117,7 +120,16 @@ class Errors implements \IteratorAggregate
      */
     public function exceptionToString(\Throwable $t): string
     {
-        return sprintf('[%s][#%s] %s', get_class($t), $t->getCode(), $t->getMessage());
+        return static::Exception2String($t);
+    }
+
+    /**
+     * @param \Throwable $t
+     * @return array
+     */
+    public function exceptionToArray(\Throwable $t): array
+    {
+        return static::Exception2Array($t);
     }
 
     /**
