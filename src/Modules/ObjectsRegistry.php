@@ -129,4 +129,13 @@ class ObjectsRegistry extends AbstractInstanceRegistry
     {
         return $this->instances;
     }
+
+    /**
+     * @return void
+     */
+    public function purge(): void
+    {
+        unset($this->instances);
+        $this->instances = [];
+    }
 }
