@@ -142,8 +142,8 @@ class CLI extends \Charcoal\CLI\CLI
             /** @var \Charcoal\Apps\Kernel\Errors\ErrorMsg $errorMsg */
             foreach ($errorLog as $errorMsg) {
                 if ($displayCompact) {
-                    $this->print($tabs . sprintf('{red}[{b}%s{/}]{red} %s{/}', $errorMsg->levelStr, $errorMsg->message));
-                    $this->print($tabs . sprintf('⮤ in {magenta}%s{/} on line {magenta}%d{/}', $errorMsg->file, $errorMsg->line));
+                    $this->print($tabs . sprintf('[{red}{b}%s{/}]{red} %s{/}', $errorMsg->levelStr, $errorMsg->message));
+                    $this->print($tabs . sprintf('⮤ in {magenta}%s{/} on line {magenta}%d{/}', $errorMsg->filePath, $errorMsg->line));
                 } else {
                     $this->print($tabs . sprintf('{grey}│  ┌ {/}{yellow}Type:{/} {magenta}%s{/}', strtoupper($errorMsg->levelStr)));
                     $this->print($tabs . sprintf('{grey}├──┼ {/}{yellow}Message:{/} %s', $errorMsg->message));
