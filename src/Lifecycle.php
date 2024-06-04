@@ -28,6 +28,16 @@ class Lifecycle
     private array $exceptions = [];
 
     /**
+     * @return void
+     */
+    public function purgeAll(): void
+    {
+        $this->entries = [];
+        $this->exceptions = [];
+        $this->count = 0;
+    }
+
+    /**
      * @param \Throwable $t
      * @return void
      */
