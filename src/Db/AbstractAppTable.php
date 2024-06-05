@@ -19,10 +19,7 @@ use Charcoal\Apps\Kernel\Modules\BaseModule;
 use Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject;
 use Charcoal\Database\Database;
 use Charcoal\Database\ORM\AbstractOrmTable;
-use Charcoal\Database\ORM\OrmFetchQuery;
-use Charcoal\Database\Queries\DbExecutedQuery;
-use Charcoal\Database\Queries\SortFlag;
-use Charcoal\OOP\Vectors\StringVector;
+use Charcoal\Database\Queries\LockFlag;
 
 /**
  * Class AbstractAppTable
@@ -96,101 +93,14 @@ abstract class AbstractAppTable extends AbstractOrmTable
     /**
      * @param string $col
      * @param int|string $value
+     * @param \Charcoal\Database\Queries\LockFlag|null $lockFlag
      * @return \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject
      * @throws \Charcoal\Database\ORM\Exception\OrmException
      * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
      */
-    public function findByCol(string $col, int|string $value): AbstractAppObject
+    public function findByCol(string $col, int|string $value, ?LockFlag $lockFlag = null): AbstractAppObject
     {
         /** @var \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject */
-        return $this->queryFind("WHERE `" . $col . "`=?", [$value], limit: 1)->getNext();
-    }
-
-    /**
-     * @param string $whereQuery
-     * @param array $whereData
-     * @param array|null $selectColumns
-     * @param \Charcoal\Database\Queries\SortFlag|null $sort
-     * @param string|null $sortColumn
-     * @param int $offset
-     * @param int $limit
-     * @param bool $lock
-     * @return \Charcoal\Database\ORM\OrmFetchQuery
-     * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
-     */
-    public function _select(
-        string    $whereQuery = "1",
-        array     $whereData = [],
-        ?array    $selectColumns = null,
-        ?SortFlag $sort = null,
-        ?string   $sortColumn = null,
-        int       $offset = 0,
-        int       $limit = 0,
-        bool      $lock = false
-    ): OrmFetchQuery
-    {
-        return $this->queryFind($whereQuery, $whereData, $selectColumns, $sort, $sortColumn, $offset, $limit, $lock);
-    }
-
-    /**
-     * @param array $changes
-     * @param int|string $primaryValue
-     * @param string|null $primaryColumn
-     * @return \Charcoal\Database\Queries\DbExecutedQuery
-     * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
-     */
-    public function _update(
-        array      $changes,
-        int|string $primaryValue,
-        ?string    $primaryColumn = null
-    ): DbExecutedQuery
-    {
-        return $this->queryUpdate($changes, $primaryValue, $primaryColumn);
-    }
-
-    /**
-     * @param object|array $model
-     * @param bool $ignoreDuplicate
-     * @return \Charcoal\Database\Queries\DbExecutedQuery
-     * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
-     */
-    public function _insert(
-        object|array $model,
-        bool         $ignoreDuplicate = false
-    ): DbExecutedQuery
-    {
-        return parent::queryInsert($model, $ignoreDuplicate);
-    }
-
-    /**
-     * @param object|array $model
-     * @param \Charcoal\OOP\Vectors\StringVector $updateCols
-     * @return \Charcoal\Database\Queries\DbExecutedQuery
-     * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
-     */
-    public function _save(object|array $model, StringVector $updateCols): DbExecutedQuery
-    {
-        return $this->querySave($model, $updateCols);
-    }
-
-    /**
-     * @param string $whereQuery
-     * @param array $whereData
-     * @return \Charcoal\Database\Queries\DbExecutedQuery
-     * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
-     */
-    public function _delete(string $whereQuery = "WHERE ...", array $whereData = []): DbExecutedQuery
-    {
-        return $this->queryDelete($whereQuery, $whereData);
-    }
-
-    /**
-     * @param int|string $value
-     * @return \Charcoal\Database\Queries\DbExecutedQuery
-     * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
-     */
-    public function _deleteWithPrimaryKey(int|string $value): DbExecutedQuery
-    {
-        return $this->queryDeletePrimaryKey($value);
+        return $this->queryFind("WHERE `" . $col . "`=?", [$value], limit: 1, lock: $lockFlag)->getNext();
     }
 }
