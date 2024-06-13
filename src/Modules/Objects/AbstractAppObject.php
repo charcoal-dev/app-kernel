@@ -77,7 +77,7 @@ abstract class AbstractAppObject
             throw new \OutOfRangeException(sprintf('Class "%s" does not have "%s" property', static::class, $prop));
         }
 
-        if ((!isset($this->$prop) && $value) || $this->$prop !== $value) {
+        if ((!isset($this->$prop) && !is_null($value)) || $this->$prop !== $value) {
             $this->$prop = $value;
             $changeLog?->append($prop);
             return true;
