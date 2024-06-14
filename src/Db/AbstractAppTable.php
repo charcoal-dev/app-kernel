@@ -33,7 +33,7 @@ abstract class AbstractAppTable extends AbstractOrmTable
      * @param string $name
      */
     public function __construct(
-        protected readonly BaseModule $module,
+        public readonly BaseModule $module,
         public readonly string        $dbInstanceKey,
         string                        $name,
     )
