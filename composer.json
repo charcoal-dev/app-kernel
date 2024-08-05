@@ -16,7 +16,7 @@
     "php": "^8.1",
     "ext-pdo": "*",
     "ext-json": "*",
-    "charcoal-dev/buffers": "dev-main",
+    "charcoal-dev/buffers": "^0.1.0",
     "charcoal-dev/cache": "dev-main",
     "charcoal-dev/cache-redis-client": "dev-main",
     "charcoal-dev/charset-validator": "dev-main",
