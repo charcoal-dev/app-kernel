@@ -23,7 +23,7 @@
     "charcoal-dev/cipher": "^0.1.0",
     "charcoal-dev/cli": "^0.1.0",
     "charcoal-dev/database": "^0.1.0",
-    "charcoal-dev/db-orm": "^0.1.0",
+    "charcoal-dev/db-orm": "^0.1.1",
     "charcoal-dev/events-base": "^0.1.0",
     "charcoal-dev/filesystem": "^0.1.0",
     "charcoal-dev/http-client": "^0.1.0",

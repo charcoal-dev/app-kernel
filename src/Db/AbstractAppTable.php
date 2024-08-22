@@ -20,6 +20,7 @@ use Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject;
 use Charcoal\Database\Database;
 use Charcoal\Database\ORM\AbstractOrmTable;
 use Charcoal\Database\Queries\LockFlag;
+use Charcoal\OOP\Vectors\ExceptionLog;
 
 /**
  * Class AbstractAppTable
@@ -34,8 +35,8 @@ abstract class AbstractAppTable extends AbstractOrmTable
      */
     public function __construct(
         public readonly BaseModule $module,
-        public readonly string        $dbInstanceKey,
-        string                        $name,
+        public readonly string     $dbInstanceKey,
+        string                     $name,
     )
     {
         parent::__construct($name);
@@ -93,14 +94,16 @@ abstract class AbstractAppTable extends AbstractOrmTable
     /**
      * @param string $col
      * @param int|string $value
-     * @param \Charcoal\Database\Queries\LockFlag|null $lockFlag
-     * @return \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject
-     * @throws \Charcoal\Database\ORM\Exception\OrmException
+     * @param LockFlag|null $lockFlag
+     * @param ExceptionLog|null $errorLog
+     * @return AbstractAppObject
+     * @throws \Charcoal\Database\ORM\Exception\OrmModelMapException
+     * @throws \Charcoal\Database\ORM\Exception\OrmModelNotFoundException
      * @throws \Charcoal\Database\ORM\Exception\OrmQueryException
      */
-    public function findByCol(string $col, int|string $value, ?LockFlag $lockFlag = null): AbstractAppObject
+    public function findByCol(string $col, int|string $value, ?LockFlag $lockFlag = null, ?ExceptionLog $errorLog = null): AbstractAppObject
     {
         /** @var \Charcoal\Apps\Kernel\Modules\Objects\AbstractAppObject */
-        return $this->queryFind("WHERE `" . $col . "`=?", [$value], limit: 1, lock: $lockFlag)->getNext();
+        return $this->queryFind("WHERE `" . $col . "`=?", [$value], limit: 1, lock: $lockFlag)->getNext($errorLog);
     }
 }
