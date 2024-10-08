@@ -21,7 +21,7 @@
     "charcoal-dev/cache-redis-client": "^0.1.0",
     "charcoal-dev/charset-validator": "^0.1.0",
     "charcoal-dev/cipher": "^0.1.0",
-    "charcoal-dev/cli": "^0.1.1",
+    "charcoal-dev/cli": "^0.1.2",
     "charcoal-dev/database": "^0.1.0",
     "charcoal-dev/db-orm": "^0.1.1",
     "charcoal-dev/events-base": "^0.1.0",
