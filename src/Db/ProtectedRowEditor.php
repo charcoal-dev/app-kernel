@@ -13,7 +13,7 @@ use Charcoal\Semaphore\Filesystem\FileLock;
  */
 abstract class ProtectedRowEditor
 {
-    protected AbstractAppObject $object;
+    public readonly AbstractAppObject $object;
     protected FileLock $lock;
 
     /**
@@ -43,7 +43,7 @@ abstract class ProtectedRowEditor
 
         // Resolve required object
         try {
-            $this->resolve();
+            $this->object = $this->resolve();
         } catch (\Exception $t) {
             try {
                 $this->lock->releaseLock();
