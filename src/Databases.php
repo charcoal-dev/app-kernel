@@ -19,6 +19,14 @@ class Databases extends AbstractDIResolver
     use NoDumpTrait;
 
     /**
+     * Constructor explicitly defined to expose "protected" constructor from parent
+     */
+    public function __construct()
+    {
+        parent::__construct(null);
+    }
+
+    /**
      * @param AppKernel $app
      * @return void
      */
