@@ -1,9 +1,0 @@
-# This file contain security-spec configuration
-security:
-  # These are encryption keys, either provide with 32 bytes (64 hexadecimal characters),
-  # or some random strings which will be hashed to generate 32 bytes of entropy.
-  # These values MUST NEVER BE CHANGED once the project has initialized.
-  keychain:
-    # Primary encryption key
-    primary: "charcoal-dev"
-    # Define more as necessary...

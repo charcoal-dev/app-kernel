@@ -1,30 +1,21 @@
 <?php
-/*
- * This file is a part of "charcoal-dev/app-kernel" package.
- * https://github.com/charcoal-dev/app-kernel
- *
- * Copyright (c) Furqan A. Siddiqui <hello@furqansiddiqui.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code or visit following link:
- * https://github.com/charcoal-dev/app-kernel/blob/main/LICENSE
- */
-
 declare(strict_types=1);
 
-namespace Charcoal\Apps\Kernel;
+namespace Charcoal\App\Kernel;
 
 use Charcoal\Events\Event;
 use Charcoal\Events\EventsRegistry;
 
 /**
  * Class Events
- * @package Charcoal\Apps\Kernel
+ * @package Charcoal\App\Kernel
  */
 class Events extends EventsRegistry
 {
     /**
-     * @return \Charcoal\Events\Event
+     * Event when a DB connection is established,
+     * Listener functions receive instance of \Charcoal\Database\Database as first argument
+     * @return Event
      */
     public function onDbConnection(): Event
     {
@@ -32,7 +23,8 @@ class Events extends EventsRegistry
     }
 
     /**
-     * @return \Charcoal\Events\Event
+     * Event when connection is established with cache server
+     * @return Event
      */
     public function onCacheConnection(): Event
     {
@@ -40,6 +32,8 @@ class Events extends EventsRegistry
     }
 
     /**
+     * Purges all stored Event objects.
+     * Listener callbacks are established after app is bootstrapped.
      * @return array
      */
     public function __serialize(): array

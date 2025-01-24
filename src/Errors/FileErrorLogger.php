@@ -1,25 +1,14 @@
 <?php
-/*
- * This file is a part of "charcoal-dev/app-kernel" package.
- * https://github.com/charcoal-dev/app-kernel
- *
- * Copyright (c) Furqan A. Siddiqui <hello@furqansiddiqui.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code or visit following link:
- * https://github.com/charcoal-dev/app-kernel/blob/main/LICENSE
- */
-
 declare(strict_types=1);
 
-namespace Charcoal\Apps\Kernel\Errors;
+namespace Charcoal\App\Kernel\Errors;
 
-use Charcoal\Apps\Kernel\Exception\AppKernelException;
+use Charcoal\Filesystem\Exception\FilesystemException;
 use Charcoal\Filesystem\File;
 
 /**
  * Class FileErrorLogger
- * @package Charcoal\Apps\Kernel\Errors
+ * @package Charcoal\App\Kernel\Errors
  */
 class FileErrorLogger implements ErrorLoggerInterface
 {
@@ -27,11 +16,7 @@ class FileErrorLogger implements ErrorLoggerInterface
     public bool $isWriting = true;
 
     /**
-     * @param \Charcoal\Filesystem\File $logFile
-     * @param bool $useAnsiEscapeSeq
-     * @param string $eolChar
-     * @throws \Charcoal\Apps\Kernel\Exception\AppKernelException
-     * @throws \Charcoal\Filesystem\Exception\FilesystemException
+     * @throws FilesystemException
      */
     public function __construct(
         File          $logFile,
@@ -40,29 +25,27 @@ class FileErrorLogger implements ErrorLoggerInterface
     )
     {
         if (!$logFile->isWritable()) {
-            throw new AppKernelException('Error log file is not writable');
+            throw new \RuntimeException('Error log file is not writable');
         }
 
         $this->logFilePath = $logFile->path;
     }
 
     /**
-     * @param \Charcoal\Apps\Kernel\Errors\ErrorMsg|\Throwable $error
-     * @return void
+     * Main exposed method
      */
-    public function write(ErrorMsg|\Throwable $error): void
+    public function write(\Throwable|ErrorEntry $error): void
     {
         if (!$this->isWriting) {
             return;
         }
 
-        $error instanceof ErrorMsg ?
+        $error instanceof ErrorEntry ?
             $this->writeError($error) : $this->writeException($error);
     }
 
     /**
-     * @param \Throwable $t
-     * @return void
+     * Prepares & formats an \Throwable object and writes into log file
      */
     private function writeException(\Throwable $t): void
     {
@@ -82,10 +65,9 @@ class FileErrorLogger implements ErrorLoggerInterface
     }
 
     /**
-     * @param \Charcoal\Apps\Kernel\Errors\ErrorMsg $error
-     * @return void
+     * Prepares & formats an ErrorEntry object and writes into log file
      */
-    private function writeError(ErrorMsg $error): void
+    private function writeError(ErrorEntry $error): void
     {
         $buffer[] = "";
         $buffer[] = sprintf("\e[36m[%s]\e[0m", date("d-m-Y H:i"));
@@ -102,8 +84,7 @@ class FileErrorLogger implements ErrorLoggerInterface
     }
 
     /**
-     * @param array $buffer
-     * @return void
+     * Writes buffer data to log file
      */
     private function writeToFile(array $buffer): void
     {
@@ -118,9 +99,7 @@ class FileErrorLogger implements ErrorLoggerInterface
     }
 
     /**
-     * @param array $buffer
-     * @param array $trace
-     * @return void
+     * Prepares & formats debug backtrace and appends to buffer
      */
     private function bufferTrace(array &$buffer, array $trace): void
     {

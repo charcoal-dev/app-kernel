@@ -10,6 +10,7 @@ phpunit.phar
 /coverage.xml
 /coverage.clover.xml
 
+purge/*
 *.sqlite
 test/*.sqlite
 tests/DemoApp/config/*

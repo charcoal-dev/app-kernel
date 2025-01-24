@@ -1,55 +1,37 @@
 <?php
-/*
- * This file is a part of "charcoal-dev/app-kernel" package.
- * https://github.com/charcoal-dev/app-kernel
- *
- * Copyright (c) Furqan A. Siddiqui <hello@furqansiddiqui.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code or visit following link:
- * https://github.com/charcoal-dev/app-kernel/blob/main/LICENSE
- */
-
 declare(strict_types=1);
 
-namespace Charcoal\Apps\Kernel\Entrypoints\Http;
+namespace Charcoal\App\Kernel\Entrypoints\Http;
 
 use Charcoal\HTTP\Router\Controllers\Request;
 
 /**
  * Class RemoteClient
- * @package Charcoal\Apps\Kernel\Entrypoints\Http
+ * @package Charcoal\App\Kernel\Entrypoints\Http
  */
-class RemoteClient
+readonly class RemoteClient
 {
-    /** @var string */
-    public readonly string $realIpAddress;
-    /** @var string */
-    public readonly string $ipAddress;
-    /** @var int */
-    public readonly int $port;
-    /** @var string|null */
-    public readonly ?string $origin;
-    /** @var string|null */
-    public readonly ?string $userAgent;
+    public string $ipAddress;
+    public int $port;
+    public ?string $cfConnectingIP;
+    public ?string $xForwardedFor;
+    public ?string $origin;
+    public ?string $userAgent;
 
-    /**
-     * @param Request $req
-     */
     public function __construct(Request $req)
     {
-        $this->realIpAddress = strval($_SERVER["REMOTE_ADDR"]);
+        $this->ipAddress = strval($_SERVER["REMOTE_ADDR"]);
         $this->port = intval($_SERVER["REMOTE_PORT"] ?? 0);
+        $this->cfConnectingIP = $req->headers->get("cf-connecting-ip");
 
-        // Cloudflare OR X-Forwarded-For IP Address
-        if ($req->headers->has("cf-connecting-ip")) {
-            $userIpAddr = $req->headers->get("cf-connecting-ip");
-        } elseif ($req->headers->has("x-forwarded-for")) {
+        // "X-Forwarded-For" IP Address
+        $xff = null;
+        if ($req->headers->has("x-forwarded-for")) {
             $xff = explode(",", $req->headers->get("x-forwarded-for"));
-            $userIpAddr = trim(preg_replace('/[^a-f\d.:]/', '', strtolower($xff[0])));
+            $xff = trim(preg_replace("/[^a-f\d.:]/", "", strtolower($xff[0])));
         }
 
-        $this->ipAddress = $userIpAddr ?? $this->realIpAddress;
+        $this->xForwardedFor = $xff;
 
         // Other Headers
         $this->origin = $req->headers->get("referer");

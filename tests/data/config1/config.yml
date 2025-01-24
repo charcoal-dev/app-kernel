@@ -1,6 +1,0 @@
-imports:
-  - cache.yml
-  - databases.yml
-  - security.yml
-
-timezone: "Europe/London"

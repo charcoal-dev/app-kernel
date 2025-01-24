@@ -1,89 +1,102 @@
 <?php
-/*
- * This file is a part of "charcoal-dev/app-kernel" package.
- * https://github.com/charcoal-dev/app-kernel
- *
- * Copyright (c) Furqan A. Siddiqui <hello@furqansiddiqui.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code or visit following link:
- * https://github.com/charcoal-dev/app-kernel/blob/main/LICENSE
- */
-
 declare(strict_types=1);
 
-namespace Charcoal\Apps\Kernel;
+namespace Charcoal\App\Kernel;
 
-use Charcoal\Apps\Kernel\Db\Databases;
-use Charcoal\Apps\Kernel\Errors\ErrorLoggerInterface;
-use Charcoal\Apps\Kernel\Errors\NullErrorLogger;
-use Charcoal\Apps\Kernel\Polyfill\NullCache;
+use Charcoal\App\Kernel\Config\CacheDriver;
+use Charcoal\App\Kernel\Errors\ErrorHandler;
+use Charcoal\App\Kernel\Errors\ErrorLoggerInterface;
+use Charcoal\App\Kernel\Polyfill\NullErrorLog;
 use Charcoal\Cache\Cache;
 use Charcoal\Cache\CacheDriverInterface;
-use Charcoal\Cache\Drivers\RedisClient;
 use Charcoal\Filesystem\Directory;
-use Charcoal\Semaphore\FilesystemSemaphore;
-use Charcoal\Yaml\Parser;
 
 /**
  * Class AppKernel
- * @package Charcoal\Apps\Kernel
+ * @package Charcoal\App\Kernel
  */
-class AppKernel
+abstract class AppKernel extends AppBuildCache
 {
-    public readonly Events $events;
-    public readonly Errors $errors;
     public readonly Cache $cache;
     public readonly Config $config;
-    public readonly Directories $dir;
-    public readonly Databases $db;
-    public readonly FilesystemSemaphore $semaphore;
+    public readonly Databases $databases;
+    public readonly Directories $directories;
+    public readonly ErrorHandler $errors;
+    public readonly Events $events;
+    public readonly Lifecycle $lifecycle;
 
-    /**
-     * @param \Charcoal\Filesystem\Directory $rootDirectory
-     * @param \Charcoal\Apps\Kernel\Errors\ErrorLoggerInterface $errorLogger
-     * @param string $configClass
-     * @param string $dirClass
-     * @param string $dbClass
-     * @param string $eventsClass
-     * @throws \Charcoal\Filesystem\Exception\FilesystemException
-     * @throws \Charcoal\Semaphore\Exception\SemaphoreException
-     * @throws \Charcoal\Yaml\Exception\YamlParseException
-     */
     public function __construct(
         Directory            $rootDirectory,
-        ErrorLoggerInterface $errorLogger = new NullErrorLogger(),
-        string               $configClass = Config::class,
-        string               $dirClass = Directories::class,
-        string               $dbClass = Databases::class,
+        ErrorLoggerInterface $errorLog = new NullErrorLog(),
+        string               $directoriesClass = Directories::class,
         string               $eventsClass = Events::class,
+        string               $databasesClass = Databases::class,
     )
     {
-        $this->dir = new $dirClass($rootDirectory);
-        $this->errors = new Errors($this, $errorLogger);
+        $this->directories = new $directoriesClass($rootDirectory);
+        $this->errors = new ErrorHandler($this, $errorLog);
         $this->events = new $eventsClass();
 
-        $configObject = (new Parser(evaluateBooleans: true, evaluateNulls: true))
-            ->getParsed($this->dir->config->pathToChild("/config.yml", false));
-        $this->config = new $configClass($configObject);
-        $this->db = new $dbClass();
-        $this->semaphore = new FilesystemSemaphore($this->dir->semaphore);
+        // Configuration should be rendered after ErrorHandler initialized...
+        $this->config = $this->renderConfig();
 
-
-        // Cache Engine
-        $cacheConfig = $this->config->cache;
-        $cacheDriver = $cacheConfig->use && $cacheConfig->storageDriver === "redis" ?
-            new RedisClient($cacheConfig->hostname, $cacheConfig->port, $cacheConfig->timeOut) : new NullCache();
-
+        // Initialize rest of components,,,
+        $this->databases = new $databasesClass();
         $this->cache = new Cache(
-            $cacheDriver,
+            CacheDriver::CreateClient($this->config->cache),
             useChecksumsByDefault: false,
             nullIfExpired: true,
             deleteIfExpired: true
         );
 
-        // Actual runtime initialization happens here:
-        $this->init();
+        $this->isReady(true);
+    }
+
+    /**
+     * This method must return Config object for AppKernel after initializing error handlers
+     * @return Config
+     */
+    abstract protected function renderConfig(): Config;
+
+    /**
+     * This method is called internally on __construct & __unserialize
+     * @param bool $isFreshBuild
+     * @return void
+     */
+    private function isReady(bool $isFreshBuild): void
+    {
+        // PHP default timezone configuration,
+        // Lifecycle entries require timestamps to function properly:
+        date_default_timezone_set($this->config->timezone->getTimezoneId());
+
+        // Initialize Lifecycle:
+        $this->lifecycle = new Lifecycle();
+        $this->lifecycle->log($isFreshBuild ? "New app instantiated" : "Restore app states successful");
+
+        // Cache Events
+        $this->cache->events->onConnected()->listen(function (CacheDriverInterface $cacheDriver) {
+            $this->events->onCacheConnection()->trigger([$cacheDriver]);
+        });
+
+        // All set!
+        $this->errors->exceptionHandlerShowTrace = false;
+    }
+
+    /**
+     * Bootstraps dependant modules
+     * @return void
+     */
+    public function bootstrap(): void
+    {
+        // Bootstrap dependants:
+        $this->databases->bootstrap($this);
+
+        // Lifecycle Entries:
+        $this->lifecycle->bootstrappedOn = microtime(true);
+        if (isset($this->lifecycle->startedOn)) {
+            $this->lifecycle->loadTime = number_format($this->lifecycle->bootstrappedOn - $this->lifecycle->startedOn, 4);
+            $this->lifecycle->log("App bootstrapped", $this->lifecycle->loadTime . "s", true);
+        }
     }
 
     /**
@@ -92,13 +105,13 @@ class AppKernel
     public function __serialize(): array
     {
         return [
+            "cache" => $this->cache,
+            "config" => $this->config,
+            "databases" => $this->databases,
+            "directories" => $this->directories,
             "errors" => $this->errors,
             "events" => $this->events,
-            "config" => $this->config,
-            "dir" => $this->dir,
-            "db" => $this->db,
-            "cache" => $this->cache,
-            "semaphore" => $this->semaphore,
+            "lifecycle" => null
         ];
     }
 
@@ -108,33 +121,12 @@ class AppKernel
      */
     public function __unserialize(array $data): void
     {
+        $this->cache = $data["cache"];
+        $this->config = $data["config"];
+        $this->databases = $data["databases"];
+        $this->directories = $data["directories"];
         $this->errors = $data["errors"];
         $this->events = $data["events"];
-        $this->config = $data["config"];
-        $this->dir = $data["dir"];
-        $this->db = $data["db"];
-        $this->cache = $data["cache"];
-        $this->semaphore = $data["semaphore"];
-        $this->init(); // Runtime initialization
-    }
-
-    /**
-     * @return void
-     */
-    private function init(): void
-    {
-        // Timezone
-        date_default_timezone_set($this->config->timezone);
-
-        // Databases
-        $this->db->bootstrap($this);
-
-        // Cache Events
-        $this->cache->events->onConnected()->listen(function (CacheDriverInterface $cacheDriver) {
-            $this->events->onCacheConnection()->trigger([$cacheDriver]);
-        });
-
-        // All set!
-        $this->errors->exceptionHandlerShowTrace = false;
+        $this->isReady(false);
     }
 }

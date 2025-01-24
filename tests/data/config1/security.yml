@@ -1,7 +1,0 @@
-security:
-  keychain:
-    primary: "charcoal"
-    another: 0xf724e9468f7255f6c151d3b9a3591b1a3bc9f810f041d4e07f7fefc011925b5c
-    more: "d1e3e544290e326f31ddd8d2643165f2319c47d73bc83dd13fd90b6875edef54"
-    more2: "0xd1e3e544290e326f31ddd8d2643165f2319c47d73bc83dd13fd90b6875edef54"
-    another2: "f724e9468f7255f6c151d3b9a3591b1a3bc9f810f041d4e07f7fefc011925b5c"

@@ -1,8 +1,0 @@
-# This is the main configuration file for this Charcoal App
-imports:
-  - cache.yml
-  - databases.yml
-  - security.yml
-
-# Timezone
-timezone: "Europe/London"
