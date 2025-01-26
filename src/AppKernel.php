@@ -3,7 +3,11 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel;
 
+use Charcoal\App\Kernel\Build\AppBuildCache;
+use Charcoal\App\Kernel\Build\AppBuildEnum;
+use Charcoal\App\Kernel\Build\BuildMetadata;
 use Charcoal\App\Kernel\Config\CacheDriver;
+use Charcoal\App\Kernel\Container\AppAware;
 use Charcoal\App\Kernel\Errors\ErrorHandler;
 use Charcoal\App\Kernel\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Polyfill\NullErrorLog;
@@ -17,6 +21,7 @@ use Charcoal\Filesystem\Directory;
  */
 abstract class AppKernel extends AppBuildCache
 {
+    public readonly BuildMetadata $build;
     public readonly Cache $cache;
     public readonly Config $config;
     public readonly Databases $databases;
@@ -26,6 +31,7 @@ abstract class AppKernel extends AppBuildCache
     public readonly Lifecycle $lifecycle;
 
     public function __construct(
+        AppBuildEnum         $build,
         Directory            $rootDirectory,
         ErrorLoggerInterface $errorLog = new NullErrorLog(),
         string               $directoriesClass = Directories::class,
@@ -40,7 +46,7 @@ abstract class AppKernel extends AppBuildCache
         // Configuration should be rendered after ErrorHandler initialized...
         $this->config = $this->renderConfig();
 
-        // Initialize rest of components,,,
+        // Initialize rest of components...
         $this->databases = new $databasesClass();
         $this->cache = new Cache(
             CacheDriver::CreateClient($this->config->cache),
@@ -49,7 +55,20 @@ abstract class AppKernel extends AppBuildCache
             deleteIfExpired: true
         );
 
+        // Build Modules
+        $modules = $build->getBuildPlan()->getPlan();
+        $modulesClasses = [];
+        $modulesProperties = [];
+        foreach ($modules as $property => $instance) {
+            $this->$property = $instance;
+            $modulesClasses[$instance::class] = $property;
+            $modulesProperties[] = $property;
+        }
+
         $this->isReady("New app instantiated");
+
+        // Created after isReady call because of timestamp:
+        $this->build = new BuildMetadata($build, time(), $modulesClasses, $modulesProperties);
     }
 
     /**
@@ -57,6 +76,17 @@ abstract class AppKernel extends AppBuildCache
      * @return Config
      */
     abstract protected function renderConfig(): Config;
+
+    /**
+     * Returns AppAware module or service that was included in build plan
+     * @param string $className
+     * @return AppAware
+     */
+    public function getModule(string $className): AppAware
+    {
+        $property = $this->build->modulesClasses[$className];
+        return $this->$property;
+    }
 
     /**
      * This method is called internally on __construct & __unserialize
@@ -104,7 +134,8 @@ abstract class AppKernel extends AppBuildCache
      */
     public function __serialize(): array
     {
-        return [
+        $data = [
+            "build" => $this->build,
             "cache" => $this->cache,
             "config" => $this->config,
             "databases" => $this->databases,
@@ -113,6 +144,12 @@ abstract class AppKernel extends AppBuildCache
             "events" => $this->events,
             "lifecycle" => null
         ];
+
+        foreach ($this->build->modulesProperties as $property) {
+            $data[$property] = $this->$property;
+        }
+
+        return $data;
     }
 
     /**
@@ -121,12 +158,17 @@ abstract class AppKernel extends AppBuildCache
      */
     public function __unserialize(array $data): void
     {
+        $this->build = $data["build"];
         $this->cache = $data["cache"];
         $this->config = $data["config"];
         $this->databases = $data["databases"];
         $this->directories = $data["directories"];
         $this->errors = $data["errors"];
         $this->events = $data["events"];
+        foreach ($this->build->modulesProperties as $property) {
+            $data[$property] = $this->$property;
+        }
+
         $this->isReady("Restore app states successful");
     }
 }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel;
 
+use Charcoal\App\Kernel\Orm\Db\DatabaseTableRegistry;
 use Charcoal\Database\Database;
 use Charcoal\Database\DbDriver;
 use Charcoal\OOP\DependencyInjection\AbstractDIResolver;
@@ -14,7 +15,8 @@ use Charcoal\OOP\Traits\NoDumpTrait;
  */
 class Databases extends AbstractDIResolver
 {
-    private AppKernel $app;
+    protected readonly AppKernel $app;
+    public readonly DatabaseTableRegistry $orm;
 
     use NoDumpTrait;
 
@@ -24,6 +26,7 @@ class Databases extends AbstractDIResolver
     public function __construct()
     {
         parent::__construct(Database::class);
+        $this->orm = new DatabaseTableRegistry();
     }
 
     /**
@@ -38,12 +41,13 @@ class Databases extends AbstractDIResolver
     /**
      * Prepares class for serialize,
      * Removes all current Database instances
-     * @return null[]|string[]
+     * @return array
      */
     public function __serialize(): array
     {
         $data = parent::__serialize();
         $data["instances"] = null;
+        $data["orm"] = $this->orm;
         return $data;
     }
 
@@ -54,6 +58,7 @@ class Databases extends AbstractDIResolver
      */
     public function __unserialize(array $data): void
     {
+        $this->orm = $data["orm"];
         parent::__unserialize(["instanceOf" => null, "instances" => []]);
     }
 
