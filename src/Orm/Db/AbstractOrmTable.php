@@ -13,13 +13,15 @@ use Charcoal\Database\Database;
  */
 abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
 {
+    public readonly DbAwareTableEnum $table;
+
     public function __construct(
         public readonly AbstractOrmModule $module,
-        public readonly DatabaseEnum      $database,
-        public readonly TableNameEnum     $table,
+        DbAwareTableEnum                  $dbTableEnum,
     )
     {
         parent::__construct($this->table->getTableName());
+        $this->table = $dbTableEnum;
     }
 
     abstract public function newChildObject(array $row): AbstractOrmEntity|null;
@@ -28,7 +30,6 @@ abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
     {
         $data = parent::__serialize();
         $data["module"] = $this->module;
-        $data["database"] = $this->database;
         $data["table"] = $this->table;
         return $data;
     }
@@ -36,7 +37,6 @@ abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
     public function __unserialize(array $object): void
     {
         $this->module = $object["module"];
-        $this->database = $object["database"];
         $this->table = $object["table"];
         parent::__unserialize($object);
     }
@@ -51,7 +51,7 @@ abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
             return $this->dbInstance;
         }
 
-        $this->dbInstance = $this->module->app->databases->getDb($this->database->getDatabaseKey());
+        $this->dbInstance = $this->module->app->databases->getDb($this->table->getDatabase()->getDatabaseKey());
         return $this->dbInstance;
     }
 }
