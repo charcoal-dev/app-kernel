@@ -40,7 +40,7 @@ abstract class AppKernel extends AppBuildCache
     )
     {
         $this->directories = new $directoriesClass($rootDirectory);
-        $this->errors = new ErrorHandler($this, $errorLog);
+        $this->errors = new ErrorHandler($this, $build, $errorLog);
         $this->events = new $eventsClass();
 
         // Configuration should be rendered after ErrorHandler initialized...

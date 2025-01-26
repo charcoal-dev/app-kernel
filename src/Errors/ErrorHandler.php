@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Errors;
 
 use Charcoal\App\Kernel\AppKernel;
+use Charcoal\App\Kernel\Build\AppBuildEnum;
 use Charcoal\OOP\Traits\NoDumpTrait;
 use Charcoal\OOP\Traits\NotCloneableTrait;
 use Charcoal\OOP\Traits\NotSerializableTrait;
@@ -28,14 +29,15 @@ class ErrorHandler implements \IteratorAggregate
 
     /**
      * @param AppKernel $app
+     * @param AppBuildEnum $build
      * @param ErrorLoggerInterface $logger
      */
-    public function __construct(AppKernel $app, public ErrorLoggerInterface $logger)
+    public function __construct(AppKernel $app, AppBuildEnum $build, public ErrorLoggerInterface $logger)
     {
         $this->pathOffset = strlen($app->directories->root->path);
         $this->errorLog = [];
         $this->errorLogCount = 0;
-        if ($app->build->enum->setErrorHandlers()) {
+        if ($build->setErrorHandlers()) {
             $this->setHandlers();
         }
     }
