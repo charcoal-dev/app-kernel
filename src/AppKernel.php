@@ -49,7 +49,7 @@ abstract class AppKernel extends AppBuildCache
             deleteIfExpired: true
         );
 
-        $this->isReady(true);
+        $this->isReady("New app instantiated");
     }
 
     /**
@@ -60,23 +60,23 @@ abstract class AppKernel extends AppBuildCache
 
     /**
      * This method is called internally on __construct & __unserialize
-     * @param bool $isFreshBuild
+     * @param string $message
      * @return void
      */
-    private function isReady(bool $isFreshBuild): void
+    private function isReady(string $message): void
     {
         // PHP default timezone configuration,
         // Lifecycle entries require timestamps to function properly:
         date_default_timezone_set($this->config->timezone->getTimezoneId());
 
-        // Initialize Lifecycle:
-        $this->lifecycle = new Lifecycle();
-        $this->lifecycle->log($isFreshBuild ? "New app instantiated" : "Restore app states successful");
-
         // Cache Events
         $this->cache->events->onConnected()->listen(function (CacheDriverInterface $cacheDriver) {
             $this->events->onCacheConnection()->trigger([$cacheDriver]);
         });
+
+        // Initialize Lifecycle
+        $this->lifecycle = new Lifecycle();
+        $this->lifecycle->log($message);
 
         // All set!
         $this->errors->exceptionHandlerShowTrace = false;
@@ -127,6 +127,6 @@ abstract class AppKernel extends AppBuildCache
         $this->directories = $data["directories"];
         $this->errors = $data["errors"];
         $this->events = $data["events"];
-        $this->isReady(false);
+        $this->isReady("Restore app states successful");
     }
 }
