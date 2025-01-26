@@ -33,17 +33,19 @@ class ErrorHandler implements \IteratorAggregate
     public function __construct(AppKernel $app, public ErrorLoggerInterface $logger)
     {
         $this->pathOffset = strlen($app->directories->root->path);
-        $this->init();
+        $this->errorLog = [];
+        $this->errorLogCount = 0;
+        if ($app->build->enum->setErrorHandlers()) {
+            $this->setHandlers();
+        }
     }
 
     /**
      * Initializes Error & Exception handlers. Called on construct and unserialize
      * @return void
      */
-    private function init(): void
+    public function setHandlers(): void
     {
-        $this->errorLog = [];
-        $this->errorLogCount = 0;
         set_error_handler([$this, "handleError"]);
         set_exception_handler([$this, "handleThrowable"]);
     }
@@ -89,7 +91,9 @@ class ErrorHandler implements \IteratorAggregate
         $this->debugBacktraceLevel = $data["debugBacktraceLevel"];
         $this->backtraceOffset = $data["backtraceOffset"];
         $this->exceptionHandlerShowTrace = $data["exceptionHandlerShowTrace"];
-        $this->init();
+        $this->errorLog = [];
+        $this->errorLogCount = 0;
+        $this->setHandlers();
     }
 
     /**

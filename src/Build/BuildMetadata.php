@@ -10,7 +10,7 @@ namespace Charcoal\App\Kernel\Build;
 readonly class BuildMetadata
 {
     public function __construct(
-        public AppBuildEnum $build,
+        public AppBuildEnum $enum,
         public int          $timestamp,
         public array        $modulesClasses,
         public array        $modulesProperties,

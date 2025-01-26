@@ -20,4 +20,10 @@ interface AppBuildEnum
      * @return BuildPlan
      */
     public function getBuildPlan(): BuildPlan;
+
+    /**
+     * Determines if build will set and use its own error handlers
+     * @return bool
+     */
+    public function setErrorHandlers(): bool;
 }
