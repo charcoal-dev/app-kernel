@@ -131,6 +131,11 @@ abstract class AppKernel extends AppBuildCache
         // Bootstrap dependants:
         $this->databases->bootstrap($this);
 
+        // All declared services and modules:
+        foreach ($this->build->modulesProperties as $property) {
+            $this->$property->bootstrap($this);
+        }
+
         // Lifecycle Entries:
         $this->lifecycle->bootstrappedOn = microtime(true);
         if (isset($this->lifecycle->startedOn)) {
