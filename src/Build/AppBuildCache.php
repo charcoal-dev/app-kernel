@@ -40,12 +40,11 @@ abstract class AppBuildCache
     /**
      * @param AppKernel $app
      * @param Directory $directory
-     * @param string $suffix
      * @return void
      */
-    public static function CreateBuild(AppKernel $app, Directory $directory, string $suffix): void
+    public static function CreateBuild(AppKernel $app, Directory $directory): void
     {
-        if (!file_put_contents($directory->pathToChild("charcoalAppBuild_" . $app->build->b . ".bin", false), serialize($app))) {
+        if (!file_put_contents($directory->pathToChild("charcoalAppBuild_" . $app->build->enum->getName() . ".bin", false), serialize($app))) {
             throw new \LogicException("Failed to create charcoal application build");
         }
     }
