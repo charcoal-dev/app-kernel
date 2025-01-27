@@ -43,12 +43,23 @@ abstract class AppAwareContainer extends AppAware
 
     protected function collectSerializableData(): array
     {
-        return ["appAwareChildren" => $this->appAwareChildren];
-    }
+        $data = ["appAwareChildren" => $this->appAwareChildren];
+        foreach ($this->appAwareChildren as $child) {
+            if (isset($this->$child)) {
+                $data[$child] = $this->$child;
+            }
+        }
 
+        return $data;
+    }
 
     protected function onUnserialize(array $data): void
     {
         $this->appAwareChildren = $data["appAwareChildren"];
+        foreach ($this->appAwareChildren as $child) {
+            if (isset($data[$child]) && $data[$child] instanceof AppAware) {
+                $this->$child = $data[$child];
+            }
+        }
     }
 }
