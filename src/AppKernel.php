@@ -176,7 +176,7 @@ abstract class AppKernel extends AppBuildCache
         $this->errors = $data["errors"];
         $this->events = $data["events"];
         foreach ($this->build->modulesProperties as $property) {
-            $data[$property] = $this->$property;
+            $this->$property = $data[$property];
         }
 
         $this->isReady("Restore app states successful");
