@@ -25,7 +25,6 @@ abstract class AbstractOrmComponent extends AppAwareContainer
         ?\Closure                $declareChildren
     )
     {
-        $this->moduleClass = $this->module::class;
         parent::__construct($declareChildren);
     }
 
