@@ -26,7 +26,7 @@ abstract class AppAwareContainer extends AppAware
             // Determine children AppAwareComponent instances
             $reflect = new \ReflectionClass($this);
             foreach ($reflect->getProperties() as $property) {
-                if ($property->getValue($this) instanceof AppAware) {
+                if ($property->isInitialized($this) && $property->getValue($this) instanceof AppAware) {
                     $this->appAwareChildren[] = $property->getName();
                 }
             }
