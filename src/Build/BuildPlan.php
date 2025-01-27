@@ -14,13 +14,12 @@ class BuildPlan
     private array $plan = [];
 
     /**
-     * Closure method receives instance of AppBuildPartial as first argument, and instance of BuildPlan as second
-     * @param AppBuildPartial $app
+     * Closure method should declare all modules and services to be included in build using "include" method
      * @param \Closure $declareChildren
      */
-    final public function __construct(AppBuildPartial $app, \Closure $declareChildren)
+    final public function __construct(\Closure $declareChildren)
     {
-        $declareChildren($app, $this);
+        $declareChildren($this);
     }
 
     /**

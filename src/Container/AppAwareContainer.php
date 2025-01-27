@@ -6,22 +6,22 @@ namespace Charcoal\App\Kernel\Container;
 use Charcoal\App\Kernel\AppKernel;
 
 /**
- * Class AppAwareComponent
+ * Class AppAwareContainer
  * @package Charcoal\App\Kernel\Container
  */
-abstract class AppAwareComponent extends AppAware
+abstract class AppAwareContainer extends AppAware
 {
     protected const array APP_AWARE_CHILDREN = [];
     private array $appAwareChildren;
 
-    protected function __construct(?\Closure $declareChildren)
+    protected function __construct(?\Closure $declareChildren, array $closureArgs = [])
     {
         // Initialize children vector
         $this->appAwareChildren = static::APP_AWARE_CHILDREN;
 
         // Callback
         if ($declareChildren) {
-            $declareChildren();
+            call_user_func_array($declareChildren, $closureArgs);
 
             // Determine children AppAwareComponent instances
             $reflect = new \ReflectionClass($this);

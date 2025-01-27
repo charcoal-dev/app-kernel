@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm;
 
-use Charcoal\App\Kernel\Container\AppAwareComponent;
+use Charcoal\App\Kernel\Build\AppBuildPartial;
+use Charcoal\App\Kernel\Modules\BaseModule;
 use Charcoal\App\Kernel\Orm\Db\DatabaseTableRegistry;
 use Charcoal\App\Kernel\Orm\Entity\EntityRepository;
 
@@ -11,14 +12,14 @@ use Charcoal\App\Kernel\Orm\Entity\EntityRepository;
  * Class AbstractOrmModule
  * @package Charcoal\App\Kernel\Orm
  */
-abstract class AbstractOrmModule extends AppAwareComponent
+abstract class AbstractOrmModule extends BaseModule
 {
     protected readonly EntityRepository $entities;
 
-    protected function __construct(DatabaseTableRegistry $registry, \Closure $declareChildren)
+    protected function __construct(AppBuildPartial $app, \Closure $declareChildren)
     {
-        $this->declareTables($registry);
-        parent::__construct($declareChildren);
+        $this->declareTables($app->databases->orm);
+        parent::__construct($app, $declareChildren);
         $this->entities = new EntityRepository($this);
     }
 

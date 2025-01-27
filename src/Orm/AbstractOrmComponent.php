@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm;
 
 use Charcoal\App\Kernel\AppKernel;
-use Charcoal\App\Kernel\Container\AppAwareComponent;
+use Charcoal\App\Kernel\Container\AppAwareContainer;
 use Charcoal\App\Kernel\Orm\Db\AbstractOrmTable;
 use Charcoal\App\Kernel\Orm\Db\DatabaseEnum;
 use Charcoal\App\Kernel\Orm\Db\TableNameEnum;
@@ -13,7 +13,7 @@ use Charcoal\App\Kernel\Orm\Db\TableNameEnum;
  * Class AbstractOrmComponent
  * @package Charcoal\App\Kernel\Orm
  */
-abstract class AbstractOrmComponent extends AppAwareComponent
+abstract class AbstractOrmComponent extends AppAwareContainer
 {
     public readonly AbstractOrmTable $table;
     public readonly AbstractOrmModule $module;
