@@ -18,23 +18,22 @@ class DatabaseTableRegistry
      */
     public function register(AbstractOrmTable $table): void
     {
-        if (!isset($this->map[$table->database->getDatabaseKey()][$table->table->getTableName()])) {
-            $this->map[$table->database->getDatabaseKey()][$table->table->getTableName()] = $table;
+        if (!isset($this->map[$table->enum->getDatabase()->getDatabaseKey()][$table->enum->getTableName()])) {
+            $this->map[$table->enum->getDatabase()->getDatabaseKey()][$table->enum->getTableName()] = $table;
         }
     }
 
     /**
      * Resolves argument Database and Table to retrieve AbstractOrmTable instance
-     * @param DatabaseEnum $db
-     * @param TableNameEnum $table
+     * @param DbAwareTableEnum $dbTable
      * @return AbstractOrmTable
      */
-    public function resolve(DatabaseEnum $db, TableNameEnum $table): AbstractOrmTable
+    public function resolve(DbAwareTableEnum $dbTable): AbstractOrmTable
     {
-        $found = $this->map[$db->getDatabaseKey()][$table->getTableName()] ?? null;
+        $found = $this->map[$dbTable->getDatabase()->getDatabaseKey()][$dbTable->getTableName()] ?? null;
         if (!$found) {
             throw new \OutOfBoundsException(
-                "ORM database \"{$db->getDatabaseKey()}\" table \"{$table->getTableName()}\" not found in registry"
+                "ORM database \"{$dbTable->getDatabase()->getDatabaseKey()}\" table \"{$dbTable->getTableName()}\" not found in registry"
             );
         }
 

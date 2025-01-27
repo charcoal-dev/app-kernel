@@ -6,8 +6,7 @@ namespace Charcoal\App\Kernel\Orm;
 use Charcoal\App\Kernel\AppKernel;
 use Charcoal\App\Kernel\Container\AppAwareContainer;
 use Charcoal\App\Kernel\Orm\Db\AbstractOrmTable;
-use Charcoal\App\Kernel\Orm\Db\DatabaseEnum;
-use Charcoal\App\Kernel\Orm\Db\TableNameEnum;
+use Charcoal\App\Kernel\Orm\Db\DbAwareTableEnum;
 
 /**
  * Class AbstractOrmComponent
@@ -21,10 +20,9 @@ abstract class AbstractOrmComponent extends AppAwareContainer
     protected int $entityCacheTtl = 86400;
 
     protected function __construct(
-        private string        $moduleClass,
-        private DatabaseEnum  $dbEnum,
-        private TableNameEnum $tableEnum,
-        ?\Closure             $declareChildren
+        private string           $moduleClass,
+        private DbAwareTableEnum $dbTableEnum,
+        ?\Closure                $declareChildren
     )
     {
         $this->moduleClass = $this->module::class;
@@ -41,7 +39,7 @@ abstract class AbstractOrmComponent extends AppAwareContainer
         /** @var AbstractOrmModule $module */
         $module = $this->app->getModule($this->moduleClass);
         $this->module = $module;
-        $this->table = $this->app->databases->orm->resolve($this->dbEnum, $this->tableEnum);
+        $this->table = $this->app->databases->orm->resolve($this->dbTableEnum);
     }
 
     abstract protected function createEntityId(): string;
@@ -70,8 +68,7 @@ abstract class AbstractOrmComponent extends AppAwareContainer
         $data["module"] = null;
         $data["entityCacheTtl"] = $this->entityCacheTtl;
         $data["moduleClass"] = $this->moduleClass;
-        $data["dbEnum"] = $this->dbEnum;
-        $data["tableEnum"] = $this->tableEnum;
+        $data["dbTableEnum"] = $this->dbTableEnum;
         return $data;
     }
 
@@ -79,8 +76,7 @@ abstract class AbstractOrmComponent extends AppAwareContainer
     {
         $this->entityCacheTtl = $data["entityCacheTtl"];
         $this->moduleClass = $data["moduleClass"];
-        $this->dbEnum = $data["dbEnum"];
-        $this->tableEnum = $data["tableEnum"];
+        $this->dbTableEnum = $data["dbTableEnum"];
         parent::onUnserialize($data);
     }
 }

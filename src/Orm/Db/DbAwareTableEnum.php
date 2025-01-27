@@ -7,7 +7,9 @@ namespace Charcoal\App\Kernel\Orm\Db;
  * Interface DbAwareTableEnum
  * @package Charcoal\App\Kernel\Orm\Db
  */
-interface DbAwareTableEnum extends TableNameEnum
+interface DbAwareTableEnum
 {
+    public function getTableName(): string;
+
     public function getDatabase(): DatabaseEnum;
 }
