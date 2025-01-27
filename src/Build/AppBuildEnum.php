@@ -17,9 +17,10 @@ interface AppBuildEnum
 
     /**
      * Return BuildPlan for AppKernel
+     * @param AppBuildPartial $app
      * @return BuildPlan
      */
-    public function getBuildPlan(): BuildPlan;
+    public function getBuildPlan(AppBuildPartial $app): BuildPlan;
 
     /**
      * Determines if build will set and use its own error handlers

@@ -5,6 +5,7 @@ namespace Charcoal\App\Kernel;
 
 use Charcoal\App\Kernel\Build\AppBuildCache;
 use Charcoal\App\Kernel\Build\AppBuildEnum;
+use Charcoal\App\Kernel\Build\AppBuildPartial;
 use Charcoal\App\Kernel\Build\BuildMetadata;
 use Charcoal\App\Kernel\Config\CacheDriver;
 use Charcoal\App\Kernel\Container\AppAware;
@@ -37,6 +38,7 @@ abstract class AppKernel extends AppBuildCache
         string               $directoriesClass = Directories::class,
         string               $eventsClass = Events::class,
         string               $databasesClass = Databases::class,
+        string               $appBuildPartialClass = AppBuildPartial::class,
     )
     {
         $this->directories = new $directoriesClass($rootDirectory);
@@ -55,8 +57,15 @@ abstract class AppKernel extends AppBuildCache
             deleteIfExpired: true
         );
 
-        // Build Modules
-        $modules = $build->getBuildPlan()->getPlan();
+        // Get plan for building modules and services...
+        $modules = $build->getBuildPlan(new $appBuildPartialClass(
+            $this->cache,
+            $this->config,
+            $this->databases,
+            $this->directories,
+            $this->errors,
+            $this->events,
+        ))->getPlan();
         $modulesClasses = [];
         $modulesProperties = [];
         foreach ($modules as $property => $instance) {
@@ -65,6 +74,7 @@ abstract class AppKernel extends AppBuildCache
             $modulesProperties[] = $property;
         }
 
+        // Initialize Lifecycle and set default timezone...
         $this->isReady("New app instantiated");
 
         // Created after isReady call because of timestamp:
