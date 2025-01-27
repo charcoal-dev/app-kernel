@@ -14,11 +14,13 @@ class BuildPlan
     private array $plan = [];
 
     /**
+     * Closure method receives instance of AppBuildPartial as first argument, and instance of BuildPlan as second
+     * @param AppBuildPartial $app
      * @param \Closure $declareChildren
      */
-    final public function __construct(\Closure $declareChildren)
+    final public function __construct(AppBuildPartial $app, \Closure $declareChildren)
     {
-        $declareChildren($this);
+        $declareChildren($app, $this);
     }
 
     /**
