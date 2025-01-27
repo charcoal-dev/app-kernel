@@ -20,8 +20,8 @@ abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
         DbAwareTableEnum                  $dbTableEnum,
     )
     {
-        parent::__construct($this->table->getTableName());
         $this->table = $dbTableEnum;
+        parent::__construct($this->table->getTableName());
     }
 
     abstract public function newChildObject(array $row): AbstractOrmEntity|null;
