@@ -5,7 +5,6 @@ namespace Charcoal\App\Kernel\Orm;
 
 use Charcoal\App\Kernel\AppKernel;
 use Charcoal\App\Kernel\Container\AppAwareContainer;
-use Charcoal\App\Kernel\Entity\ChecksumAwareEntityInterface;
 use Charcoal\App\Kernel\Orm\Db\AbstractOrmTable;
 use Charcoal\App\Kernel\Orm\Db\DbAwareTableEnum;
 use Charcoal\App\Kernel\Orm\Exception\EntityNotFoundException;
@@ -22,7 +21,7 @@ use Charcoal\Database\Queries\LockFlag;
  * Class AbstractOrmRepository
  * @package Charcoal\App\Kernel\Orm
  */
-abstract class AbstractOrmRepository extends AppAwareContainer implements ChecksumAwareEntityInterface
+abstract class AbstractOrmRepository extends AppAwareContainer
 {
     public readonly AbstractOrmTable $table;
     public readonly AbstractOrmModule $module;

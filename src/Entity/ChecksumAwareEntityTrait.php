@@ -20,13 +20,13 @@ trait ChecksumAwareEntityTrait
      * Return array of data for computing checksum hash
      * @return array
      */
-    abstract protected function collectChecksumData(): array;
+    abstract public function collectChecksumData(): array;
 
     /**
      * Return existing checksum Byte20 frame or NULL
      * @return Bytes20|null
      */
-    abstract protected function getChecksum(): ?Bytes20;
+    abstract public function getChecksum(): ?Bytes20;
 
     /**
      * @param Cipher $cipher
