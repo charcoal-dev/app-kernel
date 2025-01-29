@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm\Db;
 
 use Charcoal\App\Kernel\Orm\AbstractOrmModule;
-use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
+use Charcoal\App\Kernel\Orm\Repository\AbstractOrmEntity;
 use Charcoal\Database\Database;
 
 /**
@@ -18,19 +18,33 @@ abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
     public function __construct(
         public readonly AbstractOrmModule $module,
         DbAwareTableEnum                  $dbTableEnum,
+        public readonly ?string           $entityClass
     )
     {
         $this->enum = $dbTableEnum;
         parent::__construct($this->enum->getTableName());
     }
 
-    abstract public function newChildObject(array $row): AbstractOrmEntity|null;
+    /**
+     * @param array $row
+     * @return AbstractOrmEntity|null
+     */
+    public function newChildObject(array $row): ?AbstractOrmEntity
+    {
+        $entityClass = $this->entityClass;
+        if (!$entityClass) {
+            return null;
+        }
+
+        return new $entityClass();
+    }
 
     public function __serialize(): array
     {
         $data = parent::__serialize();
         $data["module"] = $this->module;
         $data["enum"] = $this->enum;
+        $data["entityClass"] = $this->entityClass;
         return $data;
     }
 
@@ -38,6 +52,7 @@ abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
     {
         $this->module = $object["module"];
         $this->enum = $object["enum"];
+        $this->entityClass = $object["entityClass"];
         parent::__unserialize($object);
     }
 

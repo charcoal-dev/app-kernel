@@ -6,7 +6,8 @@ namespace Charcoal\App\Kernel\Orm;
 use Charcoal\App\Kernel\Build\AppBuildPartial;
 use Charcoal\App\Kernel\Container\AppAwareContainer;
 use Charcoal\App\Kernel\Orm\Db\DatabaseTableRegistry;
-use Charcoal\App\Kernel\Orm\Entity\EntityRepository;
+use Charcoal\App\Kernel\Orm\Module\EntityRuntimeCache;
+use Charcoal\Cache\Cache;
 
 /**
  * Class AbstractOrmModule
@@ -14,16 +15,21 @@ use Charcoal\App\Kernel\Orm\Entity\EntityRepository;
  */
 abstract class AbstractOrmModule extends AppAwareContainer
 {
-    protected readonly EntityRepository $entities;
+    public readonly EntityRuntimeCache $entities;
 
     protected function __construct(AppBuildPartial $app, \Closure $declareChildren)
     {
         $this->declareDatabaseTables($app->databases->orm);
         parent::__construct($declareChildren);
-        $this->entities = new EntityRepository($this);
+        $this->entities = new EntityRuntimeCache($this);
     }
 
     abstract protected function declareDatabaseTables(DatabaseTableRegistry $tables): void;
+
+    public function getCacheStore(): ?Cache
+    {
+        return $this->app->cache;
+    }
 
     protected function collectSerializableData(): array
     {
@@ -36,6 +42,6 @@ abstract class AbstractOrmModule extends AppAwareContainer
     {
         parent::onUnserialize($data);
         /** @noinspection PhpSecondWriteToReadonlyPropertyInspection Property is undefined here */
-        $this->entities = new EntityRepository($this);
+        $this->entities = new EntityRuntimeCache($this);
     }
 }
