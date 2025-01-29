@@ -56,6 +56,18 @@ abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
         parent::__unserialize($object);
     }
 
+    /**
+     * @return Database
+     */
+    public function getDb(): Database
+    {
+        return $this->resolveDbInstance(null);
+    }
+
+    /**
+     * @param Database|null $dbArg
+     * @return Database
+     */
     protected function resolveDbInstance(?Database $dbArg = null): Database
     {
         if ($dbArg) {

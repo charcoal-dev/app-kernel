@@ -12,14 +12,11 @@ use Charcoal\OOP\OOP;
  */
 class EntityOrmException extends \Exception
 {
-    public function __construct(
-        string                 $className,
-        public readonly string $entityId,
-        OrmException           $exception
-    )
+    public function __construct(string $className, \Throwable $exception)
     {
         parent::__construct(
-            OOP::baseClassName($className) . ' caught "' . $exception::class . '"',
+            OOP::baseClassName($className) . ' caught "' .
+            ($exception instanceof OrmException ? OOP::baseClassName($exception::class) : $exception::class) . '"',
             previous: $exception
         );
     }

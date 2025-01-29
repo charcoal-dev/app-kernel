@@ -8,6 +8,7 @@ use Charcoal\App\Kernel\Container\AppAwareContainer;
 use Charcoal\App\Kernel\Orm\Db\DatabaseTableRegistry;
 use Charcoal\App\Kernel\Orm\Module\EntityRuntimeCache;
 use Charcoal\Cache\Cache;
+use Charcoal\Cipher\Cipher;
 
 /**
  * Class AbstractOrmModule
@@ -26,10 +27,9 @@ abstract class AbstractOrmModule extends AppAwareContainer
 
     abstract protected function declareDatabaseTables(DatabaseTableRegistry $tables): void;
 
-    public function getCacheStore(): ?Cache
-    {
-        return $this->app->cache;
-    }
+    abstract public function getCipher(AbstractOrmRepository $resolveFor): ?Cipher;
+
+    abstract public function getCacheStore(): ?Cache;
 
     protected function collectSerializableData(): array
     {

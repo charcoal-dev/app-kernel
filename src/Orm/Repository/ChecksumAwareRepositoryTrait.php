@@ -12,8 +12,6 @@ use Charcoal\Buffers\Frames\Bytes20;
  */
 trait ChecksumAwareRepositoryTrait
 {
-    protected int $entityChecksumIterations = 0x64;
-
     /**
      * @param AbstractOrmEntity|null $entity
      * @return Bytes20
