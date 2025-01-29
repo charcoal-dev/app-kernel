@@ -1,16 +1,22 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Orm\Entity;
+namespace Charcoal\App\Kernel\Entity;
 
 use Charcoal\OOP\Vectors\StringVector;
 
 /**
- * Class AbstractOrmEntity
- * @package Charcoal\App\Kernel\Orm\Entity
+ * Class AbstractEntity
+ * @package Charcoal\App\Kernel\Entity
  */
-abstract class AbstractOrmEntity
+abstract class AbstractEntity
 {
+    /**
+     * Returns identifier a UUID or UID or ID or identifier of sorts for instance
+     * @return int|string|null
+     */
+    abstract public function getIdentifier(): int|string|null;
+
     /**
      * Forces all child classes to explicitly implement "collectSerializableData" method
      * @return array
@@ -34,11 +40,9 @@ abstract class AbstractOrmEntity
     public function __unserialize(array $data): void
     {
         foreach ($data as $prop => $value) {
-            if (!property_exists($this, $prop)) {
-                continue;
+            if (property_exists($this, $prop) && !isset($this->$prop)) {
+                $this->$prop = $value;
             }
-
-            $this->$prop = $value;
         }
     }
 
