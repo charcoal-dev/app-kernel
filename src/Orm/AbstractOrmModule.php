@@ -18,12 +18,12 @@ abstract class AbstractOrmModule extends AppAwareContainer
 
     protected function __construct(AppBuildPartial $app, \Closure $declareChildren)
     {
-        $this->declareTables($app->databases->orm);
-        parent::__construct($declareChildren, [$app]);
+        $this->declareDatabaseTables($app->databases->orm);
+        parent::__construct($declareChildren);
         $this->entities = new EntityRepository($this);
     }
 
-    abstract protected function declareTables(DatabaseTableRegistry $tables): void;
+    abstract protected function declareDatabaseTables(DatabaseTableRegistry $tables): void;
 
     protected function collectSerializableData(): array
     {
