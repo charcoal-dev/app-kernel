@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel;
 
+use Charcoal\App\Kernel\Container\AppAwareInterface;
 use Charcoal\App\Kernel\Orm\Db\DatabaseTableRegistry;
 use Charcoal\Database\Database;
 use Charcoal\Database\DbDriver;
@@ -13,7 +14,7 @@ use Charcoal\OOP\Traits\NoDumpTrait;
  * Class Databases
  * @package Charcoal\App\Kernel
  */
-class Databases extends AbstractDIResolver
+class Databases extends AbstractDIResolver implements AppAwareInterface
 {
     protected readonly AppKernel $app;
     public readonly DatabaseTableRegistry $orm;
@@ -59,7 +60,7 @@ class Databases extends AbstractDIResolver
     public function __unserialize(array $data): void
     {
         $this->orm = $data["orm"];
-        parent::__unserialize(["instanceOf" => null, "instances" => []]);
+        parent::__unserialize(["instanceOf" => $this->instanceOf, "instances" => []]);
     }
 
     /**

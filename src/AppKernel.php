@@ -118,6 +118,7 @@ abstract class AppKernel extends AppBuildCache
     {
         // Bootstrap dependants:
         $this->databases->bootstrap($this);
+        $this->cache->bootstrap($this);
 
         // All declared services and modules:
         foreach ($this->build->modulesProperties as $property) {
