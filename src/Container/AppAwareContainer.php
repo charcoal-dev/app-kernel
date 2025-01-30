@@ -11,55 +11,88 @@ use Charcoal\App\Kernel\AppKernel;
  */
 abstract class AppAwareContainer extends AppAware
 {
-    protected const array APP_AWARE_CHILDREN = [];
-    private array $appAwareChildren;
+    /** @var string[] Map of instance property keys to be automatically serialized and bootstrapped */
+    protected array $containerChildrenMap = [];
 
-    protected function __construct(?\Closure $declareChildren, array $closureArgs = [])
+    /**
+     * Ideally in child classes parent::__construct should be called near at end of their own constructors
+     */
+    protected function __construct()
     {
-        // Initialize children vector
-        $this->appAwareChildren = static::APP_AWARE_CHILDREN;
-
-        // Callback
-        if ($declareChildren) {
-            call_user_func_array($declareChildren, $closureArgs);
-
-            // Determine children AppAwareComponent instances
-            $reflect = new \ReflectionClass($this);
-            foreach ($reflect->getProperties() as $property) {
-                if ($property->isInitialized($this) && $property->getValue($this) instanceof AppAware) {
-                    $this->appAwareChildren[] = $property->getName();
-                }
+        // Determine children for this AppAwareContainer instance to be automatically serialized
+        $reflect = new \ReflectionClass($this);
+        foreach ($reflect->getProperties() as $property) {
+            if ($property->isInitialized($this)) {
+                $this->inspectIncludeChild($property->getName(), $property->getValue($this));
             }
         }
     }
 
-    public function bootstrap(AppKernel $app): void
+    /**
+     * Only AppAware instances are automatically included, extend this method to define more
+     * @param string $property
+     * @param mixed $value
+     * @return void
+     */
+    protected function inspectIncludeChild(string $property, mixed $value): void
+    {
+        if ($property === "containerChildrenMap") {
+            return;
+        }
+
+        if ($value instanceof AppAware) {
+            $this->containerChildrenMap[] = $property;
+        }
+    }
+
+    /**
+     * Bootstrap itself and all AppAware children
+     * @param AppKernel $app
+     * @return void
+     */
+    final public function bootstrap(AppKernel $app): void
     {
         parent::bootstrap($app);
-        foreach ($this->appAwareChildren as $child) {
-            ($this->$child ?? null)?->bootstrap($app);
+        foreach ($this->containerChildrenMap as $childPropertyKey) {
+            if(isset($this->$childPropertyKey)) {
+                $this->bootstrapChildren($childPropertyKey);
+            }
         }
     }
 
+    /**
+     * @param string $childPropertyKey
+     * @return void
+     */
+    protected function bootstrapChildren(string $childPropertyKey): void
+    {
+        if ($this->$childPropertyKey instanceof AppAware) {
+            $this->$childPropertyKey->bootstrap($this->app);
+        }
+    }
+
+    /**
+     * @return array
+     */
     protected function collectSerializableData(): array
     {
-        $data = ["appAwareChildren" => $this->appAwareChildren];
-        foreach ($this->appAwareChildren as $child) {
-            if (isset($this->$child)) {
-                $data[$child] = $this->$child;
-            }
+        $data = ["containerChildrenMap" => $this->containerChildrenMap];
+        foreach ($this->containerChildrenMap as $child) {
+            $data[$child] = $this->$child;
         }
 
         return $data;
     }
 
+    /**
+     * @param array $data
+     * @return void
+     */
     protected function onUnserialize(array $data): void
     {
-        $this->appAwareChildren = $data["appAwareChildren"];
-        foreach ($this->appAwareChildren as $child) {
-            if (isset($data[$child]) && $data[$child] instanceof AppAware) {
-                $this->$child = $data[$child];
-            }
+        $this->containerChildrenMap = $data["containerChildrenMap"];
+        foreach ($this->containerChildrenMap as $child) {
+            $this->$child = $data[$child];
         }
     }
 }

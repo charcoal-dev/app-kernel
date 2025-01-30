@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm;
 
-use Charcoal\App\Kernel\AppKernel;
-use Charcoal\App\Kernel\Container\AppAwareContainer;
 use Charcoal\App\Kernel\Orm\Db\AbstractOrmTable;
 use Charcoal\App\Kernel\Orm\Db\DbAwareTableEnum;
 use Charcoal\App\Kernel\Orm\Entity\StorageHooksInterface;
@@ -17,42 +15,36 @@ use Charcoal\Cipher\Cipher;
 use Charcoal\Database\ORM\Exception\OrmException;
 use Charcoal\Database\ORM\Exception\OrmModelNotFoundException;
 use Charcoal\Database\Queries\LockFlag;
+use Charcoal\OOP\Traits\ControlledSerializableTrait;
 
 /**
  * Class AbstractOrmRepository
  * @package Charcoal\App\Kernel\Orm
  */
-abstract class AbstractOrmRepository extends AppAwareContainer
+abstract class AbstractOrmRepository
 {
     public readonly AbstractOrmTable $table;
-    public readonly AbstractOrmModule $module;
 
     protected int $entityCacheTtl = 86400;
     protected int $entityChecksumIterations = 0x64;
 
+    use ControlledSerializableTrait;
+
     protected function __construct(
-        private string           $moduleClass,
-        private DbAwareTableEnum $dbTableEnum,
-        ?\Closure                $declareChildren
+        public readonly AbstractOrmModule $module,
+        private DbAwareTableEnum          $dbTableEnum,
     )
     {
-        parent::__construct($declareChildren);
     }
 
     /**
-     * @param AppKernel $app
+     * AbstractOrmModule parent invokes this method when bootstrapped itself
      * @return void
      */
-    public function bootstrap(AppKernel $app): void
+    public function resolveDatabaseTable(): void
     {
-        parent::bootstrap($app);
-        /** @var AbstractOrmModule $module */
-        $module = $this->app->getModule($this->moduleClass);
-        $this->module = $module;
-        $this->table = $this->app->databases->orm->resolve($this->dbTableEnum);
+        $this->table = $this->module->app->databases->orm->resolve($this->dbTableEnum);
     }
-
-    abstract protected function createEntityId(): string;
 
     /**
      * @return Cipher
@@ -68,12 +60,10 @@ abstract class AbstractOrmRepository extends AppAwareContainer
      */
     protected function collectSerializableData(): array
     {
-        $data = parent::collectSerializableData();
         $data["table"] = null;
-        $data["module"] = null;
+        $data["module"] = $this->module;
         $data["entityCacheTtl"] = $this->entityCacheTtl;
         $data["entityChecksumIterations"] = $this->entityChecksumIterations;
-        $data["moduleClass"] = $this->moduleClass;
         $data["dbTableEnum"] = $this->dbTableEnum;
         return $data;
     }
@@ -87,9 +77,9 @@ abstract class AbstractOrmRepository extends AppAwareContainer
     {
         $this->entityChecksumIterations = $data["entityChecksumIterations"];
         $this->entityCacheTtl = $data["entityCacheTtl"];
-        $this->moduleClass = $data["moduleClass"];
         $this->dbTableEnum = $data["dbTableEnum"];
-        parent::onUnserialize($data);
+        /** @noinspection PhpSecondWriteToReadonlyPropertyInspection */
+        $this->module = $data["module"];
     }
 
     /**

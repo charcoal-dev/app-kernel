@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Container;
 
 use Charcoal\App\Kernel\AppKernel;
+use Charcoal\OOP\Traits\ControlledSerializableTrait;
 
 /**
  * Class AppAware
@@ -11,24 +12,17 @@ use Charcoal\App\Kernel\AppKernel;
  */
 abstract class AppAware
 {
+    use ControlledSerializableTrait;
+
     public readonly AppKernel $app;
 
+    /**
+     * AppAware implementers receive instance of AppKernel via this method
+     * @param AppKernel $app
+     * @return void
+     */
     public function bootstrap(AppKernel $app): void
     {
         $this->app = $app;
-    }
-
-    abstract protected function collectSerializableData(): array;
-
-    abstract protected function onUnserialize(array $data): void;
-
-    final public function __serialize(): array
-    {
-        return $this->collectSerializableData();
-    }
-
-    final public function __unserialize(array $data): void
-    {
-        $this->onUnserialize($data);
     }
 }
