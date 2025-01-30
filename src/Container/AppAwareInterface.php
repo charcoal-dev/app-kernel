@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Container;
 
-use Charcoal\App\Kernel\AppKernel;
+use Charcoal\App\Kernel\AppBuild;
 
 /**
  * Interface AppAwareInterface
@@ -11,5 +11,5 @@ use Charcoal\App\Kernel\AppKernel;
  */
 interface AppAwareInterface
 {
-    public function bootstrap(AppKernel $app): void;
+    public function bootstrap(AppBuild $app): void;
 }

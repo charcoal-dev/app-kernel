@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Container;
 
-use Charcoal\App\Kernel\AppKernel;
+use Charcoal\App\Kernel\AppBuild;
 use Charcoal\OOP\Traits\ControlledSerializableTrait;
 
 /**
@@ -14,14 +14,14 @@ abstract class AppAware
 {
     use ControlledSerializableTrait;
 
-    public readonly AppKernel $app;
+    public readonly AppBuild $app;
 
     /**
-     * AppAware implementers receive instance of AppKernel via this method
-     * @param AppKernel $app
+     * AppAware implementers receive instance of AppBuild via this method
+     * @param AppBuild $app
      * @return void
      */
-    public function bootstrap(AppKernel $app): void
+    public function bootstrap(AppBuild $app): void
     {
         $this->app = $app;
     }

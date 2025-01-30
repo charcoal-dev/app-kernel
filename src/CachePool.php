@@ -16,7 +16,7 @@ use Charcoal\OOP\Traits\NoDumpTrait;
  */
 class CachePool extends AbstractDIResolver implements AppAwareInterface
 {
-    protected readonly AppKernel $app;
+    protected readonly AppBuild $app;
 
     use NoDumpTrait;
 
@@ -25,7 +25,7 @@ class CachePool extends AbstractDIResolver implements AppAwareInterface
         parent::__construct(Cache::class);
     }
 
-    public function bootstrap(AppKernel $app): void
+    public function bootstrap(AppBuild $app): void
     {
         $this->app = $app;
     }

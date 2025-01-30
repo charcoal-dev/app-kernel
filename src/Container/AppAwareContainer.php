@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Container;
 
-use Charcoal\App\Kernel\AppKernel;
+use Charcoal\App\Kernel\AppBuild;
 
 /**
  * Class AppAwareContainer
@@ -47,10 +47,10 @@ abstract class AppAwareContainer extends AppAware
 
     /**
      * Bootstrap itself and all AppAware children
-     * @param AppKernel $app
+     * @param AppBuild $app
      * @return void
      */
-    final public function bootstrap(AppKernel $app): void
+    final public function bootstrap(AppBuild $app): void
     {
         parent::bootstrap($app);
         foreach ($this->containerChildrenMap as $childPropertyKey) {

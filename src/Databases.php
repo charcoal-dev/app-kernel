@@ -16,7 +16,7 @@ use Charcoal\OOP\Traits\NoDumpTrait;
  */
 class Databases extends AbstractDIResolver implements AppAwareInterface
 {
-    protected readonly AppKernel $app;
+    protected readonly AppBuild $app;
     public readonly DatabaseTableRegistry $orm;
 
     use NoDumpTrait;
@@ -31,10 +31,10 @@ class Databases extends AbstractDIResolver implements AppAwareInterface
     }
 
     /**
-     * @param AppKernel $app
+     * @param AppBuild $app
      * @return void
      */
-    public function bootstrap(AppKernel $app): void
+    public function bootstrap(AppBuild $app): void
     {
         $this->app = $app;
     }

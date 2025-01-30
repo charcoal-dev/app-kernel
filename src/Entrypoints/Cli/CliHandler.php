@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Entrypoints\Cli;
 
-use Charcoal\App\Kernel\AppKernel;
+use Charcoal\App\Kernel\AppBuild;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
 use Charcoal\CLI\Banners;
 use Charcoal\CLI\CLI;
@@ -24,9 +24,9 @@ class CliHandler extends CLI
     use NotSerializableTrait;
 
     public function __construct(
-        public readonly AppKernel $app,
-        Directory                 $scriptsDirectory,
-        array                     $args
+        public readonly AppBuild $app,
+        Directory                $scriptsDirectory,
+        array                    $args
     )
     {
         parent::__construct($scriptsDirectory, $args);

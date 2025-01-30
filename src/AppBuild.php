@@ -17,7 +17,7 @@ use Charcoal\Filesystem\Directory;
  * Class AppKernel
  * @package Charcoal\App\Kernel
  */
-abstract class AppKernel extends AppBuildCache
+abstract class AppBuild extends AppBuildCache
 {
     public readonly BuildMetadata $build;
     public readonly CachePool $cache;

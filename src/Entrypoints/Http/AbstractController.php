@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Entrypoints\Http;
 
-use Charcoal\App\Kernel\AppKernel;
+use Charcoal\App\Kernel\AppBuild;
 
 abstract class AbstractController extends \Charcoal\HTTP\Router\Controllers\AbstractController
 {
-    public readonly AppKernel $app;
+    public readonly AppBuild $app;
     public readonly RemoteClient $userClient;
 
     /**
@@ -20,11 +20,11 @@ abstract class AbstractController extends \Charcoal\HTTP\Router\Controllers\Abst
     }
 
     /**
-     * @param AppKernel $app
+     * @param AppBuild $app
      * @param string|null $remoteClientClass
      * @return void
      */
-    private function bootstrapController(AppKernel $app, ?string $remoteClientClass = RemoteClient::class): void
+    private function bootstrapController(AppBuild $app, ?string $remoteClientClass = RemoteClient::class): void
     {
         $this->app = $app;
         $this->userClient = new $remoteClientClass($this->request);

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Build;
 
-use Charcoal\App\Kernel\AppKernel;
+use Charcoal\App\Kernel\AppBuild;
 use Charcoal\Filesystem\Directory;
 
 /**
@@ -36,11 +36,11 @@ abstract class AppBuildCache
     }
 
     /**
-     * @param AppKernel $app
+     * @param AppBuild $app
      * @param Directory $directory
      * @return void
      */
-    public static function CreateBuild(AppKernel $app, Directory $directory): void
+    public static function CreateBuild(AppBuild $app, Directory $directory): void
     {
         if (!file_put_contents($directory->pathToChild("charcoalAppBuild_" . $app->build->enum->getName() . ".bin", false), serialize($app))) {
             throw new \LogicException("Failed to create charcoal application build");
