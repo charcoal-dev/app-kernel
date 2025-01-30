@@ -23,7 +23,6 @@ interface ChecksumAwareEntityInterface
      * @param int $iterations
      * @return Bytes20
      * @throws ChecksumComputeException
-     * @throws ChecksumMismatchException
      */
     public function calculateChecksum(Cipher $cipher, int $iterations): Bytes20;
 
@@ -32,7 +31,6 @@ interface ChecksumAwareEntityInterface
      * @param int $iterations
      * @return bool
      * @throws ChecksumComputeException
-     * @throws ChecksumMismatchException
      */
     public function verifyChecksum(Cipher $cipher, int $iterations): bool;
 

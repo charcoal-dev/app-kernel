@@ -38,6 +38,13 @@ abstract class AbstractOrmRepository
     }
 
     /**
+     * Returns a unique ID for entity that is used key for storing in runtime memory and cache
+     * @param AbstractOrmEntity|array $entity
+     * @return string
+     */
+    abstract public function getEntityId(AbstractOrmEntity|array $entity): string;
+
+    /**
      * AbstractOrmModule parent invokes this method when bootstrapped itself
      * @return void
      */
@@ -80,6 +87,16 @@ abstract class AbstractOrmRepository
         $this->dbTableEnum = $data["dbTableEnum"];
         /** @noinspection PhpSecondWriteToReadonlyPropertyInspection */
         $this->module = $data["module"];
+    }
+
+    /**
+     * @param AbstractOrmEntity $entity
+     * @return void
+     * @throws CacheException
+     */
+    protected function cacheDeleteEntity(AbstractOrmEntity $entity): void
+    {
+        $this->module->entities->deleteFromCache($this->getEntityId($entity));
     }
 
     /**

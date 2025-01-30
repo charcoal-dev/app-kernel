@@ -16,14 +16,12 @@ interface ChecksumAwareRepositoryInterface
     /**
      * @return Bytes20
      * @throws ChecksumComputeException
-     * @throws ChecksumMismatchException
      */
     public function calculateChecksum(): Bytes20;
 
     /**
      * @return bool
      * @throws ChecksumComputeException
-     * @throws ChecksumMismatchException
      */
     public function verifyChecksum(): bool;
 
