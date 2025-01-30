@@ -7,13 +7,10 @@ use Charcoal\App\Kernel\Build\AppBuildCache;
 use Charcoal\App\Kernel\Build\AppBuildEnum;
 use Charcoal\App\Kernel\Build\AppBuildPartial;
 use Charcoal\App\Kernel\Build\BuildMetadata;
-use Charcoal\App\Kernel\Config\CacheDriver;
 use Charcoal\App\Kernel\Container\AppAware;
 use Charcoal\App\Kernel\Errors\ErrorHandler;
 use Charcoal\App\Kernel\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Polyfill\NullErrorLog;
-use Charcoal\Cache\Cache;
-use Charcoal\Cache\CacheDriverInterface;
 use Charcoal\Filesystem\Directory;
 
 /**
@@ -23,7 +20,7 @@ use Charcoal\Filesystem\Directory;
 abstract class AppKernel extends AppBuildCache
 {
     public readonly BuildMetadata $build;
-    public readonly Cache $cache;
+    public readonly CachePool $cache;
     public readonly Config $config;
     public readonly Databases $databases;
     public readonly Directories $directories;
@@ -35,6 +32,7 @@ abstract class AppKernel extends AppBuildCache
         AppBuildEnum         $build,
         Directory            $rootDirectory,
         ErrorLoggerInterface $errorLog = new NullErrorLog(),
+        string               $cachePoolClass = CachePool::class,
         string               $directoriesClass = Directories::class,
         string               $eventsClass = Events::class,
         string               $databasesClass = Databases::class,
@@ -50,12 +48,7 @@ abstract class AppKernel extends AppBuildCache
 
         // Initialize rest of components...
         $this->databases = new $databasesClass();
-        $this->cache = new Cache(
-            CacheDriver::CreateClient($this->config->cache),
-            useChecksumsByDefault: false,
-            nullIfExpired: true,
-            deleteIfExpired: true
-        );
+        $this->cache = new $cachePoolClass();
 
         // Get plan for building modules and services...
         $modules = $build->getBuildPlan(new $appBuildPartialClass(
@@ -108,11 +101,6 @@ abstract class AppKernel extends AppBuildCache
         // PHP default timezone configuration,
         // Lifecycle entries require timestamps to function properly:
         date_default_timezone_set($this->config->timezone->getTimezoneId());
-
-        // Cache Events
-        $this->cache->events->onConnected()->listen(function (CacheDriverInterface $cacheDriver) {
-            $this->events->onCacheConnection()->trigger([$cacheDriver]);
-        });
 
         // Initialize Lifecycle
         $this->lifecycle = new Lifecycle();

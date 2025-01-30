@@ -17,10 +17,10 @@ enum CacheDriver: string
     case REDIS = "redis";
 
     /**
-     * @param CacheConfig $config
+     * @param CacheServerConfig $config
      * @return CacheDriverInterface
      */
-    public static function CreateClient(CacheConfig $config): CacheDriverInterface
+    public static function CreateClient(CacheServerConfig $config): CacheDriverInterface
     {
         return match ($config->driver) {
             self::NULL => new NullCache(),
