@@ -20,8 +20,12 @@ abstract class AbstractOrmModule extends AppAwareContainer
 
     /**
      * @param AppBuildPartial $app
+     * @param CacheStoreEnum|null $cacheStoreEnum
      */
-    final public function __construct(AppBuildPartial $app)
+    final public function __construct(
+        AppBuildPartial                  $app,
+        private readonly ?CacheStoreEnum $cacheStoreEnum
+    )
     {
         $this->declareDatabaseTables($app->databases->orm);
         $this->declareChildren($app);
@@ -35,7 +39,18 @@ abstract class AbstractOrmModule extends AppAwareContainer
 
     abstract public function getCipher(AbstractOrmRepository $resolveFor): ?Cipher;
 
-    abstract public function getCacheStore(): ?Cache;
+    /**
+     * Gets Cache store this ORM module
+     * @return Cache|null
+     */
+    public function getCacheStore(): ?Cache
+    {
+        if (!$this->cacheStoreEnum) {
+            return null;
+        }
+
+        return $this->app->cache->get($this->cacheStoreEnum->getServerKey());
+    }
 
     /**
      * Automatically include children instances of AbstractOrmRepository
@@ -75,6 +90,7 @@ abstract class AbstractOrmModule extends AppAwareContainer
     {
         $data = parent::collectSerializableData();
         $data["entities"] = null;
+        $data["cacheStoreEnum"] = $this->cacheStoreEnum;
         return $data;
     }
 
@@ -87,5 +103,7 @@ abstract class AbstractOrmModule extends AppAwareContainer
         parent::onUnserialize($data);
         /** @noinspection PhpSecondWriteToReadonlyPropertyInspection Property is undefined here */
         $this->entities = new EntityRuntimeCache($this);
+        /** @noinspection PhpSecondWriteToReadonlyPropertyInspection Property is undefined here */
+        $this->cacheStoreEnum = $data["cacheStoreEnum"];
     }
 }
