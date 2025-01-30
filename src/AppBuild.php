@@ -14,7 +14,7 @@ use Charcoal\App\Kernel\Polyfill\NullErrorLog;
 use Charcoal\Filesystem\Directory;
 
 /**
- * Class AppKernel
+ * Class AppBuild
  * @package Charcoal\App\Kernel
  */
 abstract class AppBuild extends AppBuildCache
