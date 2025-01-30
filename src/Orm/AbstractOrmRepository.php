@@ -96,7 +96,7 @@ abstract class AbstractOrmRepository
      */
     protected function cacheDeleteEntity(AbstractOrmEntity $entity): void
     {
-        $this->module->entities->deleteFromCache($this->getEntityId($entity));
+        $this->module->memoryCache->deleteFromCache($this->getEntityId($entity));
     }
 
     /**
@@ -152,16 +152,16 @@ abstract class AbstractOrmRepository
         int    $cacheTtl = 0,
     ): AbstractOrmEntity
     {
-        $entity = $this->module->entities->getFromMemory($entityId);
+        $entity = $this->module->memoryCache->getFromMemory($entityId);
         if ($entity) {
             return $this->returnEntityObject($entity, EntitySource::RUNTIME, false);
         }
 
         if ($checkInCache) {
             try {
-                $entity = $this->module->entities->getFromCache($entityId);
+                $entity = $this->module->memoryCache->getFromCache($entityId);
                 if ($entity) {
-                    $this->module->entities->storeInMemory($entityId, $entity); // Runtime Memory Set
+                    $this->module->memoryCache->storeInMemory($entityId, $entity); // Runtime Memory Set
                     return $this->returnEntityObject($entity, EntitySource::CACHE, false);
                 }
             } catch (CacheException $e) {
@@ -173,12 +173,12 @@ abstract class AbstractOrmRepository
         }
 
         $entity = $this->getFromDbTable($dbWhereStmt, $dbQueryData);
-        $this->module->entities->storeInMemory($entityId, $entity); // Runtime Memory Set
+        $this->module->memoryCache->storeInMemory($entityId, $entity); // Runtime Memory Set
 
         if ($storeInCache) {
             try {
                 $cacheTtl = $cacheTtl > 0 ? $cacheTtl : $this->entityCacheTtl;
-                $this->module->entities->storeInCache($entityId, $entity, $cacheTtl > 0 ? $cacheTtl : null);
+                $this->module->memoryCache->storeInCache($entityId, $entity, $cacheTtl > 0 ? $cacheTtl : null);
                 $storedInCache = true;
             } catch (CacheException $e) {
                 trigger_error(static::class . ' caught CacheException', E_USER_WARNING);

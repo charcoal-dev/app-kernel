@@ -23,26 +23,20 @@ abstract class AppAwareContainer extends AppAware
         $reflect = new \ReflectionClass($this);
         foreach ($reflect->getProperties() as $property) {
             if ($property->isInitialized($this)) {
-                $this->inspectIncludeChild($property->getName(), $property->getValue($this));
+                if ($this->inspectIncludeChild($property->getValue($this))) {
+                    $this->containerChildrenMap[] = $property->getName();
+                }
             }
         }
     }
 
     /**
-     * Only AppAware instances are automatically included, extend this method to define more
-     * @param string $property
      * @param mixed $value
-     * @return void
+     * @return bool
      */
-    protected function inspectIncludeChild(string $property, mixed $value): void
+    protected function inspectIncludeChild(mixed $value): bool
     {
-        if ($property === "containerChildrenMap") {
-            return;
-        }
-
-        if ($value instanceof AppAware) {
-            $this->containerChildrenMap[] = $property;
-        }
+        return $value instanceof AppAware;
     }
 
     /**
@@ -54,7 +48,7 @@ abstract class AppAwareContainer extends AppAware
     {
         parent::bootstrap($app);
         foreach ($this->containerChildrenMap as $childPropertyKey) {
-            if(isset($this->$childPropertyKey)) {
+            if (isset($this->$childPropertyKey)) {
                 $this->bootstrapChildren($childPropertyKey);
             }
         }
