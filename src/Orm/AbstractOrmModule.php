@@ -7,6 +7,7 @@ use Charcoal\App\Kernel\Build\AppBuildPartial;
 use Charcoal\App\Kernel\Module\CacheAwareModule;
 use Charcoal\App\Kernel\Orm\Db\DatabaseTableRegistry;
 use Charcoal\Cipher\Cipher;
+use Charcoal\Semaphore\AbstractSemaphore;
 
 /**
  * Class AbstractOrmModule
@@ -58,5 +59,14 @@ abstract class AbstractOrmModule extends CacheAwareModule
         }
 
         parent::bootstrapChildren($childPropertyKey);
+    }
+
+    /**
+     * Override method below to provide module with AbstractSemaphore channel
+     * @return AbstractSemaphore
+     */
+    public function getSemaphore(): AbstractSemaphore
+    {
+        throw new \RuntimeException(static::class . ' does not have semaphore channel linked');
     }
 }

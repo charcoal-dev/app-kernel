@@ -25,7 +25,8 @@
     "charcoal-dev/filesystem": "^0.1.0",
     "charcoal-dev/http-router": "^0.1.0",
     "charcoal-dev/cipher": "^0.1.0",
-    "charcoal-dev/oop-base": "^0.1.3"
+    "charcoal-dev/oop-base": "^0.1.3",
+    "charcoal-dev/semaphore": "^0.1.0"
   },
   "autoload": {
     "psr-4": {

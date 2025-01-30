@@ -107,7 +107,7 @@ abstract class AbstractOrmRepository
      * @throws EntityNotFoundException
      * @throws EntityOrmException
      */
-    protected function getFromDbTable(string $whereStmt, array $queryData = [], ?LockFlag $lock = null): AbstractOrmEntity
+    protected function getFromDb(string $whereStmt, array $queryData = [], ?LockFlag $lock = null): AbstractOrmEntity
     {
         try {
             /** @var AbstractOrmEntity */
@@ -127,9 +127,9 @@ abstract class AbstractOrmRepository
      * @throws EntityNotFoundException
      * @throws EntityOrmException
      */
-    protected function getFromDb(string $column, int|string $value, ?LockFlag $lock = null): AbstractOrmEntity
+    protected function getFromDbColumn(string $column, int|string $value, ?LockFlag $lock = null): AbstractOrmEntity
     {
-        return $this->getFromDbTable("`$column`=?", [$value], $lock);
+        return $this->getFromDb("`$column`=?", [$value], $lock);
     }
 
     /**
@@ -154,7 +154,7 @@ abstract class AbstractOrmRepository
     {
         $entity = $this->module->memoryCache->getFromMemory($entityId);
         if ($entity) {
-            return $this->returnEntityObject($entity, EntitySource::RUNTIME, false);
+            return $this->returnEntityObject($entity, EntitySource::RUNTIME);
         }
 
         if ($checkInCache) {
@@ -162,7 +162,7 @@ abstract class AbstractOrmRepository
                 $entity = $this->module->memoryCache->getFromCache($entityId);
                 if ($entity) {
                     $this->module->memoryCache->storeInMemory($entityId, $entity); // Runtime Memory Set
-                    return $this->returnEntityObject($entity, EntitySource::CACHE, false);
+                    return $this->returnEntityObject($entity, EntitySource::CACHE);
                 }
             } catch (CacheException $e) {
                 trigger_error(static::class . ' caught CacheException', E_USER_WARNING);
@@ -172,7 +172,7 @@ abstract class AbstractOrmRepository
             }
         }
 
-        $entity = $this->getFromDbTable($dbWhereStmt, $dbQueryData);
+        $entity = $this->getFromDb($dbWhereStmt, $dbQueryData);
         $this->module->memoryCache->storeInMemory($entityId, $entity); // Runtime Memory Set
 
         if ($storeInCache) {
@@ -200,7 +200,7 @@ abstract class AbstractOrmRepository
     private function returnEntityObject(
         AbstractOrmEntity $entity,
         EntitySource      $source,
-        bool              $storedInCache,
+        bool              $storedInCache = false
     ): AbstractOrmEntity
     {
         // Invoke StorageHooksInterface
