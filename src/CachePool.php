@@ -25,16 +25,32 @@ class CachePool extends AbstractDIResolver implements AppAwareInterface
         parent::__construct(Cache::class);
     }
 
+    /**
+     * Bootstrap this service
+     * @param AppBuild $app
+     * @return void
+     */
     public function bootstrap(AppBuild $app): void
     {
         $this->app = $app;
     }
 
+    /**
+     * Resolve or get a resolved Cache instance
+     * @param string $key
+     * @return Cache
+     */
     public function get(string $key): Cache
     {
         return $this->getOrResolve($key);
     }
 
+    /**
+     * Resolve instance to Cache and sets up necessary events
+     * @param string $key
+     * @param array $args
+     * @return Cache
+     */
     protected function resolve(string $key, array $args): Cache
     {
         $cacheStore = new Cache(
@@ -51,11 +67,20 @@ class CachePool extends AbstractDIResolver implements AppAwareInterface
         return $cacheStore;
     }
 
+    /**
+     * Nothing is serialized
+     * @return array
+     */
     public function __serialize(): array
     {
         return [];
     }
 
+    /**
+     * Removes all resolved instances to Cache
+     * @param array $data
+     * @return void
+     */
     public function __unserialize(array $data): void
     {
         parent::__unserialize(["instanceOf" => $this->instanceOf, "instances" => []]);
