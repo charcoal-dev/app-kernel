@@ -4,33 +4,25 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm;
 
 use Charcoal\App\Kernel\Build\AppBuildPartial;
-use Charcoal\App\Kernel\Container\AppAwareContainer;
+use Charcoal\App\Kernel\Module\CacheAwareModule;
 use Charcoal\App\Kernel\Orm\Db\DatabaseTableRegistry;
-use Charcoal\App\Kernel\Orm\Module\EntityRuntimeCache;
-use Charcoal\Cache\Cache;
 use Charcoal\Cipher\Cipher;
 
 /**
  * Class AbstractOrmModule
  * @package Charcoal\App\Kernel\Orm
  */
-abstract class AbstractOrmModule extends AppAwareContainer
+abstract class AbstractOrmModule extends CacheAwareModule
 {
-    public readonly EntityRuntimeCache $entities;
-
     /**
      * @param AppBuildPartial $app
      * @param CacheStoreEnum|null $cacheStoreEnum
      */
-    final public function __construct(
-        AppBuildPartial                  $app,
-        private readonly ?CacheStoreEnum $cacheStoreEnum
-    )
+    final public function __construct(AppBuildPartial $app, ?CacheStoreEnum $cacheStoreEnum)
     {
         $this->declareDatabaseTables($app->databases->orm);
         $this->declareChildren($app);
-        $this->entities = new EntityRuntimeCache($this);
-        parent::__construct();
+        parent::__construct($cacheStoreEnum);
     }
 
     abstract protected function declareChildren(AppBuildPartial $app): void;
@@ -40,36 +32,21 @@ abstract class AbstractOrmModule extends AppAwareContainer
     abstract public function getCipher(AbstractOrmRepository $resolveFor): ?Cipher;
 
     /**
-     * Gets Cache store this ORM module
-     * @return Cache|null
-     */
-    public function getCacheStore(): ?Cache
-    {
-        if (!$this->cacheStoreEnum) {
-            return null;
-        }
-
-        return $this->app->cache->get($this->cacheStoreEnum->getServerKey());
-    }
-
-    /**
-     * Automatically include children instances of AbstractOrmRepository
-     * @param string $property
+     * Modify parents method to provide automatic support for AbstractOrmRepository
      * @param mixed $value
-     * @return void
+     * @return bool
      */
-    protected function inspectIncludeChild(string $property, mixed $value): void
+    protected function inspectIncludeChild(mixed $value): bool
     {
         if ($value instanceof AbstractOrmRepository) {
-            $this->containerChildrenMap[] = $property;
-            return;
+            return true;
         }
 
-        parent::inspectIncludeChild($property, $value);
+        return parent::inspectIncludeChild($value);
     }
 
     /**
-     * Automatically bootstrap children instances of AbstractOrmRepository
+     * Modify parents method to provide automatic support for AbstractOrmRepository
      * @param string $childPropertyKey
      * @return void
      */
@@ -81,29 +58,5 @@ abstract class AbstractOrmModule extends AppAwareContainer
         }
 
         parent::bootstrapChildren($childPropertyKey);
-    }
-
-    /**
-     * @return array
-     */
-    protected function collectSerializableData(): array
-    {
-        $data = parent::collectSerializableData();
-        $data["entities"] = null;
-        $data["cacheStoreEnum"] = $this->cacheStoreEnum;
-        return $data;
-    }
-
-    /**
-     * @param array $data
-     * @return void
-     */
-    protected function onUnserialize(array $data): void
-    {
-        parent::onUnserialize($data);
-        /** @noinspection PhpSecondWriteToReadonlyPropertyInspection Property is undefined here */
-        $this->entities = new EntityRuntimeCache($this);
-        /** @noinspection PhpSecondWriteToReadonlyPropertyInspection Property is undefined here */
-        $this->cacheStoreEnum = $data["cacheStoreEnum"];
     }
 }
