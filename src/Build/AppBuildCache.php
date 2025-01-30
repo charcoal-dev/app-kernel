@@ -12,8 +12,6 @@ use Charcoal\Filesystem\Directory;
  */
 abstract class AppBuildCache
 {
-    protected readonly BuildMetadata $build;
-
     /**
      * @param Directory $rootDirectory
      * @param AppBuildEnum $build
