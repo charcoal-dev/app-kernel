@@ -5,6 +5,7 @@ namespace Charcoal\App\Kernel\Orm;
 
 use Charcoal\App\Kernel\Orm\Db\AbstractOrmTable;
 use Charcoal\App\Kernel\Orm\Db\DbAwareTableEnum;
+use Charcoal\App\Kernel\Orm\Entity\CacheableEntityInterface;
 use Charcoal\App\Kernel\Orm\Entity\StorageHooksInterface;
 use Charcoal\App\Kernel\Orm\Exception\EntityNotFoundException;
 use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
@@ -176,9 +177,13 @@ abstract class AbstractOrmRepository
         $this->module->memoryCache->storeInMemory($entityId, $entity); // Runtime Memory Set
 
         if ($storeInCache) {
+            if (!$entity instanceof CacheableEntityInterface) {
+                throw new \LogicException(static::class . ' requires CacheableEntityInterface');
+            }
+
             try {
                 $cacheTtl = $cacheTtl > 0 ? $cacheTtl : $this->entityCacheTtl;
-                $this->module->memoryCache->storeInCache($entityId, $entity, $cacheTtl > 0 ? $cacheTtl : null);
+                $this->module->memoryCache->storeInCache($entityId, $entity->returnCacheableObject(), $cacheTtl > 0 ? $cacheTtl : null);
                 $storedInCache = true;
             } catch (CacheException $e) {
                 trigger_error(static::class . ' caught CacheException', E_USER_WARNING);
