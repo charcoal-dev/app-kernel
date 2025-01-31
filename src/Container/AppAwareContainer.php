@@ -89,4 +89,12 @@ abstract class AppAwareContainer extends AppAware
             $this->$child = $data[$child];
         }
     }
+
+    /**
+     * @return array|string[]
+     */
+    public function getContainerChildrenMap(): array
+    {
+        return $this->containerChildrenMap;
+    }
 }
