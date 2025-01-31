@@ -85,6 +85,6 @@ class CachePool extends AbstractDIResolver implements AppAwareInterface
      */
     public function __unserialize(array $data): void
     {
-        parent::__unserialize(["instanceOf" => $this->instanceOf, "instances" => []]);
+        parent::__unserialize(["instanceOf" => $data["instanceOf"], "instances" => []]);
     }
 }
