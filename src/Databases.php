@@ -61,7 +61,7 @@ class Databases extends AbstractDIResolver implements AppAwareInterface
     public function __unserialize(array $data): void
     {
         $this->orm = $data["orm"];
-        parent::__unserialize(["instanceOf" => $this->instanceOf, "instances" => []]);
+        parent::__unserialize(["instanceOf" => $data["instanceOf"], "instances" => []]);
     }
 
     /**
