@@ -5,7 +5,11 @@ namespace Charcoal\App\Kernel\Entrypoints\Http;
 
 use Charcoal\App\Kernel\AppBuild;
 
-abstract class AbstractController extends \Charcoal\HTTP\Router\Controllers\AbstractController
+/**
+ * Class AppAwareController
+ * @package Charcoal\App\Kernel\Entrypoints\Http
+ */
+abstract class AbstractEndpoint extends \Charcoal\HTTP\Router\Controllers\AbstractController
 {
     public readonly AppBuild $app;
     public readonly RemoteClient $userClient;
@@ -16,7 +20,7 @@ abstract class AbstractController extends \Charcoal\HTTP\Router\Controllers\Abst
      */
     protected function onConstruct(array $args): void
     {
-        $this->bootstrapController($args[0], $args[1] ?? null);
+        $this->bootstrapController($args[0], $args[1] ?? RemoteClient::class);
     }
 
     /**

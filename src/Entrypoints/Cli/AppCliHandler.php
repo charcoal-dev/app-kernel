@@ -14,10 +14,10 @@ use Charcoal\OOP\Traits\NotSerializableTrait;
 use Composer\InstalledVersions;
 
 /**
- * Class CliHandler
+ * Class AppCliHandler
  * @package Charcoal\App\Kernel\Entrypoints\Cli
  */
-class CliHandler extends CLI
+class AppCliHandler extends CLI
 {
     public readonly StdoutPrinter $stdout;
 
@@ -47,7 +47,7 @@ class CliHandler extends CLI
                 $this->printAppHeaders();
             }
 
-            if ($script->config->displayLoadedClassname) {
+            if ($script->config->displayClassname) {
                 $cli->inline(sprintf("CLI script {green}{invert} %s {/} loaded", OOP::baseClassName(get_class($script))));
                 $cli->repeatChar(".", 3, 100, true);
                 $cli->print("");

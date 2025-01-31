@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Entrypoints\Cli;
 
-use Charcoal\CLI\CLI;
 use Charcoal\OOP\OOP;
 
 /**
  * Class AbstractCliScript
  * @package Charcoal\App\Kernel\Entrypoints\Cli
+ * @property AppCliHandler $cli
  */
 abstract class AbstractCliScript extends \Charcoal\CLI\AbstractCliScript
 {
@@ -16,9 +16,9 @@ abstract class AbstractCliScript extends \Charcoal\CLI\AbstractCliScript
     public readonly string $scriptClassname;
 
     /**
-     * @param CLI $cli
+     * @param AppCliHandler $cli
      */
-    public function __construct(CLI $cli)
+    public function __construct(AppCliHandler $cli)
     {
         parent::__construct($cli);
         $this->config = new CliScriptConfig();
