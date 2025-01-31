@@ -75,7 +75,7 @@ class CachePool extends AbstractDIResolver implements AppAwareInterface
      */
     public function __serialize(): array
     {
-        return [];
+        return ["instanceOf" => $this->instanceOf];
     }
 
     /**
