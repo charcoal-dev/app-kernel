@@ -17,7 +17,7 @@ class ChecksumComputeException extends \Exception
     public function __construct(AbstractEntity $entity, \Throwable $previous)
     {
         $this->entityClass = get_class($entity);
-        $this->entityId = $entity->getIdentifier();
+        $this->entityId = $entity->getPrimaryId();
         parent::__construct(sprintf(
             'Caught "%s" while computing checksum for "%s" with ID "%s"',
             $previous::class,

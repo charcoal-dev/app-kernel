@@ -39,11 +39,32 @@ abstract class AbstractOrmRepository
     }
 
     /**
-     * Returns a unique ID for entity that is used key for storing in runtime memory and cache
-     * @param AbstractOrmEntity|array $entity
+     * @param AbstractOrmEntity $entity
      * @return string
      */
-    abstract public function getEntityId(AbstractOrmEntity|array $entity): string;
+    protected function getStorageKeyFor(AbstractOrmEntity $entity): string
+    {
+        $entityClass = $this->table->entityClass;
+        if (!$entity instanceof $entityClass) {
+            throw new \LogicException("Cannot suggest storage key for " . $entity::class . " from " . static::class);
+        }
+
+        $primaryId = $entity->getPrimaryId();
+        if (!$primaryId) {
+            throw new \RuntimeException("Cannot get storage key for " . $entity::class . " without primary ID");
+        }
+
+        return $this->getStorageKey($primaryId);
+    }
+
+    /**
+     * @param int|string $primaryId
+     * @return string
+     */
+    protected function getStorageKey(int|string $primaryId): string
+    {
+        return $this->table->name . ":" . $primaryId;
+    }
 
     /**
      * AbstractOrmModule parent invokes this method when bootstrapped itself
@@ -97,22 +118,29 @@ abstract class AbstractOrmRepository
      */
     protected function cacheDeleteEntity(AbstractOrmEntity $entity): void
     {
-        $this->module->memoryCache->deleteFromCache($this->getEntityId($entity));
+        $this->module->memoryCache->deleteFromCache($this->getStorageKeyFor($entity));
     }
 
     /**
      * @param string $whereStmt
      * @param array $queryData
      * @param LockFlag|null $lock
+     * @param bool $invokeStorageHooks
      * @return AbstractOrmEntity
      * @throws EntityNotFoundException
      * @throws EntityOrmException
      */
-    protected function getFromDb(string $whereStmt, array $queryData = [], ?LockFlag $lock = null): AbstractOrmEntity
+    protected function getFromDb(
+        string    $whereStmt,
+        array     $queryData = [],
+        ?LockFlag $lock = null,
+        bool      $invokeStorageHooks = true
+    ): AbstractOrmEntity
     {
         try {
-            /** @var AbstractOrmEntity */
-            return $this->table->queryFind($whereStmt, $queryData, limit: 1, lock: $lock)->getNext();
+            /** @var AbstractOrmEntity $entity */
+            $entity = $this->table->queryFind($whereStmt, $queryData, limit: 1, lock: $lock)->getNext();
+            return $invokeStorageHooks ? $this->invokeStorageHooks($entity, EntitySource::DATABASE) : $entity;
         } catch (OrmModelNotFoundException) {
             throw new EntityNotFoundException();
         } catch (OrmException $e) {
@@ -134,7 +162,7 @@ abstract class AbstractOrmRepository
     }
 
     /**
-     * @param string $entityId
+     * @param int|string $primaryId
      * @param bool $checkInCache
      * @param string $dbWhereStmt
      * @param array $dbQueryData
@@ -145,17 +173,18 @@ abstract class AbstractOrmRepository
      * @throws EntityOrmException
      */
     protected function getEntity(
-        string $entityId,
-        bool   $checkInCache,
-        string $dbWhereStmt,
-        array  $dbQueryData,
-        bool   $storeInCache,
-        int    $cacheTtl = 0,
+        int|string $primaryId,
+        bool       $checkInCache,
+        string     $dbWhereStmt,
+        array      $dbQueryData,
+        bool       $storeInCache,
+        int        $cacheTtl = 0,
     ): AbstractOrmEntity
     {
+        $entityId = $this->getStorageKey($primaryId);
         $entity = $this->module->memoryCache->getFromMemory($entityId);
         if ($entity) {
-            return $this->returnEntityObject($entity, EntitySource::RUNTIME);
+            return $this->invokeStorageHooks($entity, EntitySource::RUNTIME);
         }
 
         if ($checkInCache) {
@@ -163,7 +192,7 @@ abstract class AbstractOrmRepository
                 $entity = $this->module->memoryCache->getFromCache($entityId);
                 if ($entity) {
                     $this->module->memoryCache->storeInMemory($entityId, $entity); // Runtime Memory Set
-                    return $this->returnEntityObject($entity, EntitySource::CACHE);
+                    return $this->invokeStorageHooks($entity, EntitySource::CACHE);
                 }
             } catch (CacheException $e) {
                 trigger_error(static::class . ' caught CacheException', E_USER_WARNING);
@@ -173,7 +202,7 @@ abstract class AbstractOrmRepository
             }
         }
 
-        $entity = $this->getFromDb($dbWhereStmt, $dbQueryData);
+        $entity = $this->getFromDb($dbWhereStmt, $dbQueryData, invokeStorageHooks: false);
         $this->module->memoryCache->storeInMemory($entityId, $entity); // Runtime Memory Set
 
         if ($storeInCache) {
@@ -193,7 +222,7 @@ abstract class AbstractOrmRepository
             }
         }
 
-        return $this->returnEntityObject($entity, EntitySource::DATABASE, $storedInCache ?? false);
+        return $this->invokeStorageHooks($entity, EntitySource::DATABASE, $storedInCache ?? false);
     }
 
     /**
@@ -202,7 +231,7 @@ abstract class AbstractOrmRepository
      * @param bool $storedInCache
      * @return AbstractOrmEntity
      */
-    private function returnEntityObject(
+    private function invokeStorageHooks(
         AbstractOrmEntity $entity,
         EntitySource      $source,
         bool              $storedInCache = false

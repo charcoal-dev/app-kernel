@@ -17,7 +17,7 @@ class ChecksumMismatchException extends \Exception
     public function __construct(AbstractEntity $entity)
     {
         $this->entityClass = get_class($entity);
-        $this->entityId = $entity->getIdentifier();
+        $this->entityId = $entity->getPrimaryId();
         parent::__construct(
             sprintf('Checksum mismatch for "%s" with ID "%s"', $this->entityClass, $this->entityId ?? "[unknown]"), 0, null);
     }

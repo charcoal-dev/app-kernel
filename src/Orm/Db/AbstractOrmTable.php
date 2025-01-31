@@ -25,6 +25,11 @@ abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
         parent::__construct($this->enum->getTableName());
     }
 
+    public function suggestEntityId(int|string $uniqueId): string
+    {
+        return $this->name . ":" . $uniqueId;
+    }
+
     /**
      * @param array $row
      * @return AbstractOrmEntity|null

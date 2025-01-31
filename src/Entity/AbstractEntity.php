@@ -15,7 +15,7 @@ abstract class AbstractEntity
      * Returns identifier a UUID or UID or ID or identifier of sorts for instance
      * @return int|string|null
      */
-    abstract public function getIdentifier(): int|string|null;
+    abstract public function getPrimaryId(): int|string|null;
 
     /**
      * Forces all child classes to explicitly implement "collectSerializableData" method
