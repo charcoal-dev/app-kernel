@@ -47,11 +47,11 @@ class DbConfigs
     public function get(DatabaseEnum|string $key): DbCredentials
     {
         $key = $key instanceof DatabaseEnum ? $key->getDatabaseKey() : $key;
-        if (!isset($this->dbs[$key])) {
+        if (!isset($this->databases[$key])) {
             throw new \OutOfRangeException(sprintf('No database configured matching "%s" key', $key));
         }
 
-        return $this->dbs[$key];
+        return $this->databases[$key];
     }
 
     /**
