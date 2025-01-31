@@ -95,7 +95,6 @@ class ErrorHandler implements \IteratorAggregate
         $this->exceptionHandlerShowTrace = $data["exceptionHandlerShowTrace"];
         $this->errorLog = [];
         $this->errorLogCount = 0;
-        $this->setHandlers();
     }
 
     /**

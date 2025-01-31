@@ -173,6 +173,10 @@ abstract class AppBuild extends AppBuildCache
             $this->$property = $data[$property];
         }
 
+        if ($this->build->enum->setErrorHandlers()) {
+            $this->errors->setHandlers();
+        }
+
         $this->isReady("Restore app states successful");
     }
 }
