@@ -21,7 +21,13 @@ abstract class AbstractEndpoint extends \Charcoal\HTTP\Router\Controllers\Abstra
     protected function onConstruct(array $args): void
     {
         $this->bootstrapController($args[0], $args[1] ?? RemoteClient::class);
+        $this->resolveEntrypoint();
     }
+
+    /**
+     * @return never
+     */
+    abstract protected function resolveEntrypoint(): never;
 
     /**
      * @param AppBuild $app
