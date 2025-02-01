@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Entrypoints\Cli;
+namespace Charcoal\App\Kernel\Interfaces\Cli;
 
 /**
  * Class CliScriptConfig
- * @package Charcoal\App\Kernel\Entrypoints\Cli
+ * @package Charcoal\App\Kernel\Interfaces\Cli
  */
 class CliScriptConfig
 {

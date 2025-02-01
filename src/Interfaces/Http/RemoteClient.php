@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Entrypoints\Http;
+namespace Charcoal\App\Kernel\Interfaces\Http;
 
 use Charcoal\HTTP\Router\Controllers\Request;
 
 /**
  * Class RemoteClient
- * @package Charcoal\App\Kernel\Entrypoints\Http
+ * @package Charcoal\App\Kernel\Interfaces\Http
  */
 readonly class RemoteClient
 {

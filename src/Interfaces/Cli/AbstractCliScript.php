@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Entrypoints\Cli;
+namespace Charcoal\App\Kernel\Interfaces\Cli;
 
 use Charcoal\OOP\OOP;
 
 /**
  * Class AbstractCliScript
- * @package Charcoal\App\Kernel\Entrypoints\Cli
+ * @package Charcoal\App\Kernel\Interfaces\Cli
  * @property AppCliHandler $cli
  */
 abstract class AbstractCliScript extends \Charcoal\CLI\AbstractCliScript

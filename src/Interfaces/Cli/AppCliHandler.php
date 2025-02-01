@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Entrypoints\Cli;
+namespace Charcoal\App\Kernel\Interfaces\Cli;
 
 use Charcoal\App\Kernel\AppBuild;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
@@ -15,7 +15,7 @@ use Composer\InstalledVersions;
 
 /**
  * Class AppCliHandler
- * @package Charcoal\App\Kernel\Entrypoints\Cli
+ * @package Charcoal\App\Kernel\Interfaces\Cli
  */
 class AppCliHandler extends CLI
 {
