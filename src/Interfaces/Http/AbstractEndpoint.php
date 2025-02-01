@@ -27,10 +27,10 @@ abstract class AbstractEndpoint extends \Charcoal\HTTP\Router\Controllers\Abstra
     /**
      * Separate method for strict typing
      * @param AppBuild $app
-     * @param string|null $remoteClientClass
+     * @param string $remoteClientClass
      * @return void
      */
-    private function bootstrapController(AppBuild $app, ?string $remoteClientClass = RemoteClient::class): void
+    private function bootstrapController(AppBuild $app, string $remoteClientClass = RemoteClient::class): void
     {
         $this->app = $app;
         $this->userClient = new $remoteClientClass($this->request);
