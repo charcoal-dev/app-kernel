@@ -31,7 +31,7 @@ abstract class AbstractOrmRepository
 
     use ControlledSerializableTrait;
 
-    protected function __construct(
+    public function __construct(
         public readonly AbstractOrmModule $module,
         private DbAwareTableEnum          $dbTableEnum,
     )
