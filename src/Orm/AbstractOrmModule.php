@@ -19,7 +19,7 @@ abstract class AbstractOrmModule extends CacheAwareModule
      * @param AppBuildPartial $app
      * @param CacheStoreEnum|null $cacheStoreEnum
      */
-    final public function __construct(AppBuildPartial $app, ?CacheStoreEnum $cacheStoreEnum)
+    protected function __construct(AppBuildPartial $app, ?CacheStoreEnum $cacheStoreEnum)
     {
         $this->declareDatabaseTables($app->databases->orm);
         $this->declareChildren($app);
