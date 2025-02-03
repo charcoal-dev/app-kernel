@@ -3,10 +3,8 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm;
 
-use Charcoal\App\Kernel\Contracts\ObjectStoreEntityContract;
-use Charcoal\App\Kernel\Entity\AbstractEntity;
+use Charcoal\App\Kernel\Contracts\StorageHooksInvokerTrait;
 use Charcoal\App\Kernel\Entity\EntitySource;
-use Charcoal\App\Kernel\Entity\StorageHooksInterface;
 use Charcoal\App\Kernel\Orm\Db\AbstractOrmTable;
 use Charcoal\App\Kernel\Orm\Db\DbAwareTableEnum;
 use Charcoal\App\Kernel\Orm\Entity\CacheableEntityInterface;
@@ -32,6 +30,7 @@ abstract class AbstractOrmRepository
     protected int $entityChecksumIterations = 0x64;
 
     use ControlledSerializableTrait;
+    use StorageHooksInvokerTrait;
 
     public function __construct(
         public readonly AbstractOrmModule $module,
@@ -185,7 +184,7 @@ abstract class AbstractOrmRepository
     {
         $entityId = $this->getStorageKey($primaryId);
         $entity = $this->module->memoryCache->getFromMemory($entityId);
-        if ($entity) {
+        if ($entity instanceof AbstractOrmEntity) {
             return $this->invokeStorageHooks($entity, EntitySource::RUNTIME);
         }
 
@@ -225,35 +224,5 @@ abstract class AbstractOrmRepository
         }
 
         return $this->invokeStorageHooks($entity, EntitySource::DATABASE, $storedInCache ?? false);
-    }
-
-    /**
-     * @param AbstractEntity $entity
-     * @param EntitySource $source
-     * @param bool $storedInCache
-     * @return AbstractOrmEntity
-     */
-    protected function invokeStorageHooks(
-        AbstractEntity $entity,
-        EntitySource   $source,
-        bool           $storedInCache = false
-    ): AbstractEntity
-    {
-        // Invoke StorageHooksInterface
-        if ($entity instanceof StorageHooksInterface) {
-            $lifecycleEntry = $entity->onRetrieve($source);
-            if ($lifecycleEntry) {
-                $this->module->app->lifecycle->log($lifecycleEntry, $source->value, true);
-            }
-
-            if ($storedInCache) {
-                $lifecycleEntry = $entity->onCacheStore();
-                if ($lifecycleEntry) {
-                    $this->module->app->lifecycle->log($lifecycleEntry, null, true);
-                }
-            }
-        }
-
-        return $entity;
     }
 }
