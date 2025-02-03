@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm;
 
+use Charcoal\App\Kernel\Contracts\ObjectStoreEntityContract;
+use Charcoal\App\Kernel\Entity\AbstractEntity;
 use Charcoal\App\Kernel\Entity\EntitySource;
 use Charcoal\App\Kernel\Entity\StorageHooksInterface;
 use Charcoal\App\Kernel\Orm\Db\AbstractOrmTable;
@@ -226,15 +228,15 @@ abstract class AbstractOrmRepository
     }
 
     /**
-     * @param AbstractOrmEntity $entity
+     * @param AbstractEntity $entity
      * @param EntitySource $source
      * @param bool $storedInCache
      * @return AbstractOrmEntity
      */
     protected function invokeStorageHooks(
-        AbstractOrmEntity $entity,
-        EntitySource      $source,
-        bool              $storedInCache = false
+        AbstractEntity $entity,
+        EntitySource   $source,
+        bool           $storedInCache = false
     ): AbstractOrmEntity
     {
         // Invoke StorageHooksInterface
