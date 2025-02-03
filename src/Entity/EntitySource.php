@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Orm\Repository;
+namespace Charcoal\App\Kernel\Entity;
 
 /**
  * Class EntitySource
- * @package Charcoal\App\Kernel\Orm\Repository
+ * @package Charcoal\App\Kernel\Entity
  */
 enum EntitySource: string
 {

@@ -1,13 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Orm\Entity;
-
-use Charcoal\App\Kernel\Orm\Repository\EntitySource;
+namespace Charcoal\App\Kernel\Entity;
 
 /**
  * Interface StorageHooksInterface
- * @package Charcoal\App\Kernel\Orm\Entity
+ * @package Charcoal\App\Kernel\Entity
  */
 interface StorageHooksInterface
 {

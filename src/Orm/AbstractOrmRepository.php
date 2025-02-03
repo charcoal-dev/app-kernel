@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm;
 
+use Charcoal\App\Kernel\Entity\EntitySource;
+use Charcoal\App\Kernel\Entity\StorageHooksInterface;
 use Charcoal\App\Kernel\Orm\Db\AbstractOrmTable;
 use Charcoal\App\Kernel\Orm\Db\DbAwareTableEnum;
 use Charcoal\App\Kernel\Orm\Entity\CacheableEntityInterface;
-use Charcoal\App\Kernel\Orm\Entity\StorageHooksInterface;
 use Charcoal\App\Kernel\Orm\Exception\EntityNotFoundException;
 use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
 use Charcoal\App\Kernel\Orm\Repository\AbstractOrmEntity;
-use Charcoal\App\Kernel\Orm\Repository\EntitySource;
 use Charcoal\Cache\Exception\CacheException;
 use Charcoal\Cipher\Cipher;
 use Charcoal\Database\ORM\Exception\OrmException;
@@ -190,7 +190,7 @@ abstract class AbstractOrmRepository
         if ($checkInCache) {
             try {
                 $entity = $this->module->memoryCache->getFromCache($entityId);
-                if ($entity) {
+                if ($entity instanceof AbstractOrmEntity) {
                     $this->module->memoryCache->storeInMemory($entityId, $entity); // Runtime Memory Set
                     return $this->invokeStorageHooks($entity, EntitySource::CACHE);
                 }
