@@ -231,7 +231,7 @@ abstract class AbstractOrmRepository
      * @param bool $storedInCache
      * @return AbstractOrmEntity
      */
-    private function invokeStorageHooks(
+    protected function invokeStorageHooks(
         AbstractOrmEntity $entity,
         EntitySource      $source,
         bool              $storedInCache = false
