@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config;
 
-use Charcoal\App\Kernel\Contracts\ObjectStoreEntityContract;
+use Charcoal\App\Kernel\Contracts\StaticObjectStoreContract;
 use Charcoal\App\Kernel\Entity\AbstractEntity;
 
 /**
  * Class AbstractComponentConfig
  * @package Charcoal\App\Kernel\Config
  */
-abstract class AbstractComponentConfig extends AbstractEntity implements ObjectStoreEntityContract
+abstract class AbstractComponentConfig extends AbstractEntity implements StaticObjectStoreContract
 {
     public const ?string CONFIG_ID = null;
 
