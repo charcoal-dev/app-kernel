@@ -237,7 +237,7 @@ abstract class AbstractOrmRepository
         AbstractEntity $entity,
         EntitySource   $source,
         bool           $storedInCache = false
-    ): AbstractOrmEntity
+    ): AbstractEntity
     {
         // Invoke StorageHooksInterface
         if ($entity instanceof StorageHooksInterface) {
