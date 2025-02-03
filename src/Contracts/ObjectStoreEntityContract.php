@@ -11,5 +11,5 @@ interface ObjectStoreEntityContract
 {
     public static function childClasses(): array;
 
-    public function getObjectStoreKey(): string;
+    public static function getObjectStoreKey(): string;
 }

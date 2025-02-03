@@ -44,18 +44,18 @@ abstract class AbstractComponentConfig extends AbstractEntity implements ObjectS
      */
     final public function getPrimaryId(): string
     {
-        if (static::CONFIG_ID === null || static::CONFIG_ID === "") {
-            throw new \LogicException(sprintf('CONFIG_ID must be defined in class "%s"', static::class));
-        }
-
-        return static::CONFIG_ID;
+        return static::getObjectStoreKey();
     }
 
     /**
      * @return string
      */
-    final public function getObjectStoreKey(): string
+    final public static function getObjectStoreKey(): string
     {
-        return $this->getPrimaryId();
+        if (static::CONFIG_ID === null || static::CONFIG_ID === "") {
+            throw new \LogicException(sprintf('CONFIG_ID must be defined in class "%s"', static::class));
+        }
+
+        return static::CONFIG_ID;
     }
 }
