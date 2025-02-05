@@ -221,6 +221,7 @@ abstract class AbstractOrmRepository
             }
 
             try {
+                $cacheTtl = max($cacheTtl, $this->entityCacheTtl);
                 $cacheTtl = $cacheTtl > 0 ? $cacheTtl : $this->entityCacheTtl;
                 $this->module->memoryCache->storeInCache($entityId, $entity->returnCacheableObject(), $cacheTtl > 0 ? $cacheTtl : null);
                 $storedInCache = true;
