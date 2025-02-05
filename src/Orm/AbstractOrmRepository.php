@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm;
 
-use Charcoal\App\Kernel\Contracts\StorageHooksInvokerTrait;
+use Charcoal\App\Kernel\Contracts\StorageHooks\StorageHooksInvokerTrait;
 use Charcoal\App\Kernel\Entity\EntitySource;
 use Charcoal\App\Kernel\Orm\Db\AbstractOrmTable;
 use Charcoal\App\Kernel\Orm\Db\DbAwareTableEnum;

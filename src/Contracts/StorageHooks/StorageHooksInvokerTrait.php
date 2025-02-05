@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Contracts;
+namespace Charcoal\App\Kernel\Contracts\StorageHooks;
 
 use Charcoal\App\Kernel\Entity\EntitySource;
 
 /**
  * Trait StorageHooksInvokerTrait
- * @package Charcoal\App\Kernel\Contracts
+ * @package Charcoal\App\Kernel\Contracts\StorageHooks
  */
 trait StorageHooksInvokerTrait
 {
