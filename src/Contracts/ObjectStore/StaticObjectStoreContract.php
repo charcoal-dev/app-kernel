@@ -14,4 +14,6 @@ interface StaticObjectStoreContract
     public static function childClasses(): array;
 
     public static function getObjectStoreKey(): string;
+
+    public static function getCacheTtl(): ?int;
 }
