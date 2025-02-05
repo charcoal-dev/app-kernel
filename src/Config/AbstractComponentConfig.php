@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config;
 
-use Charcoal\App\Kernel\Contracts\StaticObjectStoreContract;
+use Charcoal\App\Kernel\Contracts\ObjectStore\StaticObjectStoreContract;
 use Charcoal\App\Kernel\Entity\AbstractEntity;
 
 /**

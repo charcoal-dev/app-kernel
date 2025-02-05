@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Contracts;
+namespace Charcoal\App\Kernel\Contracts\ObjectStore;
 
 /**
  * Interface StaticObjectStoreContract
@@ -9,7 +9,7 @@ namespace Charcoal\App\Kernel\Contracts;
  */
 interface StaticObjectStoreContract
 {
-    public const bool ENCRYPTION = false;
+    public const ObjectStoreEncryption ENCRYPTION = ObjectStoreEncryption::DISABLED;
 
     public static function childClasses(): array;
 
