@@ -28,6 +28,7 @@ abstract class AbstractOrmRepository
 
     protected int $entityCacheTtl = 86400;
     protected int $entityChecksumIterations = 0x64;
+    private ?Cipher $cipher = null;
 
     use ControlledSerializableTrait;
     use StorageHooksInvokerTrait;
@@ -81,7 +82,13 @@ abstract class AbstractOrmRepository
      */
     protected function getCipher(): Cipher
     {
-        return $this->module->getCipher($this);
+        if (!$this->cipher) {
+            $this->cipher = $this->module->getCipher($this);
+            if (!$this->cipher) {
+                throw new \LogicException("No cipher resolved for " . static::class);
+            }
+        }
+        return $this->cipher;
     }
 
     /**
@@ -91,6 +98,7 @@ abstract class AbstractOrmRepository
     protected function collectSerializableData(): array
     {
         $data["table"] = null;
+        $data["cipher"] = null;
         $data["module"] = $this->module;
         $data["entityCacheTtl"] = $this->entityCacheTtl;
         $data["entityChecksumIterations"] = $this->entityChecksumIterations;
@@ -110,6 +118,7 @@ abstract class AbstractOrmRepository
         $this->dbTableEnum = $data["dbTableEnum"];
         /** @noinspection PhpSecondWriteToReadonlyPropertyInspection */
         $this->module = $data["module"];
+        $this->cipher = null;
     }
 
     /**
