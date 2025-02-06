@@ -125,7 +125,6 @@ abstract class AbstractOrmRepository
      * @param AbstractOrmEntity|string|int $entity
      * @return void
      * @throws CacheException
-     * @throws \Charcoal\Cache\Exception\CacheDriverOpException
      */
     protected function cacheDeleteEntity(AbstractOrmEntity|string|int $entity): void
     {
