@@ -122,13 +122,15 @@ abstract class AbstractOrmRepository
     }
 
     /**
-     * @param AbstractOrmEntity $entity
+     * @param AbstractOrmEntity|string|int $entity
      * @return void
      * @throws CacheException
+     * @throws \Charcoal\Cache\Exception\CacheDriverOpException
      */
-    protected function cacheDeleteEntity(AbstractOrmEntity $entity): void
+    protected function cacheDeleteEntity(AbstractOrmEntity|string|int $entity): void
     {
-        $this->module->memoryCache->deleteFromCache($this->getStorageKeyFor($entity));
+        $this->module->memoryCache->deleteFromCache($entity instanceof AbstractOrmEntity ?
+            $this->getStorageKeyFor($entity) : $this->getStorageKey($entity));
     }
 
     /**
