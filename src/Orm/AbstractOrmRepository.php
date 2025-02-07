@@ -5,6 +5,7 @@ namespace Charcoal\App\Kernel\Orm;
 
 use Charcoal\App\Kernel\Contracts\StorageHooks\StorageHooksInvokerTrait;
 use Charcoal\App\Kernel\Entity\EntitySource;
+use Charcoal\App\Kernel\Module\AbstractModuleComponent;
 use Charcoal\App\Kernel\Orm\Db\AbstractOrmTable;
 use Charcoal\App\Kernel\Orm\Db\DbAwareTableEnum;
 use Charcoal\App\Kernel\Orm\Entity\CacheableEntityInterface;
@@ -12,32 +13,33 @@ use Charcoal\App\Kernel\Orm\Exception\EntityNotFoundException;
 use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
 use Charcoal\App\Kernel\Orm\Repository\AbstractOrmEntity;
 use Charcoal\Cache\Exception\CacheException;
-use Charcoal\Cipher\Cipher;
 use Charcoal\Database\ORM\Exception\OrmException;
 use Charcoal\Database\ORM\Exception\OrmModelNotFoundException;
 use Charcoal\Database\Queries\LockFlag;
-use Charcoal\OOP\Traits\ControlledSerializableTrait;
 
 /**
  * Class AbstractOrmRepository
  * @package Charcoal\App\Kernel\Orm
  */
-abstract class AbstractOrmRepository
+abstract class AbstractOrmRepository extends AbstractModuleComponent
 {
     public readonly AbstractOrmTable $table;
 
     protected int $entityCacheTtl = 86400;
     protected int $entityChecksumIterations = 0x64;
-    private ?Cipher $cipher = null;
 
-    use ControlledSerializableTrait;
     use StorageHooksInvokerTrait;
 
+    /**
+     * @param AbstractOrmModule $module
+     * @param DbAwareTableEnum $dbTableEnum
+     */
     public function __construct(
-        public readonly AbstractOrmModule $module,
-        private DbAwareTableEnum          $dbTableEnum,
+        AbstractOrmModule        $module,
+        private DbAwareTableEnum $dbTableEnum,
     )
     {
+        parent::__construct($module);
     }
 
     /**
@@ -78,28 +80,13 @@ abstract class AbstractOrmRepository
     }
 
     /**
-     * @return Cipher
-     */
-    protected function getCipher(): Cipher
-    {
-        if (!$this->cipher) {
-            $this->cipher = $this->module->getCipher($this);
-            if (!$this->cipher) {
-                throw new \LogicException("No cipher resolved for " . static::class);
-            }
-        }
-        return $this->cipher;
-    }
-
-    /**
      * Repository specific serialization data
      * @return array
      */
     protected function collectSerializableData(): array
     {
+        $data = parent::collectSerializableData();
         $data["table"] = null;
-        $data["cipher"] = null;
-        $data["module"] = $this->module;
         $data["entityCacheTtl"] = $this->entityCacheTtl;
         $data["entityChecksumIterations"] = $this->entityChecksumIterations;
         $data["dbTableEnum"] = $this->dbTableEnum;
@@ -113,12 +100,10 @@ abstract class AbstractOrmRepository
      */
     protected function onUnserialize(array $data): void
     {
+        parent::onUnserialize($data);
         $this->entityChecksumIterations = $data["entityChecksumIterations"];
         $this->entityCacheTtl = $data["entityCacheTtl"];
         $this->dbTableEnum = $data["dbTableEnum"];
-        /** @noinspection PhpSecondWriteToReadonlyPropertyInspection */
-        $this->module = $data["module"];
-        $this->cipher = null;
     }
 
     /**

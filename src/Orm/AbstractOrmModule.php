@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm;
 
 use Charcoal\App\Kernel\Build\AppBuildPartial;
+use Charcoal\App\Kernel\Module\AbstractModuleComponent;
 use Charcoal\App\Kernel\Module\CacheAwareModule;
 use Charcoal\App\Kernel\Module\CacheStoreEnum;
 use Charcoal\App\Kernel\Orm\Db\DatabaseTableRegistry;
@@ -31,7 +32,7 @@ abstract class AbstractOrmModule extends CacheAwareModule
 
     abstract protected function declareDatabaseTables(DatabaseTableRegistry $tables): void;
 
-    abstract public function getCipher(AbstractOrmRepository $resolveFor): ?Cipher;
+    abstract public function getCipher(AbstractModuleComponent $resolveFor): ?Cipher;
 
     /**
      * Modify parents method to provide automatic support for AbstractOrmRepository
@@ -40,7 +41,7 @@ abstract class AbstractOrmModule extends CacheAwareModule
      */
     protected function inspectIncludeChild(mixed $value): bool
     {
-        if ($value instanceof AbstractOrmRepository) {
+        if ($value instanceof AbstractModuleComponent) {
             return true;
         }
 
