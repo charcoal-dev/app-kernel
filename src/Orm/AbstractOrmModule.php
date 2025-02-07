@@ -5,6 +5,7 @@ namespace Charcoal\App\Kernel\Orm;
 
 use Charcoal\App\Kernel\Build\AppBuildPartial;
 use Charcoal\App\Kernel\Module\CacheAwareModule;
+use Charcoal\App\Kernel\Module\CacheStoreEnum;
 use Charcoal\App\Kernel\Orm\Db\DatabaseTableRegistry;
 use Charcoal\Cipher\Cipher;
 use Charcoal\Semaphore\AbstractSemaphore;

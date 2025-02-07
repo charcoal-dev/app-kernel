@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config;
 
-use Charcoal\App\Kernel\Orm\CacheStoreEnum;
+use Charcoal\App\Kernel\Module\CacheStoreEnum;
 
 /**
  * Class CacheConfig

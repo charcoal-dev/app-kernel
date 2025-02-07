@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Module;
 
 use Charcoal\App\Kernel\Container\AppAwareContainer;
-use Charcoal\App\Kernel\Orm\CacheStoreEnum;
 use Charcoal\Cache\Cache;
 
 /**

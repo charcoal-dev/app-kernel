@@ -5,7 +5,7 @@ namespace Charcoal\App\Kernel;
 
 use Charcoal\App\Kernel\Config\CacheDriver;
 use Charcoal\App\Kernel\Container\AppAwareInterface;
-use Charcoal\App\Kernel\Orm\CacheStoreEnum;
+use Charcoal\App\Kernel\Module\CacheStoreEnum;
 use Charcoal\Cache\Cache;
 use Charcoal\Cache\CacheDriverInterface;
 use Charcoal\OOP\DependencyInjection\AbstractDIResolver;
