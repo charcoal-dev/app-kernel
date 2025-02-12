@@ -48,6 +48,7 @@ abstract class AppBuild extends AppBuildCache
         $this->directories = new $directoriesClass($rootDirectory);
         $this->errors = new ErrorHandler($this, $build, $errorLog);
         $this->events = new $eventsClass();
+        $this->cipher = new $cipherClass();
 
         // Configuration should be rendered after ErrorHandler initialized...
         $this->config = $this->renderConfig();
@@ -55,7 +56,6 @@ abstract class AppBuild extends AppBuildCache
         // Initialize rest of components...
         $this->databases = new $databasesClass();
         $this->cache = new $cachePoolClass();
-        $this->cipher = new $cipherClass();
 
         // Get plan for building modules and services...
         $modules = $build->getBuildPlan(new $appBuildPartialClass(
