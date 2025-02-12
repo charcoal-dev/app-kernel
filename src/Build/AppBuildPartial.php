@@ -17,7 +17,7 @@ use Charcoal\App\Kernel\Events;
 class AppBuildPartial
 {
     public function __construct(
-        public readonly CachePool $cache,
+        public readonly CachePool    $cache,
         public readonly Config       $config,
         public readonly Databases    $databases,
         public readonly Directories  $directories,

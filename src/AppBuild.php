@@ -7,11 +7,13 @@ use Charcoal\App\Kernel\Build\AppBuildCache;
 use Charcoal\App\Kernel\Build\AppBuildEnum;
 use Charcoal\App\Kernel\Build\AppBuildPartial;
 use Charcoal\App\Kernel\Build\BuildMetadata;
+use Charcoal\App\Kernel\Cipher\CipherKeychain;
 use Charcoal\App\Kernel\Container\AppAware;
 use Charcoal\App\Kernel\Errors\ErrorHandler;
 use Charcoal\App\Kernel\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Polyfill\NullErrorLog;
 use Charcoal\Filesystem\Directory;
+use Charcoal\OOP\Traits\NotCloneableTrait;
 
 /**
  * Class AppBuild
@@ -21,12 +23,15 @@ abstract class AppBuild extends AppBuildCache
 {
     public readonly BuildMetadata $build;
     public readonly CachePool $cache;
+    public readonly CipherKeychain $cipher;
     public readonly Config $config;
     public readonly Databases $databases;
     public readonly Directories $directories;
     public readonly ErrorHandler $errors;
     public readonly Events $events;
     public readonly Lifecycle $lifecycle;
+
+    use NotCloneableTrait;
 
     public function __construct(
         AppBuildEnum         $build,
@@ -36,6 +41,7 @@ abstract class AppBuild extends AppBuildCache
         string               $directoriesClass = Directories::class,
         string               $eventsClass = Events::class,
         string               $databasesClass = Databases::class,
+        string               $cipherClass = CipherKeychain::class,
         string               $appBuildPartialClass = AppBuildPartial::class,
     )
     {
@@ -49,6 +55,7 @@ abstract class AppBuild extends AppBuildCache
         // Initialize rest of components...
         $this->databases = new $databasesClass();
         $this->cache = new $cachePoolClass();
+        $this->cipher = new $cipherClass();
 
         // Get plan for building modules and services...
         $modules = $build->getBuildPlan(new $appBuildPartialClass(
@@ -141,6 +148,7 @@ abstract class AppBuild extends AppBuildCache
         $data = [
             "build" => $this->build,
             "cache" => $this->cache,
+            "cipher" => $this->cipher,
             "config" => $this->config,
             "databases" => $this->databases,
             "directories" => $this->directories,
@@ -164,6 +172,7 @@ abstract class AppBuild extends AppBuildCache
     {
         $this->build = $data["build"];
         $this->cache = $data["cache"];
+        $this->cipher = $data["cipher"];
         $this->config = $data["config"];
         $this->databases = $data["databases"];
         $this->directories = $data["directories"];
