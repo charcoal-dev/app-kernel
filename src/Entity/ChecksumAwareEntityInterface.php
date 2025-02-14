@@ -19,6 +19,11 @@ interface ChecksumAwareEntityInterface
     public function getChecksum(): ?Bytes20;
 
     /**
+     * @return string
+     */
+    public function checksumRawString(): string;
+
+    /**
      * @param Cipher $cipher
      * @param int $iterations
      * @return Bytes20

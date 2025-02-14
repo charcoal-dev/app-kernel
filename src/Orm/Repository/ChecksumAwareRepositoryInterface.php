@@ -20,6 +20,11 @@ interface ChecksumAwareRepositoryInterface
     public function calculateChecksum(): Bytes20;
 
     /**
+     * @return string
+     */
+    public function entityChecksumRawString(): string;
+
+    /**
      * @return bool
      * @throws ChecksumComputeException
      */

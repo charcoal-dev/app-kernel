@@ -19,8 +19,17 @@ trait ChecksumAwareRepositoryTrait
      */
     protected function entityChecksumCalculate(AbstractOrmEntity $entity = null): Bytes20
     {
-        return $this->entityChecksumCrosscheck($entity)
+        return $this->isChecksumAware($entity)
             ->calculateChecksum($this->getCipher(), $this->entityChecksumIterations);
+    }
+
+    /**
+     * @param AbstractOrmEntity|null $entity
+     * @return string
+     */
+    protected function entityChecksumRawString(AbstractOrmEntity $entity = null): string
+    {
+        return $this->isChecksumAware($entity)->checksumRawString();
     }
 
     /**
@@ -30,7 +39,7 @@ trait ChecksumAwareRepositoryTrait
      */
     protected function entityChecksumVerify(AbstractOrmEntity $entity = null): bool
     {
-        return $this->entityChecksumCrosscheck($entity)
+        return $this->isChecksumAware($entity)
             ->verifyChecksum($this->getCipher(), $this->entityChecksumIterations);
     }
 
@@ -42,7 +51,7 @@ trait ChecksumAwareRepositoryTrait
      */
     protected function entityChecksumValidate(AbstractOrmEntity $entity = null): void
     {
-        $this->entityChecksumCrosscheck($entity)
+        $this->isChecksumAware($entity)
             ->validateChecksum($this->getCipher(), $this->entityChecksumIterations);
     }
 
@@ -50,7 +59,7 @@ trait ChecksumAwareRepositoryTrait
      * @param AbstractOrmEntity|null $entity
      * @return ChecksumAwareEntityInterface
      */
-    private function entityChecksumCrosscheck(AbstractOrmEntity $entity = null): ChecksumAwareEntityInterface
+    private function isChecksumAware(AbstractOrmEntity $entity = null): ChecksumAwareEntityInterface
     {
         if (!$entity instanceof ChecksumAwareEntityInterface) {
             throw new \LogicException(static::class . " does not implement ChecksumAwareEntityInterface");

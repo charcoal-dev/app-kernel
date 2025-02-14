@@ -5,6 +5,7 @@ namespace Charcoal\App\Kernel\Entity;
 
 use Charcoal\App\Kernel\Entity\Exception\ChecksumComputeException;
 use Charcoal\App\Kernel\Entity\Exception\ChecksumMismatchException;
+use Charcoal\Buffers\AbstractByteArray;
 use Charcoal\Buffers\Frames\Bytes20;
 use Charcoal\Cipher\Cipher;
 
@@ -38,10 +39,29 @@ trait ChecksumAwareEntityTrait
     {
         try {
             /** @var Bytes20 */
-            return $cipher->pbkdf2("sha1", implode(":", $this->collectChecksumData()), $iterations);
+            return $cipher->pbkdf2("sha1", $this->checksumRawString(), $iterations);
         } catch (\Throwable $t) {
             throw new ChecksumComputeException($this, $t);
         }
+    }
+
+    /**
+     * @return string
+     * @throws ChecksumComputeException
+     */
+    public function checksumRawString(): string
+    {
+        $checksumData = $this->collectChecksumData();
+        $checksumValues = [];
+        foreach ($checksumData as $key => $value) {
+            try {
+                $this->checksumDataValue($key, $value, $checksumValues);
+            } catch (\Throwable $t) {
+                throw new ChecksumComputeException($this, $t);
+            }
+        }
+
+        return implode(":", $checksumValues);
     }
 
     /**
@@ -69,5 +89,28 @@ trait ChecksumAwareEntityTrait
         if (!$this->verifyChecksum($cipher, $iterations)) {
             throw new ChecksumMismatchException($this);
         }
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     * @param array $checksumData
+     * @return void
+     */
+    private function checksumDataValue(string $key, mixed $value, array &$checksumData): void
+    {
+        $checksumData[] = match (true) {
+            is_string($value), is_int($value), is_float($value) => $value,
+            is_null($value) => "",
+            $value instanceof \BackedEnum => $value->value,
+            $value instanceof \UnitEnum => $value->name,
+            $value instanceof AbstractByteArray => $value->raw(),
+            $value instanceof \DateTime => $value->getTimestamp(),
+            default => throw new \UnexpectedValueException(sprintf(
+                'Cannot process value for "%s" of type "%s"',
+                $key,
+                is_object($value) ? get_class($value) : gettype($value)
+            )),
+        };
     }
 }
