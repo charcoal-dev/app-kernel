@@ -21,7 +21,7 @@ abstract class AbstractEntity
      * Forces all child classes to explicitly implement "collectSerializableData" method
      * @return array
      */
-    final public function __serialize(): array
+    public function __serialize(): array
     {
         return $this->collectSerializableData();
     }

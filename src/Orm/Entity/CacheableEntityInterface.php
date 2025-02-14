@@ -10,4 +10,10 @@ namespace Charcoal\App\Kernel\Orm\Entity;
 interface CacheableEntityInterface
 {
     public function returnCacheableObject(): static;
+
+    public function setCachedOn(int $timestamp): void;
+
+    public function getCachedOn(): ?int;
+
+    public function isFromCache(): bool;
 }

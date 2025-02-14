@@ -9,13 +9,17 @@ namespace Charcoal\App\Kernel\Orm\Entity;
  */
 trait CacheableEntityTrait
 {
+    private ?int $entityCachedOn = null;
+
     /**
      * Default behaviour implementing CacheableEntityInterface interface, allowing it to be overridden
      * @return $this
      */
     public function returnCacheableObject(): static
     {
-        return $this->cloneEntity();
+        $cacheable = $this->cloneEntity();
+        $cacheable->setCachedOn(time());
+        return $cacheable;
     }
 
     /**
@@ -24,5 +28,30 @@ trait CacheableEntityTrait
     protected function cloneEntity(): static
     {
         return clone $this;
+    }
+
+    /**
+     * @param int $timestamp
+     * @return void
+     */
+    public function setCachedOn(int $timestamp): void
+    {
+        $this->entityCachedOn = $timestamp;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getCachedOn(): ?int
+    {
+        return $this->entityCachedOn;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFromCache(): bool
+    {
+        return is_int($this->entityCachedOn) && $this->entityCachedOn > 0;
     }
 }
