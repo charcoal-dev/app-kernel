@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel;
 
+use Charcoal\App\Kernel\Contracts\LifecycleBoundContextInterface;
+
 /**
  * Class Lifecycle
  * Provides a report on application execution lifecycle that can be archived for monitoring purposes or runtime inspections
@@ -10,12 +12,56 @@ namespace Charcoal\App\Kernel;
  */
 class Lifecycle
 {
-    public float $startedOn;
-    public float $bootstrappedOn;
-    public string $loadTime;
+    public ?float $startedOn = null;
+    public ?float $bootstrappedOn = null;
+    public ?string $loadTime = null;
     private array $entries = [];
     private int $count = 0;
     private array $exceptions = [];
+
+    private ?LifecycleBoundContextInterface $boundContext = null;
+
+    /**
+     * @param LifecycleBoundContextInterface $context
+     * @return void
+     */
+    public function bindContext(LifecycleBoundContextInterface $context): void
+    {
+        $this->boundContext = $context;
+    }
+
+    /**
+     * @return void
+     */
+    public function unbindContext(): void
+    {
+        $this->boundContext = null;
+    }
+
+    /**
+     * @return array
+     */
+    public function __serialize(): array
+    {
+        $data = $this->toArray();
+        $data["boundContext"] = null;
+        return $data;
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->startedOn = $data["startedOn"];
+        $this->bootstrappedOn = $data["bootstrappedOn"];
+        $this->loadTime = $data["loadTime"];
+        $this->entries = $data["entries"];
+        $this->count = $data["count"];
+        $this->exceptions = $data["exceptions"];
+        $this->boundContext = null;
+    }
 
     /**
      * @return void
@@ -34,6 +80,7 @@ class Lifecycle
     public function exception(\Throwable $t): void
     {
         $this->exceptions[] = Errors::Exception2Array($t);
+        $this->boundContext?->exceptionFromLifecycle($t);
     }
 
     /**
@@ -90,31 +137,21 @@ class Lifecycle
             "microTs" => $microTs ? microtime(true) : null
         ];
         $this->count++;
+        $this->boundContext?->entryFromLifecycle($level, $event, $value);
     }
 
     /**
      * @return array
      */
-    public function getAll(): array
+    public function toArray(): array
     {
-        $object = [
+        return [
             "count" => $this->count,
             "entries" => $this->entries,
-            "exceptions" => $this->exceptions
+            "exceptions" => $this->exceptions,
+            "startedOn" => $this->startedOn,
+            "bootstrappedOn" => $this->bootstrappedOn,
+            "loadTime" => $this->loadTime,
         ];
-
-        if (isset($this->startedOn)) {
-            $object["startedOn"] = $this->startedOn;
-        }
-
-        if (isset($this->bootstrappedOn)) {
-            $object["bootstrappedOn"] = $this->bootstrappedOn;
-        }
-
-        if (isset($this->loadTime)) {
-            $object["loadTime"] = $this->loadTime;
-        }
-
-        return $object;
     }
 }
