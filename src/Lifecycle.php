@@ -19,23 +19,25 @@ class Lifecycle
     private int $count = 0;
     private array $exceptions = [];
 
-    private ?LifecycleBoundContextInterface $boundContext = null;
+    private array $boundContext = [];
 
     /**
      * @param LifecycleBoundContextInterface $context
-     * @return void
+     * @return int
      */
-    public function bindContext(LifecycleBoundContextInterface $context): void
+    public function bindContext(LifecycleBoundContextInterface $context): int
     {
-        $this->boundContext = $context;
+        $this->boundContext[] = $context;
+        return array_key_last($this->boundContext);
     }
 
     /**
+     * @param int $index
      * @return void
      */
-    public function unbindContext(): void
+    public function unbindContext(int $index): void
     {
-        $this->boundContext = null;
+        unset($this->boundContext[$index]);
     }
 
     /**
@@ -44,7 +46,7 @@ class Lifecycle
     public function __serialize(): array
     {
         $data = $this->toArray();
-        $data["boundContext"] = null;
+        $data["boundContext"] = [];
         return $data;
     }
 
@@ -60,7 +62,7 @@ class Lifecycle
         $this->entries = $data["entries"];
         $this->count = $data["count"];
         $this->exceptions = $data["exceptions"];
-        $this->boundContext = null;
+        $this->boundContext = [];
     }
 
     /**
@@ -80,7 +82,9 @@ class Lifecycle
     public function exception(\Throwable $t): void
     {
         $this->exceptions[] = Errors::Exception2Array($t);
-        $this->boundContext?->exceptionFromLifecycle($t);
+        foreach($this->boundContext as $context) {
+            $context->exceptionFromLifecycle($t);
+        }
     }
 
     /**
@@ -137,7 +141,9 @@ class Lifecycle
             "microTs" => $microTs ? microtime(true) : null
         ];
         $this->count++;
-        $this->boundContext?->entryFromLifecycle($level, $event, $value);
+        foreach($this->boundContext as $context) {
+            $context->entryFromLifecycle($level, $event, $value);
+        }
     }
 
     /**
