@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Interfaces\Http;
 
-use Charcoal\HTTP\Router\Controllers\Request;
+use Charcoal\Http\Router\Controllers\Request;
 
 /**
  * Class RemoteClient

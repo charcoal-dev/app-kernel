@@ -9,7 +9,7 @@ use Charcoal\App\Kernel\AppBuild;
  * Class AbstractRouteController
  * @package Charcoal\App\Kernel\Interfaces\Http
  */
-abstract class AbstractRouteController extends \Charcoal\HTTP\Router\Controllers\AbstractController
+abstract class AbstractRouteController extends \Charcoal\Http\Router\Controllers\AbstractController
 {
     public readonly AppBuild $app;
     public readonly RemoteClient $userClient;
