@@ -20,12 +20,12 @@
     "charcoal-dev/cache-redis-client": "^0.1.0",
     "charcoal-dev/cli": "^0.1.2",
     "charcoal-dev/database": "^0.1.0",
-    "charcoal-dev/db-orm": "^0.1.6",
+    "charcoal-dev/db-orm": "^0.1.7",
     "charcoal-dev/events-base": "^0.1.0",
     "charcoal-dev/filesystem": "^0.1.0",
-    "charcoal-dev/http-router": "^0.1.0",
+    "charcoal-dev/http-router": "^0.1.2",
     "charcoal-dev/cipher": "^0.1.0",
-    "charcoal-dev/oop-base": "^0.1.3",
+    "charcoal-dev/oop-base": "^0.1.5",
     "charcoal-dev/semaphore": "^0.1.0"
   },
   "autoload": {

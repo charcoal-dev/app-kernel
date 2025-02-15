@@ -6,10 +6,10 @@ namespace Charcoal\App\Kernel\Interfaces\Http;
 use Charcoal\App\Kernel\AppBuild;
 
 /**
- * Class AbstractEndpoint
+ * Class AbstractRouteController
  * @package Charcoal\App\Kernel\Interfaces\Http
  */
-abstract class AbstractEndpoint extends \Charcoal\HTTP\Router\Controllers\AbstractController
+abstract class AbstractRouteController extends \Charcoal\HTTP\Router\Controllers\AbstractController
 {
     public readonly AppBuild $app;
     public readonly RemoteClient $userClient;
