@@ -50,6 +50,7 @@ class ErrorHandler implements \IteratorAggregate
     {
         set_error_handler([$this, "handleError"]);
         set_exception_handler([$this, "handleThrowable"]);
+        register_shutdown_function([$this, "handleShutdown"]);
     }
 
     /**
@@ -73,6 +74,9 @@ class ErrorHandler implements \IteratorAggregate
         $this->errorLogCount = 0;
     }
 
+    /**
+     * @return array
+     */
     public function __serialize(): array
     {
         if ($this->errorLogCount > 0) {
@@ -87,6 +91,10 @@ class ErrorHandler implements \IteratorAggregate
         ];
     }
 
+    /**
+     * @param array $data
+     * @return void
+     */
     public function __unserialize(array $data): void
     {
         $this->pathOffset = $data["pathOffset"];
@@ -115,8 +123,7 @@ class ErrorHandler implements \IteratorAggregate
         }
 
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-        $this->handleError($level,
-            $error,
+        $this->handleError($level, $error,
             $trace[$fileLineBacktraceIndex]["file"] ?? "",
             intval($trace[$fileLineBacktraceIndex]["line"] ?? -1));
     }
@@ -160,6 +167,46 @@ class ErrorHandler implements \IteratorAggregate
     }
 
     /**
+     * @return void
+     */
+    public function handleShutdown(): void
+    {
+        $error = error_get_last();
+        if ($error && $this->isFatalError($error["type"])) {
+            $this->handleThrowable(new \ErrorException(
+                    $error["message"],
+                    0,
+                    $error["type"],
+                    $error["file"],
+                    $error["line"]
+                )
+            );
+        }
+    }
+
+    /**
+     * Default error handler function
+     * @param int $level
+     * @param string $message
+     * @param string $file
+     * @param int $line
+     * @return bool
+     */
+    public function handleError(int $level, string $message, string $file, int $line): bool
+    {
+        if (error_reporting() === 0) return false;
+
+        $err = new ErrorEntry($this, $level, $message, $file, $line);
+        $this->append($err);
+
+        if ($this->isFatalError($level)) {
+            $this->handleThrowable(new \ErrorException($message, 0, $err->level, $file, $line));
+        }
+
+        return true;
+    }
+
+    /**
      * Default exception handler function
      * @param \Throwable $t
      * @return never
@@ -178,37 +225,11 @@ class ErrorHandler implements \IteratorAggregate
             $exception["trace"] = $t->getTrace();
         }
 
-        if(php_sapi_name() !== "cli") {
+        if (php_sapi_name() !== "cli") {
             header("Content-Type: application/json", response_code: 500);
         }
 
         exit(json_encode(["FatalError" => $exception]));
-    }
-
-    /**
-     * Default error handler function
-     * @param int $level
-     * @param string $message
-     * @param string $file
-     * @param int $line
-     * @return bool
-     */
-    public function handleError(int $level, string $message, string $file, int $line): bool
-    {
-        if (error_reporting() === 0) return false;
-
-        $err = new ErrorEntry($this, $level, $message, $file, $line);
-        $this->append($err);
-
-        if (!in_array($err->level, [2, 8, 512, 1024, 2048, 8192, 16384])) {
-            if(php_sapi_name() !== "cli") {
-                header("Content-Type: application/json", response_code: 500);
-            }
-
-            exit(json_encode(["FatalError" => [$err->levelStr, $err->message]]));
-        }
-
-        return true;
     }
 
     /**
@@ -219,6 +240,15 @@ class ErrorHandler implements \IteratorAggregate
     final public function getOffsetFilepath(string $path): string
     {
         return trim(substr($path, $this->pathOffset), DIRECTORY_SEPARATOR);
+    }
+
+    /**
+     * @param int $level
+     * @return bool
+     */
+    protected function isFatalError(int $level): bool
+    {
+        return in_array($level, [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE, E_USER_ERROR, E_RECOVERABLE_ERROR]);
     }
 
     /**
