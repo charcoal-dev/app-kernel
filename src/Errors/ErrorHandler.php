@@ -15,6 +15,9 @@ use Charcoal\OOP\Traits\NotSerializableTrait;
  */
 class ErrorHandler implements \IteratorAggregate
 {
+    private static bool $handlingThrowable = false;
+    private static bool $handlersSet = false;
+
     public readonly int $pathOffset;
     public int $debugBacktraceLevel = E_WARNING;
     public int $backtraceOffset = 3;
@@ -48,6 +51,11 @@ class ErrorHandler implements \IteratorAggregate
      */
     public function setHandlers(): void
     {
+        if (static::$handlersSet) {
+            return;
+        }
+
+        static::$handlersSet = true;
         set_error_handler([$this, "handleError"]);
         set_exception_handler([$this, "handleThrowable"]);
         register_shutdown_function([$this, "handleShutdown"]);
@@ -213,6 +221,11 @@ class ErrorHandler implements \IteratorAggregate
      */
     public function handleThrowable(\Throwable $t): never
     {
+        if (static::$handlingThrowable) {
+            exit(1);
+        }
+
+        static::$handlingThrowable = true;
         $exception = [
             "class" => get_class($t),
             "message" => $t->getMessage(),
