@@ -42,11 +42,12 @@ abstract class AppBuild extends AppBuildCache
         string               $eventsClass = Events::class,
         string               $databasesClass = Databases::class,
         string               $cipherClass = CipherKeychain::class,
+        string               $errorHandlerClass = ErrorHandler::class,
         string               $appBuildPartialClass = AppBuildPartial::class,
     )
     {
         $this->directories = new $directoriesClass($rootDirectory);
-        $this->errors = new ErrorHandler($this, $build, $errorLog);
+        $this->errors = new $errorHandlerClass($this, $build, $errorLog);
         $this->events = new $eventsClass();
         $this->cipher = new $cipherClass();
 
