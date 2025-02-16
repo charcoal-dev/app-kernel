@@ -164,7 +164,7 @@ class ErrorHandler implements \IteratorAggregate
      * @param \Throwable $t
      * @return never
      */
-    final public function handleThrowable(\Throwable $t): never
+    public function handleThrowable(\Throwable $t): never
     {
         $exception = [
             "class" => get_class($t),
@@ -190,7 +190,7 @@ class ErrorHandler implements \IteratorAggregate
      * @param int $line
      * @return bool
      */
-    final public function handleError(int $level, string $message, string $file, int $line): bool
+    public function handleError(int $level, string $message, string $file, int $line): bool
     {
         if (error_reporting() === 0) return false;
 
