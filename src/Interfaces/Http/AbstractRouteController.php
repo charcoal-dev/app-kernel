@@ -18,7 +18,7 @@ abstract class AbstractRouteController extends \Charcoal\Http\Router\Controllers
      * @param array $args
      * @return void
      */
-    protected function onConstructHook(array $args): void
+    final protected function onConstructHook(array $args): void
     {
         $this->bootstrapController($args[0], $args[1] ?? RemoteClient::class);
         $this->dispatchEntrypoint();
