@@ -259,7 +259,7 @@ class ErrorHandler implements \IteratorAggregate
      * @param int $level
      * @return bool
      */
-    protected function isFatalError(int $level): bool
+    public function isFatalError(int $level): bool
     {
         return in_array($level, [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE, E_USER_ERROR, E_RECOVERABLE_ERROR]);
     }
