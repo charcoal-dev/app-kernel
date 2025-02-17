@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Interfaces\Http;
 
 use Charcoal\App\Kernel\AppBuild;
+use Charcoal\OOP\OOP;
 
 /**
  * Class AbstractRouteController
@@ -21,6 +22,11 @@ abstract class AbstractRouteController extends \Charcoal\Http\Router\Controllers
     final protected function onConstructHook(array $args): void
     {
         $this->bootstrapController($args[0], $args[1] ?? RemoteClient::class);
+        if (!$this->app->errors->hasHandlersSet()) {
+            throw new \LogicException(OOP::baseClassName($this->app::class) .
+                " error handlers not set; Cannot proceed to HTTP interface");
+        }
+
         $this->dispatchEntrypoint();
     }
 

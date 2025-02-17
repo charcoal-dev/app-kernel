@@ -23,6 +23,11 @@ abstract class AbstractCliScript extends \Charcoal\CLI\AbstractCliScript
         parent::__construct($cli);
         $this->config = new CliScriptConfig();
         $this->scriptClassname = OOP::baseClassName(static::class);
+
+        if (!$this->cli->app->errors->hasHandlersSet()) {
+            throw new \LogicException(OOP::baseClassName($this->cli->app::class) .
+                " error handlers not set; Cannot proceed to CLI interface");
+        }
     }
 
     /**

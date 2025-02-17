@@ -5,6 +5,7 @@ namespace Charcoal\App\Kernel\Errors;
 
 use Charcoal\App\Kernel\AppBuild;
 use Charcoal\App\Kernel\Build\AppBuildEnum;
+use Charcoal\App\Kernel\Errors;
 use Charcoal\OOP\Traits\NoDumpTrait;
 use Charcoal\OOP\Traits\NotCloneableTrait;
 use Charcoal\OOP\Traits\NotSerializableTrait;
@@ -23,6 +24,7 @@ class ErrorHandler implements \IteratorAggregate
     public int $backtraceOffset = 3;
     public bool $exceptionHandlerShowTrace = true;
 
+    private array $errorLoggable;
     private array $errorLog;
     private int $errorLogCount;
 
@@ -38,11 +40,37 @@ class ErrorHandler implements \IteratorAggregate
     public function __construct(AppBuild $app, AppBuildEnum $build, public ErrorLoggerInterface $logger)
     {
         $this->pathOffset = strlen($app->directories->root->path);
+        $this->errorLoggable = [];
         $this->errorLog = [];
         $this->errorLogCount = 0;
         if ($build->setErrorHandlers()) {
             $this->setHandlers();
         }
+    }
+
+    /**
+     * @param int ...$levels
+     * @return void
+     */
+    public function setLoggableErrors(int ...$levels): void
+    {
+        $this->errorLoggable = [];
+        $levels = array_unique($levels);
+        foreach ($levels as $level) {
+            if (!in_array($level, [E_NOTICE, E_USER_NOTICE, E_DEPRECATED, E_USER_DEPRECATED])) {
+                throw new \LogicException('Invalid error level to log: ' . $level);
+            }
+
+            $this->errorLoggable[] = $level;
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasHandlersSet(): bool
+    {
+        return static::$handlersSet;
     }
 
     /**
@@ -92,6 +120,7 @@ class ErrorHandler implements \IteratorAggregate
         }
 
         return [
+            "errorLoggable" => $this->errorLoggable,
             "pathOffset" => $this->pathOffset,
             "debugBacktraceLevel" => $this->debugBacktraceLevel,
             "backtraceOffset" => $this->backtraceOffset,
@@ -109,16 +138,17 @@ class ErrorHandler implements \IteratorAggregate
         $this->debugBacktraceLevel = $data["debugBacktraceLevel"];
         $this->backtraceOffset = $data["backtraceOffset"];
         $this->exceptionHandlerShowTrace = $data["exceptionHandlerShowTrace"];
+        $this->errorLoggable = $data["errorLoggable"];
         $this->errorLog = [];
         $this->errorLogCount = 0;
     }
 
     /**
-     * Helper function to trigger E_USER_NOTICE or E_USER_WARNING from inline code
      * @param string|\Throwable $error
      * @param int $level
      * @param int $fileLineBacktraceIndex
      * @return void
+     * @throws \ErrorException
      */
     public function trigger(string|\Throwable $error, int $level = E_USER_NOTICE, int $fileLineBacktraceIndex = 1): void
     {
@@ -193,25 +223,35 @@ class ErrorHandler implements \IteratorAggregate
     }
 
     /**
-     * Default error handler function
      * @param int $level
      * @param string $message
      * @param string $file
      * @param int $line
      * @return bool
+     * @throws \ErrorException
      */
     public function handleError(int $level, string $message, string $file, int $line): bool
     {
         if (error_reporting() === 0) return false;
 
-        $err = new ErrorEntry($this, $level, $message, $file, $line);
-        $this->append($err);
-
         if ($this->isFatalError($level)) {
-            $this->handleThrowable(new \ErrorException($message, 0, $err->level, $file, $line));
+            $this->handleThrowable(new \ErrorException($message, 0, $level, $file, $line));
         }
 
-        return true;
+        if (in_array($level, $this->errorLoggable)) {
+            $err = new ErrorEntry($this, $level, $message, $file, $line);
+            $this->append($err);
+
+            try {
+                $this->logger->write($err);
+            } catch (\Exception $e) {
+                throw new \ErrorException(Errors::Exception2String($e), 0);
+            }
+
+            return true;
+        }
+
+        throw new \ErrorException($message, 0, $level, $file, $line);
     }
 
     /**
