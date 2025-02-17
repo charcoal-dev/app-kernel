@@ -122,7 +122,7 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
      * @param array $queryData
      * @param LockFlag|null $lock
      * @param bool $invokeStorageHooks
-     * @return AbstractOrmEntity
+     * @return AbstractOrmEntity|array
      * @throws EntityNotFoundException
      * @throws EntityOrmException
      */
@@ -131,7 +131,7 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
         array     $queryData = [],
         ?LockFlag $lock = null,
         bool      $invokeStorageHooks = true
-    ): AbstractOrmEntity
+    ): AbstractOrmEntity|array
     {
         try {
             /** @var AbstractOrmEntity $entity */
@@ -148,11 +148,11 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
      * @param string $column
      * @param int|string $value
      * @param LockFlag|null $lock
-     * @return AbstractOrmEntity
+     * @return AbstractOrmEntity|array
      * @throws EntityNotFoundException
      * @throws EntityOrmException
      */
-    protected function getFromDbColumn(string $column, int|string $value, ?LockFlag $lock = null): AbstractOrmEntity
+    protected function getFromDbColumn(string $column, int|string $value, ?LockFlag $lock = null): AbstractOrmEntity|array
     {
         return $this->getFromDb("`$column`=?", [$value], $lock);
     }
@@ -201,7 +201,7 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
         $entity = $this->getFromDb($dbWhereStmt, $dbQueryData, invokeStorageHooks: false);
         $this->module->memoryCache->storeInMemory($entityId, $entity); // Runtime Memory Set
 
-        if ($storeInCache) {
+        if ($storeInCache && $entity instanceof $this->table->entityClass) {
             if (!$entity instanceof CacheableEntityInterface) {
                 throw new \LogicException(static::class . ' requires CacheableEntityInterface');
             }
