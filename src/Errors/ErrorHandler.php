@@ -40,7 +40,7 @@ class ErrorHandler implements \IteratorAggregate
     public function __construct(AppBuild $app, AppBuildEnum $build, public ErrorLoggerInterface $logger)
     {
         $this->pathOffset = strlen($app->directories->root->path);
-        $this->errorLoggable = [];
+        $this->errorLoggable = [E_NOTICE, E_USER_NOTICE];
         $this->errorLog = [];
         $this->errorLogCount = 0;
         if ($build->setErrorHandlers()) {

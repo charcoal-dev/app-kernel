@@ -191,6 +191,7 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
                     return $this->invokeStorageHooks($entity, EntitySource::CACHE);
                 }
             } catch (CacheException $e) {
+                trigger_error(static::class . ' caught CacheException', E_USER_NOTICE);
                 $this->module->app->lifecycle->exception(
                     new \RuntimeException(static::class . ' caught CacheException', previous: $e),
                 );
@@ -210,6 +211,7 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
                 $this->module->memoryCache->storeInCache($entityId, $entity->returnCacheableObject(), $cacheTtl > 0 ? $cacheTtl : null);
                 $storedInCache = true;
             } catch (CacheException $e) {
+                trigger_error(static::class . ' caught CacheException', E_USER_NOTICE);
                 $this->module->app->lifecycle->exception(
                     new \RuntimeException(static::class . ' caught CacheException', previous: $e),
                 );
