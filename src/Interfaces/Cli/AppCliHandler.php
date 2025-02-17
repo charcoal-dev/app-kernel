@@ -8,8 +8,9 @@ use Charcoal\App\Kernel\Errors\ErrorEntry;
 use Charcoal\CLI\Banners;
 use Charcoal\CLI\CLI;
 use Charcoal\CLI\Console\StdoutPrinter;
-use Charcoal\Filesystem\Directory;
 use Charcoal\OOP\OOP;
+use Charcoal\OOP\Traits\NoDumpTrait;
+use Charcoal\OOP\Traits\NotCloneableTrait;
 use Charcoal\OOP\Traits\NotSerializableTrait;
 use Composer\InstalledVersions;
 
@@ -21,15 +22,24 @@ class AppCliHandler extends CLI
 {
     public readonly StdoutPrinter $stdout;
 
+    use NotCloneableTrait;
+    use NoDumpTrait;
     use NotSerializableTrait;
 
+    /**
+     * @param AppBuild $app
+     * @param string $scriptsNamespace
+     * @param array $args
+     * @param string|null $defaultScriptName
+     */
     public function __construct(
         public readonly AppBuild $app,
-        Directory                $scriptsDirectory,
-        array                    $args
+        string                   $scriptsNamespace,
+        array                    $args,
+        ?string                  $defaultScriptName,
     )
     {
-        parent::__construct($scriptsDirectory, $args);
+        parent::__construct($scriptsNamespace, $args, $defaultScriptName);
         $this->stdout = new StdoutPrinter();
         $this->addOutputHandler($this->stdout);
 
@@ -41,14 +51,14 @@ class AppCliHandler extends CLI
         });
 
         // Event: ScriptLoaded
-        $this->events->scriptLoaded()->listen(function (self $cli, AbstractCliScript $script) {
+        $this->events->scriptLoaded()->listen(function (self $cli) {
             // Headers & Loaded Script Name
-            if ($script->config->displayHeaders) {
+            if ($this->execScriptObject->config->displayHeaders) {
                 $this->printAppHeaders();
             }
 
-            if ($script->config->displayClassname) {
-                $cli->inline(sprintf("CLI script {green}{invert} %s {/} loaded", OOP::baseClassName(get_class($script))));
+            if ($this->execScriptObject->config->displayClassname) {
+                $cli->inline(sprintf("CLI script {green}{invert} %s {/} loaded", OOP::baseClassName($this->execClassname)));
                 $cli->repeatChar(".", 3, 100, true);
                 $cli->print("");
             }
@@ -62,10 +72,12 @@ class AppCliHandler extends CLI
         });
 
         // Event: AfterExec
-        $this->events->afterExec()->listen(function (self $cli, bool $isSuccess, ?AbstractCliScript $script) {
-            $displayErrors = $script?->options->displayTriggeredErrors ?? true;
-            if ($displayErrors) {
-                $this->printErrors(0, false, true);
+        $this->events->afterExec()->listen(function (self $cli, bool $isSuccess) {
+            if ($isSuccess) {
+                $displayErrors = $this->execScriptObject->options->displayTriggeredErrors ?? true;
+                if ($displayErrors) {
+                    $this->printErrors(0, false, true);
+                }
             }
         });
     }
