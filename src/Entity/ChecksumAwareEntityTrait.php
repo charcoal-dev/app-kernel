@@ -8,6 +8,8 @@ use Charcoal\App\Kernel\Entity\Exception\ChecksumMismatchException;
 use Charcoal\Buffers\AbstractByteArray;
 use Charcoal\Buffers\Frames\Bytes20;
 use Charcoal\Cipher\Cipher;
+use Charcoal\OOP\Vectors\AbstractVector;
+use Charcoal\OOP\Vectors\DsvString;
 
 /**
  * Trait ChecksumAwareTrait
@@ -105,6 +107,8 @@ trait ChecksumAwareEntityTrait
             $value instanceof \BackedEnum => $value->value,
             $value instanceof \UnitEnum => $value->name,
             $value instanceof AbstractByteArray => $value->raw(),
+            $value instanceof DsvString => $value->toString(),
+            $value instanceof AbstractVector => implode(":", $value->getArray()),
             $value instanceof \DateTime => $value->getTimestamp(),
             default => throw new \UnexpectedValueException(sprintf(
                 'Cannot process value for "%s" of type "%s"',
