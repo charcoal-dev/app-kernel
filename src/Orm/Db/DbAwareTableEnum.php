@@ -12,4 +12,6 @@ interface DbAwareTableEnum
     public function getTableName(): string;
 
     public function getDatabase(): DatabaseEnum;
+
+    public function getPriority(): int;
 }
