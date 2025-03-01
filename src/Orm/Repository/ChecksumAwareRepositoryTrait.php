@@ -27,7 +27,7 @@ trait ChecksumAwareRepositoryTrait
      * @param AbstractOrmEntity|null $entity
      * @return string
      */
-    protected function entityChecksumRawString(AbstractOrmEntity $entity = null): string
+    public function entityChecksumRawString(AbstractOrmEntity $entity = null): string
     {
         return $this->isChecksumAware($entity)->checksumRawString();
     }
