@@ -126,7 +126,7 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
      * @throws EntityNotFoundException
      * @throws EntityOrmException
      */
-    protected function getFromDb(
+    public function getFromDb(
         string    $whereStmt,
         array     $queryData = [],
         ?LockFlag $lock = null,
