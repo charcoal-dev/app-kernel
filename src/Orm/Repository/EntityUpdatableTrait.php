@@ -15,6 +15,16 @@ use Charcoal\OOP\Vectors\StringVector;
 trait EntityUpdatableTrait
 {
     /**
+     * @param string $entityClass
+     * @return \LogicException
+     */
+    protected function dbUpdateOutOfScopeException(string $entityClass): \LogicException
+    {
+        return new \LogicException("Out of scope; Cannot update " .
+            OOP::baseClassName($entityClass) . " from " . OOP::baseClassName(static::class));
+    }
+
+    /**
      * @param bool $isChecksumAware
      * @param LockedEntity $lockedEntity
      * @param StringVector $changeLog
@@ -32,11 +42,6 @@ trait EntityUpdatableTrait
         string       $primaryColumnName = "id",
     ): void
     {
-        if (!$lockedEntity->entity instanceof $this->table->entityClass) {
-            throw new \LogicException("Out of scope; Cannot update " .
-                OOP::baseClassName($lockedEntity->entity::class) . " from " . OOP::baseClassName(static::class));
-        }
-
         if ($isChecksumAware) {
             $this->dbUpdateChecksumAwareEntity(
                 $lockedEntity->entity,
