@@ -14,9 +14,8 @@ use Charcoal\Database\Queries\LockFlag;
  */
 trait EntitySemaphoreLockTrait
 {
-    abstract protected function getEntityLockId(AbstractOrmEntity $entity): string;
-
     /**
+     * @param string $entityLockId
      * @param string $whereStmt
      * @param array $queryData
      * @param int $lockTimeout
@@ -30,6 +29,7 @@ trait EntitySemaphoreLockTrait
      * @throws \Throwable
      */
     protected function getLockedEntity(
+        string    $entityLockId,
         string    $whereStmt,
         array     $queryData = [],
         int       $lockTimeout = 0,
@@ -40,7 +40,7 @@ trait EntitySemaphoreLockTrait
     {
         try {
             $lock = $this->module->getSemaphore()->obtainLock(
-                $this->getEntityLockId($entity),
+                $entityLockId,
                 $lockTimeout > 0 ? $lockCheckEvery : null,
                 $lockTimeout
             );
