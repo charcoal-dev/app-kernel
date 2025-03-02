@@ -104,6 +104,7 @@ trait ChecksumAwareEntityTrait
         $checksumData[] = match (true) {
             is_string($value), is_int($value), is_float($value) => $value,
             is_null($value) => "",
+            is_bool($value) => $value ? "1" : "0",
             $value instanceof \BackedEnum => $value->value,
             $value instanceof \UnitEnum => $value->name,
             $value instanceof AbstractByteArray => $value->raw(),
