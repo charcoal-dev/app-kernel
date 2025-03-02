@@ -46,6 +46,7 @@ class AppCliHandler extends CLI
         // Event: ScriptNotFound
         $this->events->scriptNotFound()->listen(function (self $cli, string $scriptClassname) {
             $this->printAppHeaders();
+            $this->printAppClassBanner();
             $cli->print(sprintf("CLI script {red}{invert} %s {/} not found", OOP::baseClassName($scriptClassname)));
             $cli->print("");
         });
@@ -57,7 +58,11 @@ class AppCliHandler extends CLI
                 $this->printAppHeaders();
             }
 
-            if ($this->execScriptObject->config->displayClassname) {
+            if ($this->execScriptObject->config->displayAppClassBanner) {
+                $this->printAppClassBanner();
+            }
+
+            if ($this->execScriptObject->config->displayScriptName) {
                 $cli->inline(sprintf("CLI script {green}{invert} %s {/} loaded", OOP::baseClassName($this->execClassname)));
                 $cli->repeatChar(".", 3, 100, true);
                 $cli->print("");
@@ -129,9 +134,14 @@ class AppCliHandler extends CLI
             InstalledVersions::getPrettyVersion("charcoal-dev/app-kernel")), 200);
         $this->print(sprintf("{cyan}{invert}Charcoal CLI{/} {grey}%s{/}",
             InstalledVersions::getPrettyVersion("charcoal-dev/cli")), 200);
-
-        // App Introduction
         $this->print("");
+    }
+
+    /**
+     * @return void
+     */
+    public function printAppClassBanner(): void
+    {
         $this->repeatChar("~", 5, 100, true);
         foreach (Banners::Digital(OOP::baseClassName($this->app::class))->lines as $line) {
             $this->print("{magenta}{invert}" . $line . "{/}");
