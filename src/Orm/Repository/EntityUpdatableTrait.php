@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Repository;
 
+use Charcoal\App\Kernel\Orm\Entity\LockedEntity;
 use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
+use Charcoal\OOP\OOP;
 use Charcoal\OOP\Vectors\StringVector;
 
 /**
@@ -12,6 +14,46 @@ use Charcoal\OOP\Vectors\StringVector;
  */
 trait EntityUpdatableTrait
 {
+    /**
+     * @param bool $isChecksumAware
+     * @param LockedEntity $lockedEntity
+     * @param StringVector $changeLog
+     * @param int|string $primaryColumnValue
+     * @param string $primaryColumnName
+     * @return void
+     * @throws EntityOrmException
+     * @throws \Charcoal\App\Kernel\Entity\Exception\ChecksumComputeException
+     */
+    protected function dbUpdateLockedEntity(
+        bool         $isChecksumAware,
+        LockedEntity $lockedEntity,
+        StringVector $changeLog,
+        int|string   $primaryColumnValue,
+        string       $primaryColumnName = "id",
+    ): void
+    {
+        if (!$lockedEntity->entity instanceof $this->table->entityClass) {
+            throw new \LogicException("Out of scope; Cannot update " .
+                OOP::baseClassName($lockedEntity->entity::class) . " from " . OOP::baseClassName(static::class));
+        }
+
+        if ($isChecksumAware) {
+            $this->dbUpdateChecksumAwareEntity(
+                $lockedEntity->entity,
+                $changeLog,
+                $primaryColumnValue,
+                $primaryColumnName
+            );
+        } else {
+            $this->dbUpdateEntity(
+                $lockedEntity->entity,
+                $changeLog,
+                $primaryColumnValue,
+                $primaryColumnName
+            );
+        }
+    }
+
     /**
      * @param AbstractOrmEntity $entity
      * @param StringVector $changeLog
