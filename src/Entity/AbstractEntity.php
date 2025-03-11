@@ -40,7 +40,7 @@ abstract class AbstractEntity
     public function __unserialize(array $data): void
     {
         foreach ($data as $prop => $value) {
-            if (property_exists($this, $prop) && !isset($this->$prop)) {
+            if (property_exists($this, $prop)) {
                 $this->$prop = $value;
             }
         }
