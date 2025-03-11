@@ -16,6 +16,7 @@ readonly class RemoteClient
     public ?string $cfConnectingIP;
     public ?string $xForwardedFor;
     public ?string $origin;
+    public ?string $referer;
     public ?string $userAgent;
 
     public function __construct(Request $req)
@@ -34,7 +35,8 @@ readonly class RemoteClient
         $this->xForwardedFor = $xff;
 
         // Other Headers
-        $this->origin = $req->headers->get("referer");
+        $this->origin = $req->headers->get("origin");
+        $this->referer = $req->headers->get("referer");
         $this->userAgent = $req->headers->get("user-agent");
     }
 }
