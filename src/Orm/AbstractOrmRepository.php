@@ -175,10 +175,10 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
     protected function getPrimaryIdFromUnique(string $column, int|string $value, string $idColumn = "id"): int
     {
         try {
-            $entityId = (int)$this->table->getDb()->fetch(
+            $entityId = (int)($this->table->getDb()->fetch(
                 sprintf("SELECT `%s` FROM `%s` WHERE `%s`=? LIMIT 1", $idColumn, $this->table->name, $column),
                 [$value]
-            )->getNext()[$idColumn] ?? -1;
+            )->getNext()[$idColumn] ?? -1);
         } catch (DatabaseException $e) {
             throw new EntityOrmException(static::class, $e);
         }
