@@ -168,10 +168,11 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
      * @param string $column
      * @param int|string $value
      * @param string $idColumn
-     * @return int|null
+     * @return int
+     * @throws EntityNotFoundException
      * @throws EntityOrmException
      */
-    protected function getPrimaryIdFromUnique(string $column, int|string $value, string $idColumn = "id"): ?int
+    protected function getPrimaryIdFromUnique(string $column, int|string $value, string $idColumn = "id"): int
     {
         try {
             $entityId = (int)$this->table->getDb()->fetch(
@@ -186,7 +187,7 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
             return $entityId;
         }
 
-        return null;
+        throw new EntityNotFoundException();
     }
 
     /**
