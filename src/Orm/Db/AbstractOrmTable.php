@@ -25,6 +25,10 @@ abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
         parent::__construct($this->enum->getTableName());
     }
 
+    /**
+     * @param int|string $uniqueId
+     * @return string
+     */
     public function suggestEntityId(int|string $uniqueId): string
     {
         return $this->name . ":" . $uniqueId;
@@ -44,6 +48,9 @@ abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
         return new $entityClass();
     }
 
+    /**
+     * @return array
+     */
     public function __serialize(): array
     {
         $data = parent::__serialize();
@@ -53,6 +60,10 @@ abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
         return $data;
     }
 
+    /**
+     * @param array $object
+     * @return void
+     */
     public function __unserialize(array $object): void
     {
         $this->module = $object["module"];

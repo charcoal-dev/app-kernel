@@ -13,6 +13,7 @@ use Charcoal\App\Kernel\Orm\Exception\EntityNotFoundException;
 use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
 use Charcoal\App\Kernel\Orm\Repository\AbstractOrmEntity;
 use Charcoal\Cache\Exception\CacheException;
+use Charcoal\Database\Exception\DatabaseException;
 use Charcoal\Database\ORM\Exception\OrmException;
 use Charcoal\Database\ORM\Exception\OrmModelNotFoundException;
 use Charcoal\Database\Queries\LockFlag;
@@ -148,13 +149,44 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
      * @param string $column
      * @param int|string $value
      * @param LockFlag|null $lock
+     * @param bool $invokeStorageHooks
      * @return AbstractOrmEntity|array
      * @throws EntityNotFoundException
      * @throws EntityOrmException
      */
-    protected function getFromDbColumn(string $column, int|string $value, ?LockFlag $lock = null): AbstractOrmEntity|array
+    protected function getFromDbColumn(
+        string     $column,
+        int|string $value,
+        ?LockFlag  $lock = null,
+        bool       $invokeStorageHooks = true
+    ): AbstractOrmEntity|array
     {
-        return $this->getFromDb("`$column`=?", [$value], $lock);
+        return $this->getFromDb("`$column`=?", [$value], $lock, $invokeStorageHooks);
+    }
+
+    /**
+     * @param string $column
+     * @param int|string $value
+     * @param string $idColumn
+     * @return int|null
+     * @throws EntityOrmException
+     */
+    protected function getPrimaryIdFromUnique(string $column, int|string $value, string $idColumn = "id"): ?int
+    {
+        try {
+            $entityId = (int)$this->table->getDb()->fetch(
+                sprintf("SELECT `%s` FROM `%s` WHERE `%s`=? LIMIT 1", $idColumn, $this->table->name, $column),
+                [$value]
+            )->getNext()[$idColumn] ?? -1;
+        } catch (DatabaseException $e) {
+            throw new EntityOrmException(static::class, $e);
+        }
+
+        if ($entityId > 0) {
+            return $entityId;
+        }
+
+        return null;
     }
 
     /**
