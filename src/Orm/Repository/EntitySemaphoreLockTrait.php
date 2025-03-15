@@ -26,7 +26,6 @@ trait EntitySemaphoreLockTrait
      * @throws EntityLockedException
      * @throws \Charcoal\App\Kernel\Orm\Exception\EntityNotFoundException
      * @throws \Charcoal\App\Kernel\Orm\Exception\EntityOrmException
-     * @throws \Throwable
      */
     protected function getLockedEntity(
         string    $entityLockId,
@@ -63,7 +62,7 @@ trait EntitySemaphoreLockTrait
             }
 
             return new LockedEntity($entity, $lock);
-        } catch (\Throwable $t) {
+        } catch (\Exception $t) {
             try {
                 $lock->releaseLock();
             } catch (\Exception) {
