@@ -9,7 +9,7 @@ namespace Charcoal\App\Kernel\Orm\Entity;
  */
 trait CacheableEntityTrait
 {
-    private ?int $entityCachedOn = null;
+    protected ?int $entityCachedOn = null;
 
     /**
      * Default behaviour implementing CacheableEntityInterface interface, allowing it to be overridden
