@@ -90,7 +90,7 @@ class ErrorHandler implements \IteratorAggregate
     }
 
     /**
-     * Erases entire error log, returning all existing values in an Array
+     * Erases the entire error log, returning all existing values in an Array
      * @return array
      */
     public function flushClean(): array
@@ -120,6 +120,7 @@ class ErrorHandler implements \IteratorAggregate
         }
 
         return [
+            "logger" => $this->logger,
             "errorLoggable" => $this->errorLoggable,
             "pathOffset" => $this->pathOffset,
             "debugBacktraceLevel" => $this->debugBacktraceLevel,
@@ -135,6 +136,7 @@ class ErrorHandler implements \IteratorAggregate
     public function __unserialize(array $data): void
     {
         $this->pathOffset = $data["pathOffset"];
+        $this->logger = $data["logger"];
         $this->debugBacktraceLevel = $data["debugBacktraceLevel"];
         $this->backtraceOffset = $data["backtraceOffset"];
         $this->exceptionHandlerShowTrace = $data["exceptionHandlerShowTrace"];
@@ -167,7 +169,7 @@ class ErrorHandler implements \IteratorAggregate
     }
 
     /**
-     * Appends error message in runtime memory
+     * Appends an error message in runtime memory
      * @param ErrorEntry $errorMsg
      * @return void
      */
@@ -178,7 +180,7 @@ class ErrorHandler implements \IteratorAggregate
     }
 
     /**
-     * Returns number of errors currently in runtime memory
+     * Returns the number of errors currently in runtime memory
      * @return int
      */
     public function count(): int
