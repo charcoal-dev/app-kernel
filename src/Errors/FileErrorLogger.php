@@ -32,7 +32,7 @@ class FileErrorLogger implements ErrorLoggerInterface
     }
 
     /**
-     * Main exposed method
+     * Main-exposed method
      */
     public function write(\Throwable|ErrorEntry $error): void
     {
@@ -45,7 +45,7 @@ class FileErrorLogger implements ErrorLoggerInterface
     }
 
     /**
-     * Prepares & formats an \Throwable object and writes into log file
+     * Prepares & formats a \Throwable object and writes into the log file
      */
     private function writeException(\Throwable $t): void
     {
@@ -65,7 +65,7 @@ class FileErrorLogger implements ErrorLoggerInterface
     }
 
     /**
-     * Prepares & formats an ErrorEntry object and writes into log file
+     * Prepares & formats an ErrorEntry object and writes into the log file
      */
     private function writeError(ErrorEntry $error): void
     {
@@ -93,7 +93,7 @@ class FileErrorLogger implements ErrorLoggerInterface
             $buffer = preg_replace("/\\e\[\d+m/", "", $buffer);
         }
 
-        if (!file_put_contents($this->logFilePath, implode($this->eolChar, $buffer))) {
+        if (!file_put_contents($this->logFilePath, $buffer)) {
             throw new \RuntimeException('Failed to write to error log file');
         }
     }
