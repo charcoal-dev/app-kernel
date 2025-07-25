@@ -7,7 +7,7 @@ use Charcoal\App\Kernel\Contracts\LifecycleBoundContextInterface;
 
 /**
  * Class Lifecycle
- * Provides a report on application execution lifecycle that can be archived for monitoring purposes or runtime inspections
+ * Provides a report on the application execution lifecycle that can be archived for monitoring purposes or runtime inspections
  * @package Charcoal\App\Kernel
  */
 class Lifecycle
@@ -18,6 +18,10 @@ class Lifecycle
     private array $entries = [];
     private int $count = 0;
     private array $exceptions = [];
+    private int $peakMemoryUsage = 0;
+    private ?float $cpuTimeUser = null;
+    private ?float $cpuTimeSystem = null;
+    private ?float $cpuTimeTotal = null;
 
     private array $boundContext = [];
 
@@ -62,6 +66,10 @@ class Lifecycle
         $this->entries = $data["entries"];
         $this->count = $data["count"];
         $this->exceptions = $data["exceptions"];
+        $this->peakMemoryUsage = $data["peakMemoryUsage"];
+        $this->cpuTimeUser = $data["cpuTimeUser"];
+        $this->cpuTimeSystem = $data["cpuTimeSystem"];
+        $this->cpuTimeTotal = $data["cpuTimeTotal"];
         $this->boundContext = [];
     }
 
@@ -82,7 +90,7 @@ class Lifecycle
     public function exception(\Throwable $t): void
     {
         $this->exceptions[] = Errors::Exception2Array($t);
-        foreach($this->boundContext as $context) {
+        foreach ($this->boundContext as $context) {
             $context->exceptionFromLifecycle($t);
         }
     }
@@ -141,9 +149,21 @@ class Lifecycle
             "microTs" => $microTs ? microtime(true) : null
         ];
         $this->count++;
-        foreach($this->boundContext as $context) {
+        foreach ($this->boundContext as $context) {
             $context->entryFromLifecycle($level, $event, $value);
         }
+    }
+
+    /**
+     * @return void
+     */
+    public function updateExecutionMetrics(): void
+    {
+        $this->peakMemoryUsage = memory_get_peak_usage(false);
+        $cpuUsage = getrusage(0);
+        $this->cpuTimeUser = $cpuUsage["ru_utime.tv_sec"] + ($cpuUsage["ru_utime.tv_usec"] / 1e6);
+        $this->cpuTimeSystem = $cpuUsage["ru_stime.tv_sec"] + ($cpuUsage["ru_stime.tv_usec"] / 1e6);
+        $this->cpuTimeTotal = $this->cpuTimeUser + $this->cpuTimeSystem;
     }
 
     /**
@@ -158,6 +178,10 @@ class Lifecycle
             "startedOn" => $this->startedOn,
             "bootstrappedOn" => $this->bootstrappedOn,
             "loadTime" => $this->loadTime,
+            "peakMemoryUsage" => $this->peakMemoryUsage,
+            "cpuTimeUser" => $this->cpuTimeUser,
+            "cpuTimeSystem" => $this->cpuTimeSystem,
+            "cpuTimeTotal" => $this->cpuTimeTotal,
         ];
     }
 }
