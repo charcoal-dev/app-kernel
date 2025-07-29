@@ -124,7 +124,7 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
      * @param array $queryData
      * @param LockFlag|null $lock
      * @param bool $invokeStorageHooks
-     * @return AbstractOrmEntity
+     * @return AbstractOrmEntity|array
      * @throws EntityNotFoundException
      * @throws EntityOrmException
      */
@@ -133,7 +133,7 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
         array     $queryData = [],
         ?LockFlag $lock = null,
         bool      $invokeStorageHooks = true
-    ): AbstractOrmEntity
+    ): AbstractOrmEntity|array
     {
         try {
             /** @var AbstractOrmEntity $entity */
@@ -154,7 +154,7 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
      * @param int $offset
      * @param int $limit
      * @param LockFlag|null $lock
-     * @return array
+     * @return array|AbstractOrmEntity[]
      * @throws EntityNotFoundException
      * @throws EntityOrmException
      */
