@@ -17,6 +17,7 @@ use Charcoal\Database\Exception\DatabaseException;
 use Charcoal\Database\ORM\Exception\OrmException;
 use Charcoal\Database\ORM\Exception\OrmModelNotFoundException;
 use Charcoal\Database\Queries\LockFlag;
+use Charcoal\Database\Queries\SortFlag;
 
 /**
  * Class AbstractOrmRepository
@@ -123,7 +124,7 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
      * @param array $queryData
      * @param LockFlag|null $lock
      * @param bool $invokeStorageHooks
-     * @return AbstractOrmEntity|array
+     * @return AbstractOrmEntity
      * @throws EntityNotFoundException
      * @throws EntityOrmException
      */
@@ -132,12 +133,44 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
         array     $queryData = [],
         ?LockFlag $lock = null,
         bool      $invokeStorageHooks = true
-    ): AbstractOrmEntity|array
+    ): AbstractOrmEntity
     {
         try {
             /** @var AbstractOrmEntity $entity */
             $entity = $this->table->queryFind($whereStmt, $queryData, limit: 1, lock: $lock)->getNext();
             return $invokeStorageHooks ? $this->invokeStorageHooks($entity, EntitySource::DATABASE) : $entity;
+        } catch (OrmModelNotFoundException) {
+            throw new EntityNotFoundException();
+        } catch (OrmException $e) {
+            throw new EntityOrmException(static::class, $e);
+        }
+    }
+
+    /**
+     * @param string $whereStmt
+     * @param array $queryData
+     * @param SortFlag|null $sort
+     * @param string|null $sortColumn
+     * @param int $offset
+     * @param int $limit
+     * @param LockFlag|null $lock
+     * @return array
+     * @throws EntityNotFoundException
+     * @throws EntityOrmException
+     */
+    protected function getMultipleFromDb(
+        string    $whereStmt,
+        array     $queryData = [],
+        ?SortFlag $sort = null,
+        ?string   $sortColumn = null,
+        int       $offset = 0,
+        int       $limit = 0,
+        ?LockFlag $lock = null,
+    ): array
+    {
+        try {
+            return $this->table->queryFind($whereStmt, $queryData, null, $sort, $sortColumn,
+                $offset, $limit, $lock)->getAll();
         } catch (OrmModelNotFoundException) {
             throw new EntityNotFoundException();
         } catch (OrmException $e) {
