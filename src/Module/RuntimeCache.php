@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Module;
 
-use Charcoal\App\Kernel\Orm\Repository\AbstractOrmEntity;
+use Charcoal\App\Kernel\Entity\AbstractEntity;
 use Charcoal\Cache\Cache;
 use Charcoal\Cache\CachedReferenceKey;
 use Charcoal\Cache\Exception\CacheException;
@@ -113,7 +113,7 @@ class RuntimeCache
             $instance = $instance->resolve($this->getCacheStore());
         }
 
-        if ($instance instanceof AbstractOrmEntity) {
+        if ($instance instanceof AbstractEntity) {
             return $instance;
         }
 
