@@ -274,7 +274,8 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
 
             try {
                 $cacheTtl = max($cacheTtl, $this->entityCacheTtl);
-                $this->module->memoryCache->storeInCache($entityId, $entity->returnCacheableObject(), $cacheTtl > 0 ? $cacheTtl : null);
+                $this->module->memoryCache->storeInCache($entityId, $entity->getCacheableClone(),
+                    $cacheTtl > 0 ? $cacheTtl : null);
                 $storedInCache = true;
             } catch (CacheException $e) {
                 trigger_error(static::class . ' caught CacheException', E_USER_NOTICE);

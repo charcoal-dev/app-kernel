@@ -12,12 +12,12 @@ trait CacheableEntityTrait
     protected ?int $entityCachedOn = null;
 
     /**
-     * Default behaviour implementing CacheableEntityInterface interface, allowing it to be overridden
+     * Default behavior implementing CacheableEntityInterface interface, allowing it to be overridden
      * @return $this
      */
-    public function returnCacheableObject(): static
+    public function getCacheableClone(): static
     {
-        $cacheable = $this->cloneEntity();
+        $cacheable = $this->cloneForCache();
         $cacheable->setCachedOn(time());
         return $cacheable;
     }
@@ -25,7 +25,7 @@ trait CacheableEntityTrait
     /**
      * @return $this
      */
-    protected function cloneEntity(): static
+    protected function cloneForCache(): static
     {
         return clone $this;
     }
