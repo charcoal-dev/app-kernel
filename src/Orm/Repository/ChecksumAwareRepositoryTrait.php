@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm\Repository;
 
 use Charcoal\App\Kernel\Entity\ChecksumAwareEntityInterface;
+use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
 use Charcoal\Buffers\Frames\Bytes20;
+use Charcoal\Cipher\Cipher;
 
 /**
  * Trait ChecksumAwareRepositoryTrait
@@ -12,6 +14,8 @@ use Charcoal\Buffers\Frames\Bytes20;
  */
 trait ChecksumAwareRepositoryTrait
 {
+    protected function getCipher(): Cipher;
+
     /**
      * @param AbstractOrmEntity|null $entity
      * @return Bytes20

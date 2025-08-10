@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Orm\Entity;
+namespace Charcoal\App\Kernel\Contracts\Orm\Entity;
 
 /**
  * Interface CacheableEntityInterface
- * @package Charcoal\App\Kernel\Orm\Entity
+ * @package Charcoal\App\Kernel\Contracts\Orm\Entity
  */
 interface CacheableEntityInterface
 {

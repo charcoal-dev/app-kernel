@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Repository;
 
+use Charcoal\App\Kernel\Contracts\Orm\Repository\ChecksumAwareInterface;
+use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
 use Charcoal\App\Kernel\Orm\Entity\LockedEntity;
 use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
 use Charcoal\OOP\OOP;
@@ -96,7 +98,7 @@ trait EntityUpdatableTrait
         string            $checksumColumn = "checksum",
     ): int
     {
-        if (!$this instanceof ChecksumAwareRepositoryInterface) {
+        if (!$this instanceof ChecksumAwareInterface) {
             throw new \RuntimeException(static::class . " does not implement ChecksumAwareRepositoryInterface");
         }
 

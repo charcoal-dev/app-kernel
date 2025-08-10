@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm\Db;
 
 use Charcoal\App\Kernel\Contracts\Enums\TableRegistryEnumInterface;
-use Charcoal\App\Kernel\Orm\AbstractOrmModule;
-use Charcoal\App\Kernel\Orm\Repository\AbstractOrmEntity;
+use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
+use Charcoal\App\Kernel\Orm\Module\OrmAwareModule;
 use Charcoal\Database\Database;
 
 /**
@@ -17,9 +17,9 @@ abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
     public readonly TableRegistryEnumInterface $enum;
 
     public function __construct(
-        public readonly AbstractOrmModule $module,
-        TableRegistryEnumInterface        $dbTableEnum,
-        public readonly ?string           $entityClass
+        public readonly OrmAwareModule $module,
+        TableRegistryEnumInterface     $dbTableEnum,
+        public readonly ?string        $entityClass
     )
     {
         $this->enum = $dbTableEnum;
@@ -95,7 +95,7 @@ abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
             return $this->dbInstance;
         }
 
-        $this->dbInstance = $this->module->app->databases->getDb($this->enum->getDatabase()->getDatabaseKey());
+        $this->dbInstance = $this->module->app->database->getDb($this->enum->getDatabase()->getDatabaseKey());
         return $this->dbInstance;
     }
 }

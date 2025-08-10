@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Contracts\Container;
+namespace Charcoal\App\Kernel\Contracts\Orm\Module;
 
 use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
 use Charcoal\Cache\Cache;
 
 /**
  * Interface CacheStoreAwareInterface
- * @package Charcoal\App\Kernel\Contracts\Container
+ * @package Charcoal\App\Kernel\Contracts\Orm\Module
  */
 interface CacheStoreAwareInterface
 {

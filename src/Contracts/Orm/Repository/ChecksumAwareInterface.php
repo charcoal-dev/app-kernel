@@ -1,18 +1,24 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Orm\Repository;
+namespace Charcoal\App\Kernel\Contracts\Orm\Repository;
 
 use Charcoal\App\Kernel\Entity\Exception\ChecksumComputeException;
 use Charcoal\App\Kernel\Entity\Exception\ChecksumMismatchException;
 use Charcoal\Buffers\Frames\Bytes20;
+use Charcoal\Cipher\Cipher;
 
 /**
  * Interface ChecksumAwareRepositoryInterface
- * @package Charcoal\App\Kernel\Orm\Repository
+ * @package Charcoal\App\Kernel\Contracts\Orm\Repository
  */
-interface ChecksumAwareRepositoryInterface
+interface ChecksumAwareInterface
 {
+    /**
+     * @return Cipher
+     */
+    public function getCipher(): Cipher;
+
     /**
      * @return Bytes20
      * @throws ChecksumComputeException

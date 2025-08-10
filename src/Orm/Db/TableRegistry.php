@@ -7,10 +7,10 @@ use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
 use Charcoal\App\Kernel\Contracts\Enums\TableRegistryEnumInterface;
 
 /**
- * Class DatabaseTableRegistry
- * @package Charcoal\App\Kernel\Orm\Db
+ * Class TableRegistry
+ * @package Charcoal\App\Kernel\Database
  */
-class DatabaseTableRegistry
+class TableRegistry
 {
     protected array $map = [];
 
@@ -21,8 +21,10 @@ class DatabaseTableRegistry
      */
     public function register(AbstractOrmTable $table): void
     {
-        if (!isset($this->map[$table->enum->getDatabase()->getDatabaseKey()][$table->enum->getTableName()])) {
-            $this->map[$table->enum->getDatabase()->getDatabaseKey()][$table->enum->getTableName()] = $table;
+        $db = $table->enum->getDatabase()->getDatabaseKey();
+        $table = $table->enum->getTableName();
+        if (!isset($this->map[$db][$table])) {
+            $this->map[$db][$table] = $table;
         }
     }
 
@@ -36,7 +38,8 @@ class DatabaseTableRegistry
         $found = $this->map[$dbTable->getDatabase()->getDatabaseKey()][$dbTable->getTableName()] ?? null;
         if (!$found) {
             throw new \OutOfBoundsException(
-                "ORM database \"{$dbTable->getDatabase()->getDatabaseKey()}\" table \"{$dbTable->getTableName()}\" not found in registry"
+                "Database \"{$dbTable->getDatabase()->getDatabaseKey()}\" " .
+                "table \"{$dbTable->getTableName()}\" not found in registry"
             );
         }
 

@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Orm\Repository;
+namespace Charcoal\App\Kernel\Orm\Entity;
 
+use Charcoal\App\Kernel\Contracts\Orm\Entity\CacheableEntityInterface;
 use Charcoal\App\Kernel\Entity\AbstractEntity;
-use Charcoal\App\Kernel\Orm\Entity\CacheableEntityInterface;
 
 /**
  * Class AbstractOrmEntity
- * @package Charcoal\App\Kernel\Orm\Repository
+ * @package Charcoal\App\Kernel\Orm\Entity
  */
 abstract class AbstractOrmEntity extends AbstractEntity
 {

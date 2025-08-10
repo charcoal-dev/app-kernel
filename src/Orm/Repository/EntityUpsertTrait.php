@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Repository;
 
+use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
 use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
 use Charcoal\OOP\Vectors\StringVector;
 

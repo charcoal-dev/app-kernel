@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Entity;
 
-use Charcoal\App\Kernel\Orm\Repository\AbstractOrmEntity;
 use Charcoal\Semaphore\AbstractLock;
 
 /**
