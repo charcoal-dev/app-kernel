@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Exception;
 
+use Charcoal\Base\Exception\WrappedException;
 use Charcoal\Database\ORM\Exception\OrmException;
 use Charcoal\OOP\OOP;
 
@@ -10,14 +11,11 @@ use Charcoal\OOP\OOP;
  * Class EntityOrmException
  * @package Charcoal\App\Kernel\Orm\Exception
  */
-class EntityOrmException extends \Exception
+class EntityOrmException extends WrappedException
 {
-    public function __construct(string $className, \Throwable $exception)
+    public function __construct(string $className, \Throwable $previous)
     {
-        parent::__construct(
-            OOP::baseClassName($className) . ' caught "' .
-            ($exception instanceof OrmException ? OOP::baseClassName($exception::class) : $exception::class) . '"',
-            previous: $exception
-        );
+        parent::__construct($previous, OOP::baseClassName($className) . ' caught "' .
+            ($previous instanceof OrmException ? OOP::baseClassName($previous::class) : $previous::class) . '"');
     }
 }
