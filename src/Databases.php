@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel;
 
 use Charcoal\App\Kernel\Container\AppAwareInterface;
-use Charcoal\App\Kernel\Orm\Db\DatabaseEnum;
+use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
 use Charcoal\App\Kernel\Orm\Db\DatabaseTableRegistry;
 use Charcoal\Database\Database;
 use Charcoal\Database\DbDriver;
@@ -41,7 +41,7 @@ class Databases extends AbstractDIResolver implements AppAwareInterface
     }
 
     /**
-     * Prepares class for serialize,
+     * Prepares class for serializing,
      * Removes all current Database instances
      * @return array
      */
@@ -88,12 +88,12 @@ class Databases extends AbstractDIResolver implements AppAwareInterface
 
     /**
      * Gets existing Database instance or resolves it from configuration
-     * @param DatabaseEnum|string $key
+     * @param DatabaseEnumInterface|string $key
      * @return Database
      */
-    public function getDb(DatabaseEnum|string $key): Database
+    public function getDb(DatabaseEnumInterface|string $key): Database
     {
-        $key = $key instanceof DatabaseEnum ? $key->getDatabaseKey() : $key;
+        $key = $key instanceof DatabaseEnumInterface ? $key->getDatabaseKey() : $key;
         return $this->getOrResolve($key);
     }
 

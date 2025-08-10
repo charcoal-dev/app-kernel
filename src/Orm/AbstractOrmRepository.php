@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm;
 
+use Charcoal\App\Kernel\Contracts\Enums\TableRegistryEnumInterface;
 use Charcoal\App\Kernel\Contracts\StorageHooks\StorageHooksInvokerTrait;
 use Charcoal\App\Kernel\Module\AbstractModuleComponent;
 use Charcoal\App\Kernel\Orm\Db\AbstractOrmTable;
-use Charcoal\App\Kernel\Orm\Db\DbAwareTableEnum;
 use Charcoal\App\Kernel\Orm\Entity\CacheableEntityInterface;
 use Charcoal\App\Kernel\Orm\Exception\EntityNotFoundException;
 use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
@@ -34,11 +34,11 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
 
     /**
      * @param AbstractOrmModule $module
-     * @param DbAwareTableEnum $dbTableEnum
+     * @param TableRegistryEnumInterface $dbTableEnum
      */
     public function __construct(
-        AbstractOrmModule        $module,
-        private DbAwareTableEnum $dbTableEnum,
+        AbstractOrmModule                  $module,
+        private TableRegistryEnumInterface $dbTableEnum,
     )
     {
         parent::__construct($module);

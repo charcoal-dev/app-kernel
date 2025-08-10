@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm;
 
 use Charcoal\App\Kernel\Build\AppBuildPartial;
+use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
 use Charcoal\App\Kernel\Module\AbstractModuleComponent;
 use Charcoal\App\Kernel\Module\CacheAwareModule;
-use Charcoal\App\Kernel\Module\CacheStoreEnum;
 use Charcoal\App\Kernel\Orm\Db\DatabaseTableRegistry;
 use Charcoal\Cipher\Cipher;
 use Charcoal\Semaphore\AbstractSemaphore;
@@ -19,9 +19,9 @@ abstract class AbstractOrmModule extends CacheAwareModule
 {
     /**
      * @param AppBuildPartial $app
-     * @param CacheStoreEnum|null $cacheStoreEnum
+     * @param CacheStoreEnumInterface|null $cacheStoreEnum
      */
-    protected function __construct(AppBuildPartial $app, ?CacheStoreEnum $cacheStoreEnum)
+    protected function __construct(AppBuildPartial $app, ?CacheStoreEnumInterface $cacheStoreEnum)
     {
         $this->declareDatabaseTables($app->databases->orm);
         $this->declareChildren($app);

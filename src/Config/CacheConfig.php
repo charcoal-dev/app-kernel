@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config;
 
-use Charcoal\App\Kernel\Module\CacheStoreEnum;
+use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
 
 /**
  * Class CacheConfig
@@ -14,23 +14,23 @@ class CacheConfig
     private array $servers = [];
 
     /**
-     * @param CacheStoreEnum|string $key
+     * @param CacheStoreEnumInterface|string $key
      * @param CacheServerConfig $config
      * @return void
      */
-    public function set(CacheStoreEnum|string $key, CacheServerConfig $config): void
+    public function set(CacheStoreEnumInterface|string $key, CacheServerConfig $config): void
     {
-        $key = $key instanceof CacheStoreEnum ? $key->getServerKey() : $key;
+        $key = $key instanceof CacheStoreEnumInterface ? $key->getServerKey() : $key;
         $this->servers[$key] = $config;
     }
 
     /**
-     * @param CacheStoreEnum|string $key
+     * @param CacheStoreEnumInterface|string $key
      * @return CacheServerConfig
      */
-    public function get(CacheStoreEnum|string $key): CacheServerConfig
+    public function get(CacheStoreEnumInterface|string $key): CacheServerConfig
     {
-        $key = $key instanceof CacheStoreEnum ? $key->getServerKey() : $key;
+        $key = $key instanceof CacheStoreEnumInterface ? $key->getServerKey() : $key;
         if (!isset($this->servers[$key])) {
             throw new \OutOfRangeException(sprintf('No cache server configured matching "%s" key', $key));
         }

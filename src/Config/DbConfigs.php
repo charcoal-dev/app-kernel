@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config;
 
-use Charcoal\App\Kernel\Orm\Db\DatabaseEnum;
+use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
 use Charcoal\Database\DbCredentials;
 use Charcoal\OOP\Traits\NoDumpTrait;
 
@@ -29,24 +29,24 @@ class DbConfigs
 
     /**
      * Adds a database configuration available to AppKernel
-     * @param DatabaseEnum|string $key
+     * @param DatabaseEnumInterface|string $key
      * @param DbCredentials $dbConfig
      * @return void
      */
-    public function set(DatabaseEnum|string $key, DbCredentials $dbConfig): void
+    public function set(DatabaseEnumInterface|string $key, DbCredentials $dbConfig): void
     {
-        $key = $key instanceof DatabaseEnum ? $key->getDatabaseKey() : $key;
+        $key = $key instanceof DatabaseEnumInterface ? $key->getDatabaseKey() : $key;
         $this->databases[$key] = $dbConfig;
     }
 
     /**
      * Returns a specific database configuration or throws \OutOfRangeException if none matched
-     * @param DatabaseEnum|string $key
+     * @param DatabaseEnumInterface|string $key
      * @return DbCredentials
      */
-    public function get(DatabaseEnum|string $key): DbCredentials
+    public function get(DatabaseEnumInterface|string $key): DbCredentials
     {
-        $key = $key instanceof DatabaseEnum ? $key->getDatabaseKey() : $key;
+        $key = $key instanceof DatabaseEnumInterface ? $key->getDatabaseKey() : $key;
         if (!isset($this->databases[$key])) {
             throw new \OutOfRangeException(sprintf('No database configured matching "%s" key', $key));
         }

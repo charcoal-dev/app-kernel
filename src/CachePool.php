@@ -5,7 +5,7 @@ namespace Charcoal\App\Kernel;
 
 use Charcoal\App\Kernel\Config\CacheDriver;
 use Charcoal\App\Kernel\Container\AppAwareInterface;
-use Charcoal\App\Kernel\Module\CacheStoreEnum;
+use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
 use Charcoal\Cache\Cache;
 use Charcoal\Cache\CacheDriverInterface;
 use Charcoal\OOP\DependencyInjection\AbstractDIResolver;
@@ -38,17 +38,17 @@ class CachePool extends AbstractDIResolver implements AppAwareInterface
 
     /**
      * Resolve or get a resolved Cache instance
-     * @param CacheStoreEnum|string $key
+     * @param CacheStoreEnumInterface|string $key
      * @return Cache
      */
-    public function get(CacheStoreEnum|string $key): Cache
+    public function get(CacheStoreEnumInterface|string $key): Cache
     {
-        $key = $key instanceof CacheStoreEnum ? $key->getServerKey() : $key;
+        $key = $key instanceof CacheStoreEnumInterface ? $key->getServerKey() : $key;
         return $this->getOrResolve($key);
     }
 
     /**
-     * Resolve instance to Cache and sets up necessary events
+     * Resolve instance to Cache and sets up the necessary events
      * @param string $key
      * @param array $args
      * @return Cache

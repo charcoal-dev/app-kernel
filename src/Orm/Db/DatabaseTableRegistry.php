@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Db;
 
+use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
+use Charcoal\App\Kernel\Contracts\Enums\TableRegistryEnumInterface;
+
 /**
  * Class DatabaseTableRegistry
  * @package Charcoal\App\Kernel\Orm\Db
@@ -25,10 +28,10 @@ class DatabaseTableRegistry
 
     /**
      * Resolves argument Database and Table to retrieve AbstractOrmTable instance
-     * @param DbAwareTableEnum $dbTable
+     * @param TableRegistryEnumInterface $dbTable
      * @return AbstractOrmTable
      */
-    public function resolve(DbAwareTableEnum $dbTable): AbstractOrmTable
+    public function resolve(TableRegistryEnumInterface $dbTable): AbstractOrmTable
     {
         $found = $this->map[$dbTable->getDatabase()->getDatabaseKey()][$dbTable->getTableName()] ?? null;
         if (!$found) {
@@ -42,10 +45,10 @@ class DatabaseTableRegistry
 
     /**
      * Returns all declared tables under a DB
-     * @param DatabaseEnum $db
+     * @param DatabaseEnumInterface $db
      * @return array
      */
-    public function getDatabaseTables(DatabaseEnum $db): array
+    public function getDatabaseTables(DatabaseEnumInterface $db): array
     {
         return $this->map[$db->getDatabaseKey()] ?? [];
     }

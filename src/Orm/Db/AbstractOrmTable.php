@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Db;
 
+use Charcoal\App\Kernel\Contracts\Enums\TableRegistryEnumInterface;
 use Charcoal\App\Kernel\Orm\AbstractOrmModule;
 use Charcoal\App\Kernel\Orm\Repository\AbstractOrmEntity;
 use Charcoal\Database\Database;
@@ -13,11 +14,11 @@ use Charcoal\Database\Database;
  */
 abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
 {
-    public readonly DbAwareTableEnum $enum;
+    public readonly TableRegistryEnumInterface $enum;
 
     public function __construct(
         public readonly AbstractOrmModule $module,
-        DbAwareTableEnum                  $dbTableEnum,
+        TableRegistryEnumInterface        $dbTableEnum,
         public readonly ?string           $entityClass
     )
     {
