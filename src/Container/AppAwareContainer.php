@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Container;
 
 use Charcoal\App\Kernel\AppBuild;
+use Charcoal\App\Kernel\Contracts\Container\CacheStoreAwareInterface;
+use Charcoal\App\Kernel\Contracts\Container\RuntimeCacheOwnerInterface;
 
 /**
  * Class AppAwareContainer
@@ -11,23 +13,37 @@ use Charcoal\App\Kernel\AppBuild;
  */
 abstract class AppAwareContainer extends AppAware
 {
-    /** @var string[] Map of instance property keys to be automatically serialized and bootstrapped */
-    protected array $containerChildrenMap = [];
+    /** @var string[] property keys to be automatically serialized and bootstrapped */
+    private array $containerChildren = [];
 
-    /**
-     * Ideally in child classes parent::__construct should be called near at end of their own constructors
-     */
+    public readonly bool $hasPrivateRuntimeCache;
+    public readonly bool $isCacheStoreAware;
+
     protected function __construct()
     {
+        $this->initializeContracts();
+
         // Determine children for this AppAwareContainer instance to be automatically serialized
         $reflect = new \ReflectionClass($this);
         foreach ($reflect->getProperties() as $property) {
             if ($property->isInitialized($this)) {
                 if ($this->inspectIncludeChild($property->getValue($this))) {
-                    $this->containerChildrenMap[] = $property->getName();
+                    $this->containerChildren[] = $property->getName();
                 }
             }
         }
+    }
+
+    /**
+     * @return void
+     */
+    public function initializeContracts(): void
+    {
+        $this->isCacheStoreAware = $this instanceof CacheStoreAwareInterface ?
+            $this->initializeCacheStoreAwareContainer() : false;
+
+        $this->hasPrivateRuntimeCache = $this instanceof RuntimeCacheOwnerInterface ?
+            $this->initializePrivateRuntimeCache() : false;
     }
 
     /**
@@ -47,7 +63,7 @@ abstract class AppAwareContainer extends AppAware
     final public function bootstrap(AppBuild $app): void
     {
         parent::bootstrap($app);
-        foreach ($this->containerChildrenMap as $childPropertyKey) {
+        foreach ($this->containerChildren as $childPropertyKey) {
             if (isset($this->$childPropertyKey)) {
                 $this->bootstrapChildren($childPropertyKey);
             }
@@ -66,12 +82,14 @@ abstract class AppAwareContainer extends AppAware
     }
 
     /**
+     * Deliberately does not include "hasPrivateRuntimeCache", "isCacheStoreAware",
+     * and other contract trait declared properties
      * @return array
      */
     protected function collectSerializableData(): array
     {
-        $data = ["containerChildrenMap" => $this->containerChildrenMap];
-        foreach ($this->containerChildrenMap as $child) {
+        $data = ["containerChildren" => $this->containerChildren];
+        foreach ($this->containerChildren as $child) {
             $data[$child] = $this->$child;
         }
 
@@ -82,10 +100,11 @@ abstract class AppAwareContainer extends AppAware
      * @param array $data
      * @return void
      */
-    protected function onUnserialize(array $data): void
+    public function __unserialize(array $data): void
     {
-        $this->containerChildrenMap = $data["containerChildrenMap"];
-        foreach ($this->containerChildrenMap as $child) {
+        $this->initializeContracts();
+        $this->containerChildren = $data["containerChildren"];
+        foreach ($this->containerChildren as $child) {
             $this->$child = $data[$child];
         }
     }
@@ -93,8 +112,8 @@ abstract class AppAwareContainer extends AppAware
     /**
      * @return array|string[]
      */
-    public function getContainerChildrenMap(): array
+    public function getContainerChildren(): array
     {
-        return $this->containerChildrenMap;
+        return $this->containerChildren;
     }
 }

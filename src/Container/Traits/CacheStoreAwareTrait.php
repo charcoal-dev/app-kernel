@@ -1,0 +1,36 @@
+<?php
+declare(strict_types=1);
+
+namespace Charcoal\App\Kernel\Container\Traits;
+
+use Charcoal\App\Kernel\Container\AppAwareContainer;
+use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
+use Charcoal\Cache\Cache;
+
+/**
+ * Trait CacheStoreAwareTrait
+ * @package Charcoal\App\Kernel\Contracts\Container
+ * @mixin AppAwareContainer
+ */
+trait CacheStoreAwareTrait
+{
+    private ?Cache $cacheStore = null;
+    public readonly ?CacheStoreEnumInterface $cacheStoreEnum;
+
+    abstract public function declareCacheStoreEnum(): ?CacheStoreEnumInterface;
+
+    public function initializeCacheStoreAwareContainer(): true
+    {
+        $this->cacheStoreEnum = $this->declareCacheStoreEnum();
+        return true;
+    }
+
+    public function getCacheStore(): ?Cache
+    {
+        if ($this->cacheStore) {
+            return $this->cacheStore;
+        }
+
+        return $this->cacheStore = $this->app->cache->get($this->cacheStoreEnum->getServerKey());
+    }
+}
