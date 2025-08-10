@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Contracts\Container;
+namespace Charcoal\App\Kernel\Contracts\Cache;
 
 use Charcoal\App\Kernel\Cache\RuntimeCache;
 
 /**
  * Interface RuntimeCacheOwnerInterface
- * @package Charcoal\App\Kernel\Contracts\Container
+ * @package Charcoal\App\Kernel\Contracts\Cache
  */
 interface RuntimeCacheOwnerInterface
 {

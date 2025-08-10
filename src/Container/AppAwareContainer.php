@@ -4,8 +4,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Container;
 
 use Charcoal\App\Kernel\AppBuild;
-use Charcoal\App\Kernel\Contracts\Container\CacheStoreAwareInterface;
-use Charcoal\App\Kernel\Contracts\Container\RuntimeCacheOwnerInterface;
+use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
 
 /**
  * Class AppAwareContainer
@@ -16,12 +15,14 @@ abstract class AppAwareContainer extends AppAware
     /** @var string[] property keys to be automatically serialized and bootstrapped */
     private array $containerChildren = [];
 
-    public readonly bool $hasPrivateRuntimeCache;
-    public readonly bool $isCacheStoreAware;
-
+    /**
+     * @throws \ReflectionException
+     */
     protected function __construct()
     {
-        $this->initializeContracts();
+        if ($this instanceof RuntimeCacheOwnerInterface) {
+            $this->initializePrivateRuntimeCache();
+        }
 
         // Determine children for this AppAwareContainer instance to be automatically serialized
         $reflect = new \ReflectionClass($this);
@@ -32,18 +33,6 @@ abstract class AppAwareContainer extends AppAware
                 }
             }
         }
-    }
-
-    /**
-     * @return void
-     */
-    public function initializeContracts(): void
-    {
-        $this->isCacheStoreAware = $this instanceof CacheStoreAwareInterface ?
-            $this->initializeCacheStoreAwareContainer() : false;
-
-        $this->hasPrivateRuntimeCache = $this instanceof RuntimeCacheOwnerInterface ?
-            $this->initializePrivateRuntimeCache() : false;
     }
 
     /**
@@ -82,9 +71,7 @@ abstract class AppAwareContainer extends AppAware
     }
 
     /**
-     * Deliberately does not include "hasPrivateRuntimeCache", "isCacheStoreAware",
-     * and other contract trait declared properties
-     * @return array
+     * @return array[]|\string[][]
      */
     protected function collectSerializableData(): array
     {
@@ -102,7 +89,10 @@ abstract class AppAwareContainer extends AppAware
      */
     public function __unserialize(array $data): void
     {
-        $this->initializeContracts();
+        if ($this instanceof RuntimeCacheOwnerInterface) {
+            $this->initializePrivateRuntimeCache();
+        }
+
         $this->containerChildren = $data["containerChildren"];
         foreach ($this->containerChildren as $child) {
             $this->$child = $data[$child];

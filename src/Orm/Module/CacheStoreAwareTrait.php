@@ -1,16 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Container\Traits;
+namespace Charcoal\App\Kernel\Orm\Module;
 
-use Charcoal\App\Kernel\Container\AppAwareContainer;
 use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
 use Charcoal\Cache\Cache;
 
 /**
  * Trait CacheStoreAwareTrait
- * @package Charcoal\App\Kernel\Contracts\Container
- * @mixin AppAwareContainer
+ * @package Charcoal\App\Kernel\Orm\Module
  */
 trait CacheStoreAwareTrait
 {
@@ -29,6 +27,10 @@ trait CacheStoreAwareTrait
     {
         if ($this->cacheStore) {
             return $this->cacheStore;
+        }
+
+        if (!$this->cacheStoreEnum) {
+            return null;
         }
 
         return $this->cacheStore = $this->app->cache->get($this->cacheStoreEnum->getServerKey());
