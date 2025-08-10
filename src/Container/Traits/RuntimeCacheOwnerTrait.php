@@ -16,8 +16,6 @@ trait RuntimeCacheOwnerTrait
 {
     public readonly RuntimeCache $memoryCache;
 
-    abstract public function normalizeStorageKey(string $key): string;
-
     public function initializePrivateRuntimeCache(): true
     {
         /** @var RuntimeCacheOwnerInterface $this */
