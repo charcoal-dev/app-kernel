@@ -7,8 +7,10 @@ use Charcoal\App\Kernel\Build\AppBuildCache;
 use Charcoal\App\Kernel\Build\AppBuildEnum;
 use Charcoal\App\Kernel\Build\AppBuildPartial;
 use Charcoal\App\Kernel\Build\BuildMetadata;
+use Charcoal\App\Kernel\Cache\CacheManager;
 use Charcoal\App\Kernel\Cipher\CipherKeychain;
 use Charcoal\App\Kernel\Container\AppAware;
+use Charcoal\App\Kernel\Database\DatabaseManager;
 use Charcoal\App\Kernel\Errors\ErrorHandler;
 use Charcoal\App\Kernel\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Polyfill\NullErrorLog;
@@ -22,10 +24,10 @@ use Charcoal\OOP\Traits\NotCloneableTrait;
 abstract class AppBuild extends AppBuildCache
 {
     public readonly BuildMetadata $build;
-    public readonly CachePool $cache;
+    public readonly CacheManager $cache;
     public readonly CipherKeychain $cipher;
     public readonly Config $config;
-    public readonly Databases $databases;
+    public readonly DatabaseManager $database;
     public readonly Directories $directories;
     public readonly ErrorHandler $errors;
     public readonly Events $events;
@@ -37,10 +39,10 @@ abstract class AppBuild extends AppBuildCache
         AppBuildEnum         $build,
         Directory            $rootDirectory,
         ErrorLoggerInterface $errorLog = new NullErrorLog(),
-        string               $cachePoolClass = CachePool::class,
+        string               $cachePoolClass = CacheManager::class,
         string               $directoriesClass = Directories::class,
         string               $eventsClass = Events::class,
-        string               $databasesClass = Databases::class,
+        string               $databasesClass = DatabaseManager::class,
         string               $cipherClass = CipherKeychain::class,
         string               $errorHandlerClass = ErrorHandler::class,
         string               $appBuildPartialClass = AppBuildPartial::class,
@@ -55,14 +57,14 @@ abstract class AppBuild extends AppBuildCache
         $this->config = $this->renderConfig();
 
         // Initialize rest of components...
-        $this->databases = new $databasesClass();
+        $this->database = new $databasesClass();
         $this->cache = new $cachePoolClass();
 
         // Get plan for building modules and services...
         $modules = $build->getBuildPlan(new $appBuildPartialClass(
             $this->cache,
             $this->config,
-            $this->databases,
+            $this->database,
             $this->directories,
             $this->errors,
             $this->events,
@@ -125,7 +127,7 @@ abstract class AppBuild extends AppBuildCache
     public function bootstrap(): void
     {
         // Bootstrap dependants:
-        $this->databases->bootstrap($this);
+        $this->database->bootstrap($this);
         $this->cache->bootstrap($this);
 
         // All declared services and modules:
@@ -151,7 +153,7 @@ abstract class AppBuild extends AppBuildCache
             "cache" => $this->cache,
             "cipher" => $this->cipher,
             "config" => $this->config,
-            "databases" => $this->databases,
+            "database" => $this->database,
             "directories" => $this->directories,
             "errors" => $this->errors,
             "events" => $this->events,
@@ -175,7 +177,7 @@ abstract class AppBuild extends AppBuildCache
         $this->cache = $data["cache"];
         $this->cipher = $data["cipher"];
         $this->config = $data["config"];
-        $this->databases = $data["databases"];
+        $this->database = $data["database"];
         $this->directories = $data["directories"];
         $this->errors = $data["errors"];
         $this->events = $data["events"];

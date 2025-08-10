@@ -12,7 +12,7 @@ use Charcoal\Cipher\Cipher;
  * Interface ChecksumAwareRepositoryInterface
  * @package Charcoal\App\Kernel\Contracts\Orm\Repository
  */
-interface ChecksumAwareInterface
+interface ChecksumAwareRepositoryInterface
 {
     /**
      * @return Cipher

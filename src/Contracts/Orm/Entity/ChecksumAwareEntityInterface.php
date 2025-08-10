@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Entity;
+namespace Charcoal\App\Kernel\Contracts\Orm\Entity;
 
 use Charcoal\App\Kernel\Entity\Exception\ChecksumComputeException;
 use Charcoal\App\Kernel\Entity\Exception\ChecksumMismatchException;

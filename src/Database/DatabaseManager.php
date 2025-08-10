@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel;
+namespace Charcoal\App\Kernel\Database;
 
-use Charcoal\App\Kernel\Container\AppAwareInterface;
+use Charcoal\App\Kernel\AppBuild;
 use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
-use Charcoal\App\Kernel\Orm\Db\DatabaseTableRegistry;
+use Charcoal\App\Kernel\Orm\Db\TableRegistry;
 use Charcoal\Database\Database;
 use Charcoal\Database\DbDriver;
 use Charcoal\OOP\DependencyInjection\AbstractDIResolver;
@@ -15,10 +15,10 @@ use Charcoal\OOP\Traits\NoDumpTrait;
  * Class Databases
  * @package Charcoal\App\Kernel
  */
-class Databases extends AbstractDIResolver implements AppAwareInterface
+class DatabaseManager extends AbstractDIResolver
 {
     protected readonly AppBuild $app;
-    public readonly DatabaseTableRegistry $orm;
+    public readonly TableRegistry $tables;
 
     use NoDumpTrait;
 
@@ -28,7 +28,7 @@ class Databases extends AbstractDIResolver implements AppAwareInterface
     public function __construct()
     {
         parent::__construct(Database::class);
-        $this->orm = new DatabaseTableRegistry();
+        $this->tables = new TableRegistry();
     }
 
     /**
@@ -49,7 +49,7 @@ class Databases extends AbstractDIResolver implements AppAwareInterface
     {
         $data = parent::__serialize();
         $data["instances"] = null;
-        $data["orm"] = $this->orm;
+        $data["orm"] = $this->tables;
         return $data;
     }
 
@@ -60,7 +60,7 @@ class Databases extends AbstractDIResolver implements AppAwareInterface
      */
     public function __unserialize(array $data): void
     {
-        $this->orm = $data["orm"];
+        $this->tables = $data["orm"];
         parent::__unserialize(["instanceOf" => $data["instanceOf"], "instances" => []]);
     }
 
@@ -74,10 +74,10 @@ class Databases extends AbstractDIResolver implements AppAwareInterface
      */
     protected function resolve(string $key, array $args): Database
     {
-        $cred = $this->app->config->databases->get($key);
+        $cred = $this->app->config->database->get($key);
         if ($cred->driver === DbDriver::MYSQL) {
             if ($cred->username === "root" && !$cred->password) {
-                $cred->password = $this->app->config->databases->mysqlRootPassword;
+                $cred->password = $this->app->config->database->mysqlRootPassword;
             }
         }
 

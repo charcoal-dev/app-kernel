@@ -75,7 +75,8 @@ trait ChecksumAwareEntityTrait
      */
     public function verifyChecksum(Cipher $cipher, int $iterations): bool
     {
-        return $this->entityChecksumValidated = $this->calculateChecksum($cipher, $iterations)->equals($this->getChecksum() ?? "\0");
+        return $this->entityChecksumValidated =
+            $this->calculateChecksum($cipher, $iterations)->equals($this->getChecksum() ?? "\0");
     }
 
     /**

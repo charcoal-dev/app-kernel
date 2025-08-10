@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Cache;
 
-use Charcoal\App\Kernel\Contracts\Container\RuntimeCacheOwnerInterface;
+use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Base\Traits\NotSerializableTrait;
@@ -42,7 +42,7 @@ final class RuntimeCache
      * @param mixed $value
      * @return void
      */
-    public function storeInMemory(string $key, mixed $value): void
+    public function store(string $key, mixed $value): void
     {
         $this->storage[$this->normalizeStorageKey($key)] = $value;
     }
@@ -51,7 +51,7 @@ final class RuntimeCache
      * @param string $key
      * @return mixed
      */
-    public function getFromMemory(string $key): mixed
+    public function get(string $key): mixed
     {
         return $this->storage[$this->normalizeStorageKey($key)] ?? null;
     }
@@ -60,7 +60,7 @@ final class RuntimeCache
      * @param string $key
      * @return void
      */
-    public function deleteFromMemory(string $key): void
+    public function delete(string $key): void
     {
         unset($this->storage[$this->normalizeStorageKey($key)]);
     }
@@ -69,7 +69,7 @@ final class RuntimeCache
      * Cleans the entire repository
      * @return void
      */
-    public function purgeRuntimeMemory(): void
+    public function purge(): void
     {
         unset($this->storage);
         $this->storage = [];

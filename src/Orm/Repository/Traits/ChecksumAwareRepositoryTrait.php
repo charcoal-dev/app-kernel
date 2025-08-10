@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
-use Charcoal\App\Kernel\Entity\ChecksumAwareEntityInterface;
+use Charcoal\App\Kernel\Contracts\Orm\Entity\ChecksumAwareEntityInterface;
 use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
 use Charcoal\Buffers\Frames\Bytes20;
 use Charcoal\Cipher\Cipher;

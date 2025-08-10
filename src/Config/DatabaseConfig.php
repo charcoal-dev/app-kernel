@@ -11,9 +11,9 @@ use Charcoal\OOP\Traits\NoDumpTrait;
  * Class DbConfigs
  * @package Charcoal\App\Kernel\Config
  */
-class DbConfigs
+class DatabaseConfig
 {
-    private array $databases = [];
+    private array $database = [];
 
     use NoDumpTrait;
 
@@ -36,7 +36,7 @@ class DbConfigs
     public function set(DatabaseEnumInterface|string $key, DbCredentials $dbConfig): void
     {
         $key = $key instanceof DatabaseEnumInterface ? $key->getDatabaseKey() : $key;
-        $this->databases[$key] = $dbConfig;
+        $this->database[$key] = $dbConfig;
     }
 
     /**
@@ -47,11 +47,11 @@ class DbConfigs
     public function get(DatabaseEnumInterface|string $key): DbCredentials
     {
         $key = $key instanceof DatabaseEnumInterface ? $key->getDatabaseKey() : $key;
-        if (!isset($this->databases[$key])) {
+        if (!isset($this->database[$key])) {
             throw new \OutOfRangeException(sprintf('No database configured matching "%s" key', $key));
         }
 
-        return $this->databases[$key];
+        return $this->database[$key];
     }
 
     /**
@@ -60,6 +60,6 @@ class DbConfigs
      */
     public function getAll(): array
     {
-        return $this->databases;
+        return $this->database;
     }
 }

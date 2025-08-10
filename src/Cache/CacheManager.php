@@ -1,10 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel;
+namespace Charcoal\App\Kernel\Cache;
 
+use Charcoal\App\Kernel\AppBuild;
 use Charcoal\App\Kernel\Config\CacheDriver;
-use Charcoal\App\Kernel\Container\AppAwareInterface;
+use Charcoal\App\Kernel\Contracts\AppAwareInterface;
 use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
 use Charcoal\Cache\Cache;
 use Charcoal\Cache\CacheDriverInterface;
@@ -15,7 +16,7 @@ use Charcoal\OOP\Traits\NoDumpTrait;
  * Class CachePool
  * @package Charcoal\App\Kernel
  */
-class CachePool extends AbstractDIResolver implements AppAwareInterface
+class CacheManager extends AbstractDIResolver implements AppAwareInterface
 {
     protected readonly AppBuild $app;
 
