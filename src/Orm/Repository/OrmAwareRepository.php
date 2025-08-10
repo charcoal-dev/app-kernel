@@ -8,9 +8,9 @@ use Charcoal\App\Kernel\Contracts\StorageHooks\StorageHooksInvokerTrait;
 use Charcoal\App\Kernel\Orm\Db\AbstractOrmTable;
 use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
 use Charcoal\App\Kernel\Orm\Module\OrmAwareModule;
+use Charcoal\App\Kernel\Orm\Repository\Traits\EntityFetchTrait;
 use Charcoal\Base\Enums\ExceptionAction;
 use Charcoal\Cache\Exception\CacheException;
-use Charcoal\Cipher\Cipher;
 use Charcoal\OOP\Traits\ControlledSerializableTrait;
 
 /**
@@ -23,7 +23,6 @@ abstract class OrmAwareRepository
 
     protected int $entityCacheTtl = 86400;
     protected int $entityChecksumIterations = 0x64;
-    private ?Cipher $cipher = null;
 
     use StorageHooksInvokerTrait;
     use ControlledSerializableTrait;
@@ -50,7 +49,6 @@ abstract class OrmAwareRepository
      */
     protected function collectSerializableData(): array
     {
-        $data["cipher"] = null;
         $data["table"] = $this->serializeTable ? $this->table : null;
         $data["dbTableEnum"] = $this->dbTableEnum;
         $data["module"] = $this->module;
@@ -66,7 +64,6 @@ abstract class OrmAwareRepository
      */
     public function __unserialize(array $data): void
     {
-        $this->cipher = null;
         $this->module = $data["module"];
         $this->table = $data["table"];
         $this->dbTableEnum = $data["dbTableEnum"];
@@ -101,7 +98,6 @@ abstract class OrmAwareRepository
         $this->module->deleteFromCache($entity instanceof AbstractOrmEntity ?
             $this->getStorageKeyFor($entity) : $this->getStorageKey($entity));
     }
-
 
     /**
      * @param AbstractOrmEntity $entity

@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Orm\Repository;
+namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
+use Charcoal\App\Kernel\Contracts\Orm\Entity\SemaphoreLockHooksInterface;
 use Charcoal\App\Kernel\Orm\Entity\LockedEntity;
-use Charcoal\App\Kernel\Orm\Entity\SemaphoreLockHooksInterface;
 use Charcoal\App\Kernel\Orm\Exception\EntityLockedException;
 use Charcoal\Database\Queries\LockFlag;
 
@@ -24,8 +24,7 @@ trait EntitySemaphoreLockTrait
      * @param LockFlag|null $dbLockFlag
      * @return LockedEntity
      * @throws EntityLockedException
-     * @throws \Charcoal\App\Kernel\Orm\Exception\EntityNotFoundException
-     * @throws \Charcoal\App\Kernel\Orm\Exception\EntityOrmException
+     * @throws \Charcoal\Semaphore\Exception\SemaphoreLockException
      */
     protected function getLockedEntity(
         string    $entityLockId,
@@ -44,10 +43,9 @@ trait EntitySemaphoreLockTrait
                 $lockTimeout
             );
         } catch (\Exception $e) {
-            throw new EntityLockedException(previous: $e);
+            throw new EntityLockedException($this->table->entityClass, previous: $e);
         }
 
-        /** @noinspection PhpUnreachableStatementInspection */
         if ($autoReleaseLock) {
             $lock->setAutoRelease();
         }
@@ -62,13 +60,13 @@ trait EntitySemaphoreLockTrait
             }
 
             return new LockedEntity($entity, $lock);
-        } catch (\Exception $t) {
+        } catch (\Exception $e) {
             try {
                 $lock->releaseLock();
             } catch (\Exception) {
             }
 
-            throw $t;
+            throw $e;
         }
     }
 }

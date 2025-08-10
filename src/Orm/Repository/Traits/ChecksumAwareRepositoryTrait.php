@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Orm\Repository;
+namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
 use Charcoal\App\Kernel\Entity\ChecksumAwareEntityInterface;
 use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
@@ -14,7 +14,21 @@ use Charcoal\Cipher\Cipher;
  */
 trait ChecksumAwareRepositoryTrait
 {
-    protected function getCipher(): Cipher;
+    private ?Cipher $cipher = null;
+
+    /**
+     * @return Cipher
+     */
+    public function getCipher(): Cipher
+    {
+        if (!$this->cipher) {
+            $this->cipher = $this->module->getCipherFor($this);
+            if (!$this->cipher) {
+                throw new \LogicException("No cipher resolved for " . static::class);
+            }
+        }
+        return $this->cipher;
+    }
 
     /**
      * @param AbstractOrmEntity|null $entity

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Orm\Repository;
+namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
 use Charcoal\App\Kernel\Contracts\Orm\Entity\CacheableEntityInterface;
 use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
