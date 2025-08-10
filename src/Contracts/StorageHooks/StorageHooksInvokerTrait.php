@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Contracts\StorageHooks;
 
-use Charcoal\App\Kernel\Entity\EntitySource;
+use Charcoal\Base\Enums\FetchOrigin;
 
 /**
  * Trait StorageHooksInvokerTrait
@@ -13,21 +13,21 @@ trait StorageHooksInvokerTrait
 {
     /**
      * @param object $entity
-     * @param EntitySource $source
+     * @param FetchOrigin $origin
      * @param bool $storedInCache
      * @return object
      */
     protected function invokeStorageHooks(
-        object       $entity,
-        EntitySource $source,
-        bool         $storedInCache = false
+        object      $entity,
+        FetchOrigin $origin,
+        bool        $storedInCache = false
     ): object
     {
         // Invoke StorageHooksInterface
         if ($entity instanceof StorageHooksInterface) {
-            $lifecycleEntry = $entity->onRetrieve($source);
+            $lifecycleEntry = $entity->onRetrieve($origin);
             if ($lifecycleEntry) {
-                $this->module->app->lifecycle->log($lifecycleEntry, $source->value, true);
+                $this->module->app->lifecycle->log($lifecycleEntry, $origin->value, true);
             }
 
             if ($storedInCache) {

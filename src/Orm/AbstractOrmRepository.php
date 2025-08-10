@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm;
 
 use Charcoal\App\Kernel\Contracts\StorageHooks\StorageHooksInvokerTrait;
-use Charcoal\App\Kernel\Entity\EntitySource;
 use Charcoal\App\Kernel\Module\AbstractModuleComponent;
 use Charcoal\App\Kernel\Orm\Db\AbstractOrmTable;
 use Charcoal\App\Kernel\Orm\Db\DbAwareTableEnum;
@@ -12,6 +11,7 @@ use Charcoal\App\Kernel\Orm\Entity\CacheableEntityInterface;
 use Charcoal\App\Kernel\Orm\Exception\EntityNotFoundException;
 use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
 use Charcoal\App\Kernel\Orm\Repository\AbstractOrmEntity;
+use Charcoal\Base\Enums\FetchOrigin;
 use Charcoal\Cache\Exception\CacheException;
 use Charcoal\Database\Exception\DatabaseException;
 use Charcoal\Database\ORM\Exception\OrmException;
@@ -138,7 +138,7 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
         try {
             /** @var AbstractOrmEntity $entity */
             $entity = $this->table->queryFind($whereStmt, $queryData, limit: 1, lock: $lock)->getNext();
-            return $invokeStorageHooks ? $this->invokeStorageHooks($entity, EntitySource::DATABASE) : $entity;
+            return $invokeStorageHooks ? $this->invokeStorageHooks($entity, FetchOrigin::DATABASE) : $entity;
         } catch (OrmModelNotFoundException) {
             throw new EntityNotFoundException();
         } catch (OrmException $e) {
@@ -246,7 +246,7 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
         $entityId = $this->getStorageKey($primaryId);
         $entity = $this->module->memoryCache->getFromMemory($entityId);
         if ($entity instanceof AbstractOrmEntity) {
-            return $this->invokeStorageHooks($entity, EntitySource::RUNTIME);
+            return $this->invokeStorageHooks($entity, FetchOrigin::RUNTIME);
         }
 
         if ($checkInCache) {
@@ -254,7 +254,7 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
                 $entity = $this->module->memoryCache->getFromCache($entityId);
                 if ($entity instanceof AbstractOrmEntity) {
                     $this->module->memoryCache->storeInMemory($entityId, $entity); // Runtime Memory Set
-                    return $this->invokeStorageHooks($entity, EntitySource::CACHE);
+                    return $this->invokeStorageHooks($entity, FetchOrigin::CACHE);
                 }
             } catch (CacheException $e) {
                 trigger_error(static::class . ' caught CacheException', E_USER_NOTICE);
@@ -285,6 +285,6 @@ abstract class AbstractOrmRepository extends AbstractModuleComponent
             }
         }
 
-        return $this->invokeStorageHooks($entity, EntitySource::DATABASE, $storedInCache ?? false);
+        return $this->invokeStorageHooks($entity, FetchOrigin::DATABASE, $storedInCache ?? false);
     }
 }
