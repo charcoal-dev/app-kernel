@@ -95,7 +95,7 @@ abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
             return $this->dbInstance;
         }
 
-        $this->dbInstance = $this->module->app->database->getDb($this->enum->getDatabase()->getDatabaseKey());
+        $this->dbInstance = $this->module->app->database->getDb($this->enum->getDatabase());
         return $this->dbInstance;
     }
 }

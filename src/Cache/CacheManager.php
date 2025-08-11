@@ -5,26 +5,29 @@ namespace Charcoal\App\Kernel\Cache;
 
 use Charcoal\App\Kernel\AppBuild;
 use Charcoal\App\Kernel\Config\CacheDriver;
-use Charcoal\App\Kernel\Contracts\AppAwareInterface;
 use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
+use Charcoal\Base\Abstracts\AbstractFactoryRegistry;
+use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
+use Charcoal\Base\Traits\NoDumpTrait;
+use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Cache\Cache;
 use Charcoal\Cache\CacheDriverInterface;
-use Charcoal\OOP\DependencyInjection\AbstractDIResolver;
-use Charcoal\OOP\Traits\NoDumpTrait;
 
 /**
  * Class CachePool
  * @package Charcoal\App\Kernel
+ * @template-extends AbstractFactoryRegistry<Cache>
  */
-class CacheManager extends AbstractDIResolver implements AppAwareInterface
+class CacheManager extends AbstractFactoryRegistry
 {
     protected readonly AppBuild $app;
 
+    use RegistryKeysLowercaseTrimmed;
     use NoDumpTrait;
+    use NotCloneableTrait;
 
     public function __construct()
     {
-        parent::__construct(Cache::class);
     }
 
     /**
@@ -45,16 +48,15 @@ class CacheManager extends AbstractDIResolver implements AppAwareInterface
     public function get(CacheStoreEnumInterface|string $key): Cache
     {
         $key = $key instanceof CacheStoreEnumInterface ? $key->getServerKey() : $key;
-        return $this->getOrResolve($key);
+        return $this->getExistingOrCreate($key);
     }
 
     /**
      * Resolve instance to Cache and sets up the necessary events
      * @param string $key
-     * @param array $args
      * @return Cache
      */
-    protected function resolve(string $key, array $args): Cache
+    protected function create(string $key): Cache
     {
         $cacheStore = new Cache(
             CacheDriver::CreateClient($this->app->config->cache->get($key)),
@@ -76,7 +78,7 @@ class CacheManager extends AbstractDIResolver implements AppAwareInterface
      */
     public function __serialize(): array
     {
-        return ["instanceOf" => $this->instanceOf];
+        return [];
     }
 
     /**
@@ -86,6 +88,6 @@ class CacheManager extends AbstractDIResolver implements AppAwareInterface
      */
     public function __unserialize(array $data): void
     {
-        parent::__unserialize(["instanceOf" => $data["instanceOf"], "instances" => []]);
+        $this->instances = [];
     }
 }

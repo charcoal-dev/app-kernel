@@ -6,28 +6,29 @@ namespace Charcoal\App\Kernel\Database;
 use Charcoal\App\Kernel\AppBuild;
 use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
 use Charcoal\App\Kernel\Orm\Db\TableRegistry;
+use Charcoal\Base\Abstracts\AbstractFactoryRegistry;
+use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
+use Charcoal\Base\Traits\NoDumpTrait;
+use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Database\Database;
 use Charcoal\Database\DbDriver;
-use Charcoal\OOP\DependencyInjection\AbstractDIResolver;
-use Charcoal\OOP\Traits\NoDumpTrait;
 
 /**
  * Class Databases
  * @package Charcoal\App\Kernel
+ * @template-extends AbstractFactoryRegistry<Database>
  */
-class DatabaseManager extends AbstractDIResolver
+class DatabaseManager extends AbstractFactoryRegistry
 {
     protected readonly AppBuild $app;
     public readonly TableRegistry $tables;
 
+    use RegistryKeysLowercaseTrimmed;
     use NoDumpTrait;
+    use NotCloneableTrait;
 
-    /**
-     * Constructor explicitly defined to expose "protected" constructor from parent
-     */
     public function __construct()
     {
-        parent::__construct(Database::class);
         $this->tables = new TableRegistry();
     }
 
@@ -47,9 +48,8 @@ class DatabaseManager extends AbstractDIResolver
      */
     public function __serialize(): array
     {
-        $data = parent::__serialize();
+        $data["tables"] = $this->tables;
         $data["instances"] = null;
-        $data["orm"] = $this->tables;
         return $data;
     }
 
@@ -60,19 +60,18 @@ class DatabaseManager extends AbstractDIResolver
      */
     public function __unserialize(array $data): void
     {
-        $this->tables = $data["orm"];
-        parent::__unserialize(["instanceOf" => $data["instanceOf"], "instances" => []]);
+        $this->tables = $data["tables"];
+        $this->instances = [];
     }
 
     /**
      * Resolves DbCredentials object from config and, creates a Database instance
      * @param string $key
-     * @param array $args
      * @return Database
      * @throws \Charcoal\Database\Exception\DbConnectionException
      * @throws \Throwable
      */
-    protected function resolve(string $key, array $args): Database
+    protected function create(string $key): Database
     {
         $cred = $this->app->config->database->get($key);
         if ($cred->driver === DbDriver::MYSQL) {
@@ -88,13 +87,12 @@ class DatabaseManager extends AbstractDIResolver
 
     /**
      * Gets existing Database instance or resolves it from configuration
-     * @param DatabaseEnumInterface|string $key
+     * @param DatabaseEnumInterface $key
      * @return Database
      */
-    public function getDb(DatabaseEnumInterface|string $key): Database
+    public function getDb(DatabaseEnumInterface $key): Database
     {
-        $key = $key instanceof DatabaseEnumInterface ? $key->getDatabaseKey() : $key;
-        return $this->getOrResolve($key);
+        return $this->getExistingOrCreate($key->getDatabaseKey());
     }
 
     /**
@@ -104,8 +102,6 @@ class DatabaseManager extends AbstractDIResolver
     public function getAllQueries(): array
     {
         $queries = [];
-
-        /** @var Database $dbInstance */
         foreach ($this->instances as $dbTag => $dbInstance) {
             foreach ($dbInstance->queries as $dbQuery) {
                 $queries[] = [
@@ -125,8 +121,6 @@ class DatabaseManager extends AbstractDIResolver
     public function flushAllQueries(): int
     {
         $flushed = 0;
-
-        /** @var Database $db */
         foreach ($this->instances as $db) {
             $flushed += $db->queries->count();
             $db->queries->flush();

@@ -14,8 +14,8 @@ use Charcoal\App\Kernel\Database\DatabaseManager;
 use Charcoal\App\Kernel\Errors\ErrorHandler;
 use Charcoal\App\Kernel\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Polyfill\NullErrorLog;
+use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Filesystem\Directory;
-use Charcoal\OOP\Traits\NotCloneableTrait;
 
 /**
  * Class AppBuild

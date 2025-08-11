@@ -6,9 +6,9 @@ namespace Charcoal\App\Kernel\Errors;
 use Charcoal\App\Kernel\AppBuild;
 use Charcoal\App\Kernel\Build\AppBuildEnum;
 use Charcoal\App\Kernel\Errors;
-use Charcoal\OOP\Traits\NoDumpTrait;
-use Charcoal\OOP\Traits\NotCloneableTrait;
-use Charcoal\OOP\Traits\NotSerializableTrait;
+use Charcoal\Base\Traits\NoDumpTrait;
+use Charcoal\Base\Traits\NotCloneableTrait;
+use Charcoal\Base\Traits\NotSerializableTrait;
 
 /**
  * Class ErrorHandler
@@ -29,8 +29,8 @@ class ErrorHandler implements \IteratorAggregate
     private int $errorLogCount;
 
     use NoDumpTrait;
-    use NotSerializableTrait;
     use NotCloneableTrait;
+    use NotSerializableTrait;
 
     /**
      * @param AppBuild $app

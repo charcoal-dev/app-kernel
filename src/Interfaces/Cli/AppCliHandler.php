@@ -5,13 +5,13 @@ namespace Charcoal\App\Kernel\Interfaces\Cli;
 
 use Charcoal\App\Kernel\AppBuild;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
+use Charcoal\Base\Support\ObjectHelper;
+use Charcoal\Base\Traits\NoDumpTrait;
+use Charcoal\Base\Traits\NotCloneableTrait;
+use Charcoal\Base\Traits\NotSerializableTrait;
 use Charcoal\CLI\Banners;
 use Charcoal\CLI\CLI;
 use Charcoal\CLI\Console\StdoutPrinter;
-use Charcoal\OOP\OOP;
-use Charcoal\OOP\Traits\NoDumpTrait;
-use Charcoal\OOP\Traits\NotCloneableTrait;
-use Charcoal\OOP\Traits\NotSerializableTrait;
 use Composer\InstalledVersions;
 
 /**
@@ -47,7 +47,8 @@ class AppCliHandler extends CLI
         $this->events->scriptNotFound()->listen(function (self $cli, string $scriptClassname) {
             $this->printAppHeaders();
             $this->printAppClassBanner();
-            $cli->print(sprintf("CLI script {red}{invert} %s {/} not found", OOP::baseClassName($scriptClassname)));
+            $cli->print(sprintf("CLI script {red}{invert} %s {/} not found",
+                ObjectHelper::baseClassName($scriptClassname)));
             $cli->print("");
         });
 
@@ -63,7 +64,9 @@ class AppCliHandler extends CLI
             }
 
             if ($this->execScriptObject->config->displayScriptName) {
-                $cli->inline(sprintf("CLI script {green}{invert} %s {/} loaded", OOP::baseClassName($this->execClassname)));
+                $cli->inline(sprintf("CLI script {green}{invert} %s {/} loaded",
+                    ObjectHelper::baseClassName($this->execClassname)));
+
                 $cli->repeatChar(".", 3, 100, true);
                 $cli->print("");
             }
@@ -143,7 +146,7 @@ class AppCliHandler extends CLI
     public function printAppClassBanner(): void
     {
         $this->repeatChar("~", 5, 100, true);
-        foreach (Banners::Digital(OOP::baseClassName($this->app::class))->lines as $line) {
+        foreach (Banners::Digital(ObjectHelper::baseClassName($this->app::class))->lines as $line) {
             $this->print("{magenta}{invert}" . $line . "{/}");
         }
 

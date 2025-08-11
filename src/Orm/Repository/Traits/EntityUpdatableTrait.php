@@ -8,8 +8,8 @@ use Charcoal\App\Kernel\Contracts\Orm\Repository\ChecksumAwareRepositoryInterfac
 use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
 use Charcoal\App\Kernel\Orm\Entity\LockedEntity;
 use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
-use Charcoal\OOP\OOP;
-use Charcoal\OOP\Vectors\StringVector;
+use Charcoal\Base\Support\ObjectHelper;
+use Charcoal\Base\Vectors\StringVector;
 
 /**
  * Trait EntityUpdatableTrait
@@ -24,7 +24,7 @@ trait EntityUpdatableTrait
     protected function dbUpdateOutOfScopeException(string $entityClass): \LogicException
     {
         return new \LogicException("Out of scope; Cannot update " .
-            OOP::baseClassName($entityClass) . " from " . OOP::baseClassName(static::class));
+            ObjectHelper::baseClassName($entityClass) . " from " . ObjectHelper::baseClassName(static::class));
     }
 
     /**

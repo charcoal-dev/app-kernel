@@ -10,8 +10,8 @@ use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
 use Charcoal\App\Kernel\Orm\Module\OrmAwareModule;
 use Charcoal\App\Kernel\Orm\Repository\Traits\EntityFetchTrait;
 use Charcoal\Base\Enums\ExceptionAction;
+use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Cache\Exception\CacheException;
-use Charcoal\OOP\Traits\ControlledSerializableTrait;
 
 /**
  * Class AbstractOrmRepository

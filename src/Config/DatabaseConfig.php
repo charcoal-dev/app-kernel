@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Config;
 
 use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
+use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Database\DbCredentials;
-use Charcoal\OOP\Traits\NoDumpTrait;
 
 /**
  * Class DbConfigs

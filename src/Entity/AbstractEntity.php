@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Entity;
 
-use Charcoal\OOP\Vectors\StringVector;
+use Charcoal\Base\Vectors\StringVector;
 
 /**
  * Class AbstractEntity

@@ -5,7 +5,7 @@ namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
 use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
 use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
-use Charcoal\OOP\OOP;
+use Charcoal\Base\Support\ObjectHelper;
 
 /**
  * Trait EntityInsertableTrait
@@ -27,7 +27,7 @@ trait EntityInsertableTrait
         }
 
         if ($insertOp->rowsCount !== 1) {
-            throw new \RuntimeException('Failed to insert a row in ' . OOP::baseClassName(static::class));
+            throw new \RuntimeException('Failed to insert a row in ' . ObjectHelper::baseClassName(static::class));
         }
     }
 
@@ -41,7 +41,7 @@ trait EntityInsertableTrait
     protected function dbInsertAndSetId(AbstractOrmEntity $object, string $idColumn = "id", ?int $overrideId = null): void
     {
         if (isset($object->$idColumn)) {
-            throw new \LogicException('Cannot insert ' . OOP::baseClassName($object::class) .
+            throw new \LogicException('Cannot insert ' . ObjectHelper::baseClassName($object::class) .
                 ' while its property $' . $idColumn . ' is already set');
         }
 

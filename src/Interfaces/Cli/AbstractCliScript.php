@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Interfaces\Cli;
 
-use Charcoal\OOP\OOP;
+use Charcoal\Base\Support\ObjectHelper;
 
 /**
  * Class AbstractCliScript
@@ -22,10 +22,10 @@ abstract class AbstractCliScript extends \Charcoal\CLI\AbstractCliScript
     {
         parent::__construct($cli);
         $this->config = new CliScriptConfig();
-        $this->scriptClassname = OOP::baseClassName(static::class);
+        $this->scriptClassname = ObjectHelper::baseClassName(static::class);
 
         if (!$this->cli->app->errors->hasHandlersSet()) {
-            throw new \LogicException(OOP::baseClassName($this->cli->app::class) .
+            throw new \LogicException(ObjectHelper::baseClassName($this->cli->app::class) .
                 " error handlers not set; Cannot proceed to CLI interface");
         }
     }
