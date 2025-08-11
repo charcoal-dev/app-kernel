@@ -3,46 +3,44 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Cipher;
 
+use Charcoal\Base\Concerns\InstancedObjectsRegistry;
+use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
 use Charcoal\Cipher\Cipher;
-use Charcoal\OOP\DependencyInjection\AbstractInstanceRegistry;
 
 /**
  * Class CipherKeychain
  * @package Charcoal\App\Kernel
+ * @template-implements InstancedObjectsRegistry<Cipher>
  */
-class CipherKeychain extends AbstractInstanceRegistry
+class CipherKeychain
 {
-    public function __construct()
-    {
-        parent::__construct(Cipher::class);
-    }
+    use InstancedObjectsRegistry;
+    use RegistryKeysLowercaseTrimmed;
 
     /**
-     * @param CipherEnum|string $key
+     * @param CipherEnum $key
      * @param Cipher $cipher
      * @return void
      */
-    public function set(CipherEnum|string $key, Cipher $cipher): void
+    public function set(CipherEnum $key, Cipher $cipher): void
     {
-        $key = $key instanceof CipherEnum ? $key->value : $key;
-        $this->registrySet($key, $cipher);
+        $this->registrySet($key->value, $cipher);
     }
 
     /**
-     * @param CipherEnum|string $key
+     * @param CipherEnum $key
      * @return Cipher|null
      */
-    public function getOrNull(CipherEnum|string $key): ?Cipher
+    public function getOrNull(CipherEnum $key): ?Cipher
     {
-        $key = $key instanceof CipherEnum ? $key->value : $key;
-        return $this->registryGet($key);
+        return $this->registryGet($key->value);
     }
 
     /**
-     * @param CipherEnum|string $key
+     * @param CipherEnum $key
      * @return Cipher
      */
-    public function get(CipherEnum|string $key): Cipher
+    public function get(CipherEnum $key): Cipher
     {
         $cipher = $this->getOrNull($key);
         if (!$cipher) {
