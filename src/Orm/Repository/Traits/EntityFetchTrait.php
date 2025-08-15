@@ -1,4 +1,9 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Repository\Traits;
@@ -9,12 +14,12 @@ use Charcoal\App\Kernel\Orm\Exception\EntityNotFoundException;
 use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
 use Charcoal\Base\Enums\ExceptionAction;
 use Charcoal\Base\Enums\FetchOrigin;
+use Charcoal\Base\Enums\Sort;
 use Charcoal\Cache\Exception\CacheException;
+use Charcoal\Database\Enums\LockFlag;
 use Charcoal\Database\Exception\DatabaseException;
-use Charcoal\Database\ORM\Exception\OrmException;
-use Charcoal\Database\ORM\Exception\OrmModelNotFoundException;
-use Charcoal\Database\Queries\LockFlag;
-use Charcoal\Database\Queries\SortFlag;
+use Charcoal\Database\Orm\Exception\OrmException;
+use Charcoal\Database\Orm\Exception\OrmModelNotFoundException;
 
 /**
  * Trait EntityFetchTrait
@@ -52,7 +57,7 @@ trait EntityFetchTrait
     /**
      * @param string $whereStmt
      * @param array $queryData
-     * @param SortFlag|null $sort
+     * @param Sort|null $sort
      * @param string|null $sortColumn
      * @param int $offset
      * @param int $limit
@@ -64,7 +69,7 @@ trait EntityFetchTrait
     protected function getMultipleFromDb(
         string    $whereStmt,
         array     $queryData = [],
-        ?SortFlag $sort = null,
+        ?Sort     $sort = null,
         ?string   $sortColumn = null,
         int       $offset = 0,
         int       $limit = 0,

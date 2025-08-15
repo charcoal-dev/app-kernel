@@ -1,4 +1,9 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Repository\Traits;
@@ -8,7 +13,7 @@ use Charcoal\App\Kernel\Contracts\Orm\Repository\ChecksumAwareRepositoryInterfac
 use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
 use Charcoal\App\Kernel\Orm\Entity\LockedEntity;
 use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
-use Charcoal\Base\Support\ObjectHelper;
+use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Base\Vectors\StringVector;
 
 /**

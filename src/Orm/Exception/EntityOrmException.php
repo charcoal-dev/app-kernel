@@ -1,11 +1,16 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Exception;
 
 use Charcoal\Base\Exceptions\WrappedException;
-use Charcoal\Base\Support\ObjectHelper;
-use Charcoal\Database\ORM\Exception\OrmException;
+use Charcoal\Base\Support\Helpers\ObjectHelper;
+use Charcoal\Database\Orm\Exception\OrmException;
 
 /**
  * Class EntityOrmException

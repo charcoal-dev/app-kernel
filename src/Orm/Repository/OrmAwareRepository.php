@@ -1,11 +1,16 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Repository;
 
 use Charcoal\App\Kernel\Contracts\Enums\TableRegistryEnumInterface;
 use Charcoal\App\Kernel\Contracts\StorageHooks\StorageHooksInvokerTrait;
-use Charcoal\App\Kernel\Orm\Db\AbstractOrmTable;
+use Charcoal\App\Kernel\Orm\Db\AppAwareTable;
 use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
 use Charcoal\App\Kernel\Orm\Module\OrmAwareModule;
 use Charcoal\App\Kernel\Orm\Repository\Traits\EntityFetchTrait;
@@ -19,7 +24,7 @@ use Charcoal\Cache\Exception\CacheException;
  */
 abstract class OrmAwareRepository
 {
-    public readonly AbstractOrmTable $table;
+    public readonly AppAwareTable $table;
 
     protected int $entityCacheTtl = 86400;
     protected int $entityChecksumIterations = 0x64;

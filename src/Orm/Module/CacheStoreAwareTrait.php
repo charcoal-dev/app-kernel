@@ -1,10 +1,15 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Module;
 
 use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
-use Charcoal\Cache\Cache;
+use Charcoal\Cache\CacheClient;
 
 /**
  * Trait CacheStoreAwareTrait
@@ -12,7 +17,7 @@ use Charcoal\Cache\Cache;
  */
 trait CacheStoreAwareTrait
 {
-    private ?Cache $cacheStore = null;
+    private ?CacheClient $cacheStore = null;
     public readonly ?CacheStoreEnumInterface $cacheStoreEnum;
 
     abstract public function declareCacheStoreEnum(): ?CacheStoreEnumInterface;
@@ -23,7 +28,7 @@ trait CacheStoreAwareTrait
         return true;
     }
 
-    public function getCacheStore(): ?Cache
+    public function getCacheStore(): ?CacheClient
     {
         if ($this->cacheStore) {
             return $this->cacheStore;
@@ -33,6 +38,6 @@ trait CacheStoreAwareTrait
             return null;
         }
 
-        return $this->cacheStore = $this->app->cache->get($this->cacheStoreEnum->getServerKey());
+        return $this->cacheStore = $this->app->cache->get($this->cacheStoreEnum);
     }
 }

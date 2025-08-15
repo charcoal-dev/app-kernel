@@ -1,4 +1,9 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Repository\Traits;
@@ -6,7 +11,7 @@ namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 use Charcoal\App\Kernel\Contracts\Orm\Entity\SemaphoreLockHooksInterface;
 use Charcoal\App\Kernel\Orm\Entity\LockedEntity;
 use Charcoal\App\Kernel\Orm\Exception\EntityLockedException;
-use Charcoal\Database\Queries\LockFlag;
+use Charcoal\Database\Enums\LockFlag;
 
 /**
  * Trait EntitySemaphoreLockTrait
