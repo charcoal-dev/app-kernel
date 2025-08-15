@@ -15,14 +15,18 @@ use Charcoal\Base\Support\Helpers\ObjectHelper;
 /**
  * Class AbstractConfigCollector
  * @package Charcoal\App\Kernel\Config\Builder
+ * @template TKey of ConfigEnumInterface
+ * @template TConfig of object
+ * @template-implements ConfigCollectorInterface<TConfig>
  */
 abstract class AbstractConfigCollector implements ConfigCollectorInterface
 {
+    /** @var array<string, TConfig> */
     private array $configs = [];
 
     /**
-     * @param ConfigEnumInterface $key
-     * @param object $config
+     * @param TKey $key
+     * @param TConfig $config
      * @return void
      */
     protected function storeConfig(ConfigEnumInterface $key, object $config): void
@@ -32,22 +36,30 @@ abstract class AbstractConfigCollector implements ConfigCollectorInterface
                 ObjectHelper::baseClassName(static::class) . " already exists");
         }
 
-        if (!(new \ReflectionClass($config))->isReadOnly()) {
-            throw new \RuntimeException(ObjectHelper::baseClassName($config::class) .
-                " is not read-only; Cannot store in " . ObjectHelper::baseClassName(static::class));
-        }
-
         $this->configs[$key->getConfigKey()] = $config;
     }
 
     /**
-     * @param ConfigEnumInterface $key
+     * @param TKey $key
      * @return bool
      * @api
      */
     protected function hasConfig(ConfigEnumInterface $key): bool
     {
         return isset($this->configs[$key->getConfigKey()]);
+    }
+
+    /**
+     * @param TKey $key
+     * @return TConfig
+     */
+    public function getConfig(ConfigEnumInterface $key): object
+    {
+        if (!$this->hasConfig($key)) {
+            throw new \RuntimeException("Config key '{$key->getConfigKey()}' for " .
+                ObjectHelper::baseClassName(static::class) . " does not exist");
+        }
+        return $this->configs[$key->getConfigKey()];
     }
 
     /**
@@ -59,7 +71,7 @@ abstract class AbstractConfigCollector implements ConfigCollectorInterface
     }
 
     /**
-     * @return array
+     * @return array<string, TConfig>
      */
     public function getCollection(): array
     {
