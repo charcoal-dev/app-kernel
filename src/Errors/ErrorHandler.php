@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Errors;
 
-use Charcoal\App\Kernel\AppBuild;
+use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Contracts\AppBuildEnum;
 use Charcoal\App\Kernel\Contracts\Error\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Support\ErrorHelper;
@@ -39,11 +39,11 @@ class ErrorHandler implements \IteratorAggregate
     use NotSerializableTrait;
 
     /**
-     * @param AppBuild $app
+     * @param AbstractApp $app
      * @param AppBuildEnum $context
      * @param ErrorLoggerInterface $logger
      */
-    public function __construct(AppBuild $app, AppBuildEnum $context, public ErrorLoggerInterface $logger)
+    public function __construct(AbstractApp $app, AppBuildEnum $context, public ErrorLoggerInterface $logger)
     {
         $this->pathOffset = strlen($app->directories->root->path);
         $this->errorLoggable = [E_NOTICE, E_USER_NOTICE];
@@ -161,7 +161,7 @@ class ErrorHandler implements \IteratorAggregate
     public function trigger(string|\Throwable $error, int $level = E_USER_NOTICE, int $fileLineBacktraceIndex = 1): void
     {
         if ($error instanceof \Throwable) {
-            $error = \Charcoal\App\Kernel\Support\ErrorHelper::Exception2String($error);
+            $error = \Charcoal\App\Kernel\Support\ErrorHelper::exception2String($error);
         }
 
         if (!in_array($level, [E_USER_NOTICE, E_USER_WARNING])) {
@@ -253,7 +253,7 @@ class ErrorHandler implements \IteratorAggregate
             try {
                 $this->logger->write($err);
             } catch (\Exception $e) {
-                throw new \ErrorException(ErrorHelper::Exception2String($e), 0);
+                throw new \ErrorException(ErrorHelper::exception2String($e), 0);
             }
 
             return true;
