@@ -1,9 +1,14 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Contracts\Cache;
 
-use Charcoal\Cache\Cache;
+use Charcoal\Cache\CacheClient;
 
 /**
  * Interface CacheStoreOperationsInterface
@@ -13,7 +18,7 @@ interface CacheStoreOperationsInterface
 {
     public function normalizeStorageKey(string $key): string;
 
-    public function getCacheStore(): ?Cache;
+    public function getCacheStore(): ?CacheClient;
 
     public function storeInCache(string $key, mixed $value, ?int $ttl = null, ?array $referenceKeys = null): void;
 
