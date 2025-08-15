@@ -9,28 +9,22 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Config\Builder;
 
 use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
-use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Database\DbCredentials;
 
 /**
  * Class DbConfigBuilder
  * @package Charcoal\App\Kernel\Config\Builder
+ * @extends AbstractConfigCollector<DatabaseEnumInterface, DbCredentials>
  */
-class DbConfigBuilder
+final class DbConfigBuilder extends AbstractConfigCollector
 {
-    private array $database = [];
-
-    use NoDumpTrait;
-
-    public function __construct(
-        #[\SensitiveParameter]
-        public readonly ?string $mysqlRootPassword = null,
-    )
+    /**
+     * @param DatabaseEnumInterface $key
+     * @param DbCredentials $config
+     * @return void
+     */
+    public function set(DatabaseEnumInterface $key, DbCredentials $config): void
     {
-    }
-
-    public function set(DatabaseEnumInterface $key, DbCredentials $dbConfig): void
-    {
-        $this->database[$key->getConfigKey()] = $dbConfig;
+        $this->storeConfig($key, $config);
     }
 }
