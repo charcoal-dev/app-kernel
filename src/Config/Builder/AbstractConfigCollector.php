@@ -50,19 +50,6 @@ abstract class AbstractConfigCollector implements ConfigCollectorInterface
     }
 
     /**
-     * @param TKey $key
-     * @return TConfig
-     */
-    public function getConfig(ConfigEnumInterface $key): object
-    {
-        if (!$this->hasConfig($key)) {
-            throw new \RuntimeException("Config key '{$key->getConfigKey()}' for " .
-                ObjectHelper::baseClassName(static::class) . " does not exist");
-        }
-        return $this->configs[$key->getConfigKey()];
-    }
-
-    /**
      * @return int
      */
     public function count(): int
