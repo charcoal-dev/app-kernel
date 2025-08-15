@@ -6,13 +6,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Time;
+namespace Charcoal\Tests\App\Fixtures\Enums;
 
-use Charcoal\App\Kernel\Contracts\TimezoneInterface;
+use Charcoal\App\Kernel\Contracts\Time\TimezoneInterface;
 
 /**
  * Class Timezone
- * @package Charcoal\App\Kernel\DateTime
+ * @package Charcoal\Tests\App\Fixtures\Enums
  */
 enum Timezone: string implements TimezoneInterface
 {
