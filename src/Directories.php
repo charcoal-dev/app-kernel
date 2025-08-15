@@ -1,4 +1,9 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel;
@@ -18,12 +23,6 @@ class Directories
     {
     }
 
-    /**
-     * @param string $dirPath
-     * @param bool $checkReadable
-     * @param bool $checkWritable
-     * @return Directory
-     */
     protected function validateDirectory(string $dirPath, bool $checkReadable, bool $checkWritable): Directory
     {
         try {

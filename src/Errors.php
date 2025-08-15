@@ -1,4 +1,9 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel;
@@ -10,7 +15,6 @@ namespace Charcoal\App\Kernel;
 class Errors
 {
     /**
-     * Static helper to convert \Throwable object into an archive-able Array comprised purely of scalar data
      * @param \Throwable $t
      * @return array
      */
@@ -39,12 +43,12 @@ class Errors
     }
 
     /**
-     * Static helper to convert \Throwable object into a readable string
      * @param \Throwable $t
+     * @param string $format
      * @return string
      */
-    public static function Exception2String(\Throwable $t): string
+    public static function Exception2String(\Throwable $t, string $format = '[%1$s][#%2$s] %3$s'): string
     {
-        return sprintf("[%s][#%s] %s", get_class($t), $t->getCode(), $t->getMessage());
+        return sprintf($format, get_class($t), $t->getCode(), $t->getMessage());
     }
 }
