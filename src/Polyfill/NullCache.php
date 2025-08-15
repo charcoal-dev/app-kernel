@@ -1,10 +1,15 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Polyfill;
 
-use Charcoal\Cache\Cache;
-use Charcoal\Cache\CacheDriverInterface;
+use Charcoal\Cache\CacheClient;
+use Charcoal\Cache\Contracts\CacheDriverInterface;
 
 /**
  * Class NullCache
@@ -12,7 +17,7 @@ use Charcoal\Cache\CacheDriverInterface;
  */
 class NullCache implements CacheDriverInterface
 {
-    public function createLink(Cache $cache): void
+    public function createLink(CacheClient $cache): void
     {
     }
 
