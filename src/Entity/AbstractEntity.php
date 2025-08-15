@@ -1,4 +1,9 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Entity;
@@ -69,9 +74,9 @@ abstract class AbstractEntity
     }
 
     /**
-     * Extracts argument properties as associative array
      * @param array $dataSet
-     * @param string[] $props
+     * @param string ...$props
+     * @return void
      */
     public function extractValues(array &$dataSet, string ...$props): void
     {

@@ -1,14 +1,16 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Entity;
 
 use Charcoal\App\Kernel\Entity\Exception\ChecksumComputeException;
 use Charcoal\App\Kernel\Entity\Exception\ChecksumMismatchException;
-use Charcoal\Base\Contracts\Vectors\StringVectorProviderInterface;
-use Charcoal\Base\Support\DsvString;
-use Charcoal\Base\Vectors\StringTokenVector;
-use Charcoal\Base\Vectors\StringVector;
+use Charcoal\Base\Contracts\Vectors\StringVectorInterface;
 use Charcoal\Buffers\AbstractByteArray;
 use Charcoal\Buffers\Frames\Bytes20;
 use Charcoal\Cipher\Cipher;
@@ -111,10 +113,7 @@ trait ChecksumAwareEntityTrait
             $value instanceof \BackedEnum => $value->value,
             $value instanceof \UnitEnum => $value->name,
             $value instanceof AbstractByteArray => $value->raw(),
-            $value instanceof DsvString => $value->toString(),
-            $value instanceof StringTokenVector => $value->toString(","),
-            $value instanceof StringVector => implode(",", $value->getArray()),
-            $value instanceof StringVectorProviderInterface => implode(",", $value->toStringArray()),
+            $value instanceof StringVectorInterface => implode(",", $value->getArray()),
             $value instanceof \DateTime => $value->getTimestamp(),
             default => throw new \UnexpectedValueException(sprintf(
                 'Cannot process value for "%s" of type "%s"',

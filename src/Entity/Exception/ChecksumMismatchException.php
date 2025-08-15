@@ -1,4 +1,9 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Entity\Exception;
@@ -19,6 +24,7 @@ class ChecksumMismatchException extends \Exception
         $this->entityClass = get_class($entity);
         $this->entityId = $entity->getPrimaryId();
         parent::__construct(
-            sprintf('Checksum mismatch for "%s" with ID "%s"', $this->entityClass, $this->entityId ?? "[unknown]"), 0, null);
+            sprintf('Checksum mismatch for "%s" with ID "%s"', $this->entityClass,
+                $this->entityId ?? "[unknown]"), 0, null);
     }
 }
