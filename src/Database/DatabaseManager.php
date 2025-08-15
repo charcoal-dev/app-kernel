@@ -1,4 +1,9 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Database;
@@ -6,19 +11,19 @@ namespace Charcoal\App\Kernel\Database;
 use Charcoal\App\Kernel\AppBuild;
 use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
 use Charcoal\App\Kernel\Orm\Db\TableRegistry;
-use Charcoal\Base\Abstracts\AbstractFactoryRegistry;
+use Charcoal\Base\Abstracts\BaseFactoryRegistry;
 use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
-use Charcoal\Database\Database;
-use Charcoal\Database\DbDriver;
+use Charcoal\Database\DatabaseClient;
+use Charcoal\Database\Enums\DbDriver;
 
 /**
  * Class Databases
  * @package Charcoal\App\Kernel
- * @template-extends AbstractFactoryRegistry<Database>
+ * @template-extends BaseFactoryRegistry<DatabaseClient>
  */
-class DatabaseManager extends AbstractFactoryRegistry
+class DatabaseManager extends BaseFactoryRegistry
 {
     protected readonly AppBuild $app;
     public readonly TableRegistry $tables;
@@ -65,13 +70,11 @@ class DatabaseManager extends AbstractFactoryRegistry
     }
 
     /**
-     * Resolves DbCredentials object from config and, creates a Database instance
      * @param string $key
-     * @return Database
+     * @return DatabaseClient
      * @throws \Charcoal\Database\Exception\DbConnectionException
-     * @throws \Throwable
      */
-    protected function create(string $key): Database
+    protected function create(string $key): DatabaseClient
     {
         $cred = $this->app->config->database->get($key);
         if ($cred->driver === DbDriver::MYSQL) {
@@ -80,32 +83,30 @@ class DatabaseManager extends AbstractFactoryRegistry
             }
         }
 
-        $db = new Database($cred);
+        $db = new DatabaseClient($cred);
         $this->app->events->onDbConnection()->trigger([$db]);
         return $db;
     }
 
     /**
-     * Gets existing Database instance or resolves it from configuration
      * @param DatabaseEnumInterface $key
-     * @return Database
+     * @return DatabaseClient
      */
-    public function getDb(DatabaseEnumInterface $key): Database
+    public function getDb(DatabaseEnumInterface $key): DatabaseClient
     {
         return $this->getExistingOrCreate($key->getDatabaseKey());
     }
 
     /**
-     * Returns aggregated (executed) queries logged in runtime memory from ALL databases
      * @return array
      */
     public function getAllQueries(): array
     {
         $queries = [];
-        foreach ($this->instances as $dbTag => $dbInstance) {
+        foreach ($this->instances as $dbId => $dbInstance) {
             foreach ($dbInstance->queries as $dbQuery) {
                 $queries[] = [
-                    "db" => $dbTag,
+                    "db" => $dbId,
                     "query" => $dbQuery
                 ];
             }
@@ -115,7 +116,6 @@ class DatabaseManager extends AbstractFactoryRegistry
     }
 
     /**
-     * Flushes all stored (executed) queries from runtime memory from ALL databases
      * @return int
      */
     public function flushAllQueries(): int
