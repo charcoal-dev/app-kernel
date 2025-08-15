@@ -1,16 +1,21 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Interfaces\Cli;
 
-use Charcoal\Base\Support\ObjectHelper;
+use Charcoal\Base\Support\Helpers\ObjectHelper;
 
 /**
  * Class AbstractCliScript
  * @package Charcoal\App\Kernel\Interfaces\Cli
  * @property AppCliHandler $cli
  */
-abstract class AbstractCliScript extends \Charcoal\CLI\AbstractCliScript
+abstract class AbstractCliScript extends \Charcoal\Cli\Script\AbstractCliScript
 {
     public readonly CliScriptConfig $config;
     public readonly string $scriptClassname;

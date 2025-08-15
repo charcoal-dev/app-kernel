@@ -1,24 +1,31 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Interfaces\Cli;
 
 use Charcoal\App\Kernel\AppBuild;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
-use Charcoal\Base\Support\ObjectHelper;
+use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Base\Traits\NotSerializableTrait;
-use Charcoal\CLI\Banners;
-use Charcoal\CLI\CLI;
-use Charcoal\CLI\Console\StdoutPrinter;
+use Charcoal\Cli\Console;
+use Charcoal\Cli\Display\Banners;
+use Charcoal\Cli\Events\State\ExecutionState;
+use Charcoal\Cli\Events\State\ExecutionStateChange;
+use Charcoal\Cli\Output\StdoutPrinter;
 use Composer\InstalledVersions;
 
 /**
  * Class AppCliHandler
  * @package Charcoal\App\Kernel\Interfaces\Cli
  */
-class AppCliHandler extends CLI
+class AppCliHandler extends Console
 {
     public readonly StdoutPrinter $stdout;
 
@@ -31,6 +38,7 @@ class AppCliHandler extends CLI
      * @param string $scriptsNamespace
      * @param array $args
      * @param string|null $defaultScriptName
+     * @throws \Charcoal\Events\Exception\SubscriptionClosedException
      */
     public function __construct(
         public readonly AppBuild $app,
@@ -43,50 +51,13 @@ class AppCliHandler extends CLI
         $this->stdout = new StdoutPrinter();
         $this->addOutputHandler($this->stdout);
 
-        // Event: ScriptNotFound
-        $this->events->scriptNotFound()->listen(function (self $cli, string $scriptClassname) {
-            $this->printAppHeaders();
-            $this->printAppClassBanner();
-            $cli->print(sprintf("CLI script {red}{invert} %s {/} not found",
-                ObjectHelper::baseClassName($scriptClassname)));
-            $cli->print("");
-        });
-
-        // Event: ScriptLoaded
-        $this->events->scriptLoaded()->listen(function (self $cli) {
-            // Headers & Loaded Script Name
-            if ($this->execScriptObject->config->displayHeaders) {
-                $this->printAppHeaders();
-            }
-
-            if ($this->execScriptObject->config->displayAppClassBanner) {
-                $this->printAppClassBanner();
-            }
-
-            if ($this->execScriptObject->config->displayScriptName) {
-                $cli->inline(sprintf("CLI script {green}{invert} %s {/} loaded",
-                    ObjectHelper::baseClassName($this->execClassname)));
-
-                $cli->repeatChar(".", 3, 100, true);
-                $cli->print("");
-            }
-        });
-
-        // Event: BeforeExec
-        $this->events->beforeExec()->listen(function (self $cli) {
-            if (!extension_loaded("pcntl")) {
-                $cli->print("{red}{b}PCNTL{/}{red} extension is not loaded.");
-            }
-        });
-
-        // Event: AfterExec
-        $this->events->afterExec()->listen(function (self $cli, bool $isSuccess) {
-            if ($isSuccess) {
-                $displayErrors = $this->execScriptObject->options->displayTriggeredErrors ?? true;
-                if ($displayErrors) {
-                    $this->printErrors(0, false, true);
-                }
-            }
+        $this->events->subscribe()->listen(ExecutionStateChange::class, function (ExecutionStateChange $event) {
+            match ($event->state) {
+                ExecutionState::Prepare => $this->eventCallbackPrepare(),
+                ExecutionState::ScriptNotFound => $this->eventCallbackScriptNotFound($event->scriptClassname),
+                ExecutionState::Ready => $this->eventCallbackReady(),
+                ExecutionState::Completed => $this->eventCallbackCompleted($event->isSuccess),
+            };
         });
     }
 
@@ -152,5 +123,71 @@ class AppCliHandler extends CLI
 
         $this->repeatChar("~", 5, 100, true);
         $this->print("");
+    }
+
+    /**
+     * @return void
+     */
+    private function eventCallbackPrepare(): void
+    {
+        if (!extension_loaded("pcntl")) {
+            $this->print("{red}{b}PCNTL{/}{red} extension is not loaded.");
+        }
+    }
+
+    /**
+     * @param string|null $scriptClassname
+     * @return void
+     */
+    private function eventCallbackScriptNotFound(?string $scriptClassname): void
+    {
+        if (!$scriptClassname) {
+            return;
+        }
+
+        $this->printAppHeaders();
+        $this->printAppClassBanner();
+        $this->print(sprintf("CLI script {red}{invert} %s {/} not found",
+            ObjectHelper::baseClassName($scriptClassname)));
+        $this->print("");
+    }
+
+    /**
+     * @return void
+     */
+    private function eventCallbackReady(): void
+    {
+        // Headers & Loaded Script Name
+        if ($this->execScriptObject->config->displayHeaders) {
+            $this->printAppHeaders();
+        }
+
+        if ($this->execScriptObject->config->displayAppClassBanner) {
+            $this->printAppClassBanner();
+        }
+
+        if ($this->execScriptObject->config->displayScriptName) {
+            $this->inline(sprintf("CLI script {green}{invert} %s {/} loaded",
+                ObjectHelper::baseClassName($this->execClassname)));
+
+            $this->repeatChar(".", 3, 100, true);
+            $this->print("");
+        }
+    }
+
+    /**
+     * @param bool|null $isSuccess
+     * @return void
+     */
+    private function eventCallbackCompleted(?bool $isSuccess): void
+    {
+        if (!$isSuccess) {
+            return;
+        }
+
+        $displayErrors = $this->execScriptObject->options->displayTriggeredErrors ?? true;
+        if ($displayErrors) {
+            $this->printErrors(0, false, true);
+        }
     }
 }
