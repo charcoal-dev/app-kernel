@@ -1,10 +1,15 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Cache;
 
 use Charcoal\App\Kernel\Entity\AbstractEntity;
-use Charcoal\Cache\Cache;
+use Charcoal\Cache\CacheClient;
 use Charcoal\Cache\CachedReferenceKey;
 use Charcoal\Cache\Exception\CacheException;
 
@@ -21,9 +26,9 @@ trait CacheStoreOperationsTrait
     abstract public function normalizeStorageKey(string $key): string;
 
     /**
-     * @return Cache|null
+     * @return CacheClient|null
      */
-    abstract public function getCacheStore(): ?Cache;
+    abstract public function getCacheStore(): ?CacheClient;
 
     /**
      * @param string $key
@@ -70,7 +75,7 @@ trait CacheStoreOperationsTrait
     /**
      * @param string $key
      * @return void
-     * @throws \Charcoal\Cache\Exception\CacheDriverOpException
+     * @throws \Charcoal\Cache\Exception\CacheDriverException
      */
     public function deleteFromCache(string $key): void
     {

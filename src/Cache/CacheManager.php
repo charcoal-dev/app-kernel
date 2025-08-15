@@ -1,4 +1,9 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Cache;
@@ -6,19 +11,18 @@ namespace Charcoal\App\Kernel\Cache;
 use Charcoal\App\Kernel\AppBuild;
 use Charcoal\App\Kernel\Config\CacheDriver;
 use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
-use Charcoal\Base\Abstracts\AbstractFactoryRegistry;
+use Charcoal\Base\Abstracts\BaseFactoryRegistry;
 use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
-use Charcoal\Cache\Cache;
-use Charcoal\Cache\CacheDriverInterface;
+use Charcoal\Cache\CacheClient;
 
 /**
  * Class CachePool
  * @package Charcoal\App\Kernel
- * @template-extends AbstractFactoryRegistry<Cache>
+ * @template-extends BaseFactoryRegistry<CacheClient>
  */
-class CacheManager extends AbstractFactoryRegistry
+class CacheManager extends BaseFactoryRegistry
 {
     protected readonly AppBuild $app;
 
@@ -41,35 +45,26 @@ class CacheManager extends AbstractFactoryRegistry
     }
 
     /**
-     * Resolve or get a resolved Cache instance
-     * @param CacheStoreEnumInterface|string $key
-     * @return Cache
+     * @param CacheStoreEnumInterface $key
+     * @return CacheClient
      */
-    public function get(CacheStoreEnumInterface|string $key): Cache
+    public function get(CacheStoreEnumInterface $key): CacheClient
     {
-        $key = $key instanceof CacheStoreEnumInterface ? $key->getServerKey() : $key;
-        return $this->getExistingOrCreate($key);
+        return $this->getExistingOrCreate($key->getServerKey());
     }
 
     /**
-     * Resolve instance to Cache and sets up the necessary events
      * @param string $key
-     * @return Cache
+     * @return CacheClient
      */
-    protected function create(string $key): Cache
+    protected function create(string $key): CacheClient
     {
-        $cacheStore = new Cache(
+        return new CacheClient(
             CacheDriver::CreateClient($this->app->config->cache->get($key)),
             useChecksumsByDefault: false,
             nullIfExpired: true,
             deleteIfExpired: true
         );
-
-        $cacheStore->events->onConnected()->listen(function (CacheDriverInterface $cacheDriver) {
-            $this->app->events->onCacheConnection()->trigger([$cacheDriver]);
-        });
-
-        return $cacheStore;
     }
 
     /**
@@ -78,6 +73,7 @@ class CacheManager extends AbstractFactoryRegistry
      */
     public function __serialize(): array
     {
+        // Todo: Enable serialization of CacheClient instances
         return [];
     }
 
