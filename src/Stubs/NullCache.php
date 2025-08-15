@@ -6,14 +6,14 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Polyfill;
+namespace Charcoal\App\Kernel\Stubs;
 
 use Charcoal\Cache\CacheClient;
 use Charcoal\Cache\Contracts\CacheDriverInterface;
 
 /**
  * Class NullCache
- * @package Charcoal\App\Kernel\Polyfill
+ * @package Charcoal\App\Kernel\Stubs
  */
 class NullCache implements CacheDriverInterface
 {

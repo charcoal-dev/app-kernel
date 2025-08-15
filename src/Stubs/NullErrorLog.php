@@ -6,14 +6,14 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Polyfill;
+namespace Charcoal\App\Kernel\Stubs;
 
+use Charcoal\App\Kernel\Contracts\Error\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
-use Charcoal\App\Kernel\Errors\ErrorLoggerInterface;
 
 /**
  * Class NullErrorLog
- * @package Charcoal\App\Kernel\Polyfill
+ * @package Charcoal\App\Kernel\Stubs
  */
 class NullErrorLog implements ErrorLoggerInterface
 {
