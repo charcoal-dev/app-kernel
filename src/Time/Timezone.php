@@ -6,7 +6,9 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\DateTime;
+namespace Charcoal\App\Kernel\Time;
+
+use Charcoal\App\Kernel\Contracts\TimezoneInterface;
 
 /**
  * Class Timezone
