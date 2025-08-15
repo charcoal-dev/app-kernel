@@ -6,19 +6,19 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel;
+namespace Charcoal\App\Kernel\Support;
 
 /**
- * Class Errors
- * @package Charcoal\App\Kernel
+ * Class ErrorHelper
+ * @package Charcoal\App\Kernel\Support
  */
-class Errors
+class ErrorHelper
 {
     /**
      * @param \Throwable $t
      * @return array
      */
-    public static function Exception2Array(\Throwable $t): array
+    public static function exception2Array(\Throwable $t): array
     {
         $exception = [
             "class" => get_class($t),
@@ -26,7 +26,7 @@ class Errors
             "code" => $t->getCode(),
             "file" => $t->getFile(),
             "line" => $t->getLine(),
-            "previous" => $t->getPrevious() ? static::Exception2Array($t->getPrevious()) : null,
+            "previous" => $t->getPrevious() ? static::exception2Array($t->getPrevious()) : null,
         ];
 
         $exception["trace"] = array_map(function (array $trace) {
@@ -47,7 +47,7 @@ class Errors
      * @param string $format
      * @return string
      */
-    public static function Exception2String(\Throwable $t, string $format = '[%1$s][#%2$s] %3$s'): string
+    public static function exception2String(\Throwable $t, string $format = '[%1$s][#%2$s] %3$s'): string
     {
         return sprintf($format, get_class($t), $t->getCode(), $t->getMessage());
     }
