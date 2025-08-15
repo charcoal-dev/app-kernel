@@ -6,11 +6,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Errors;
+namespace Charcoal\App\Kernel\Contracts\Error;
+
+use Charcoal\App\Kernel\Errors\ErrorEntry;
 
 /**
  * Interface ErrorLoggerInterface
- * @package Charcoal\App\Kernel\Errors
+ * @package Charcoal\App\Kernel\Contracts\Error
  */
 interface ErrorLoggerInterface
 {

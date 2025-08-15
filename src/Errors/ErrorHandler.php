@@ -9,8 +9,9 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Errors;
 
 use Charcoal\App\Kernel\AppBuild;
-use Charcoal\App\Kernel\Build\AppBuildEnum;
-use Charcoal\App\Kernel\Errors;
+use Charcoal\App\Kernel\Contracts\AppBuildEnum;
+use Charcoal\App\Kernel\Contracts\Error\ErrorLoggerInterface;
+use Charcoal\App\Kernel\Support\ErrorHelper;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Base\Traits\NotSerializableTrait;
@@ -39,16 +40,16 @@ class ErrorHandler implements \IteratorAggregate
 
     /**
      * @param AppBuild $app
-     * @param AppBuildEnum $build
+     * @param AppBuildEnum $context
      * @param ErrorLoggerInterface $logger
      */
-    public function __construct(AppBuild $app, AppBuildEnum $build, public ErrorLoggerInterface $logger)
+    public function __construct(AppBuild $app, AppBuildEnum $context, public ErrorLoggerInterface $logger)
     {
         $this->pathOffset = strlen($app->directories->root->path);
         $this->errorLoggable = [E_NOTICE, E_USER_NOTICE];
         $this->errorLog = [];
         $this->errorLogCount = 0;
-        if ($build->setErrorHandlers()) {
+        if ($context->deployErrorHandlers()) {
             $this->setHandlers();
         }
     }
@@ -160,7 +161,7 @@ class ErrorHandler implements \IteratorAggregate
     public function trigger(string|\Throwable $error, int $level = E_USER_NOTICE, int $fileLineBacktraceIndex = 1): void
     {
         if ($error instanceof \Throwable) {
-            $error = \Charcoal\App\Kernel\Errors::Exception2String($error);
+            $error = \Charcoal\App\Kernel\Support\ErrorHelper::Exception2String($error);
         }
 
         if (!in_array($level, [E_USER_NOTICE, E_USER_WARNING])) {
@@ -252,7 +253,7 @@ class ErrorHandler implements \IteratorAggregate
             try {
                 $this->logger->write($err);
             } catch (\Exception $e) {
-                throw new \ErrorException(Errors::Exception2String($e), 0);
+                throw new \ErrorException(ErrorHelper::Exception2String($e), 0);
             }
 
             return true;

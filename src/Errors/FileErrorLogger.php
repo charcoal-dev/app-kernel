@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Errors;
 
+use Charcoal\App\Kernel\Contracts\Error\ErrorLoggerInterface;
 use Charcoal\Filesystem\Exception\FilesystemException;
 use Charcoal\Filesystem\File;
 
