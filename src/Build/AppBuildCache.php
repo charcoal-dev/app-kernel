@@ -1,4 +1,9 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Build;
@@ -24,7 +29,8 @@ abstract class AppBuildCache
             implode(DIRECTORY_SEPARATOR, $childDirs) . DIRECTORY_SEPARATOR .
             "charcoalAppBuild_" . $build->getName() . ".bin", false);
         if (!is_file($buildFilepath) || !is_readable($buildFilepath)) {
-            throw new \RuntimeException(sprintf('Charcoal app build file "%s" not found/readable', basename($buildFilepath)));
+            throw new \RuntimeException(sprintf('Charcoal app build file "%s" not found/readable',
+                basename($buildFilepath)));
         }
 
         $app = unserialize(file_get_contents($buildFilepath));
@@ -42,7 +48,8 @@ abstract class AppBuildCache
      */
     public static function CreateBuild(AppBuild $app, Directory $directory): void
     {
-        if (!file_put_contents($directory->pathToChild("charcoalAppBuild_" . $app->build->enum->getName() . ".bin", false), serialize($app))) {
+        if (!file_put_contents($directory->pathToChild("charcoalAppBuild_" .
+            $app->build->enum->getName() . ".bin", false), serialize($app))) {
             throw new \LogicException("Failed to create charcoal application build");
         }
     }
