@@ -1,4 +1,9 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Db;
@@ -16,10 +21,10 @@ class TableRegistry
 
     /**
      * Registers an AbstractOrmTable instance in DatabaseTableRegistry
-     * @param AbstractOrmTable $table
+     * @param AppAwareTable $table
      * @return void
      */
-    public function register(AbstractOrmTable $table): void
+    public function register(AppAwareTable $table): void
     {
         $db = $table->enum->getDatabase()->getDatabaseKey();
         $table = $table->enum->getTableName();
@@ -31,9 +36,9 @@ class TableRegistry
     /**
      * Resolves argument Database and Table to retrieve AbstractOrmTable instance
      * @param TableRegistryEnumInterface $dbTable
-     * @return AbstractOrmTable
+     * @return AppAwareTable
      */
-    public function resolve(TableRegistryEnumInterface $dbTable): AbstractOrmTable
+    public function resolve(TableRegistryEnumInterface $dbTable): AppAwareTable
     {
         $found = $this->map[$dbTable->getDatabase()->getDatabaseKey()][$dbTable->getTableName()] ?? null;
         if (!$found) {

@@ -1,4 +1,9 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Db;
@@ -6,13 +11,13 @@ namespace Charcoal\App\Kernel\Orm\Db;
 use Charcoal\App\Kernel\Contracts\Enums\TableRegistryEnumInterface;
 use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
 use Charcoal\App\Kernel\Orm\Module\OrmAwareModule;
-use Charcoal\Database\Database;
+use Charcoal\Database\DatabaseClient;
 
 /**
- * Class AbstractOrmTable
+ * Class AppAwareTable
  * @package Charcoal\App\Kernel\Orm\Db
  */
-abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
+abstract class AppAwareTable extends \Charcoal\Database\Orm\AbstractOrmTable
 {
     public readonly TableRegistryEnumInterface $enum;
 
@@ -74,23 +79,18 @@ abstract class AbstractOrmTable extends \Charcoal\Database\ORM\AbstractOrmTable
     }
 
     /**
-     * @return Database
+     * @return DatabaseClient
      */
-    public function getDb(): Database
+    public function getDb(): DatabaseClient
     {
-        return $this->resolveDbInstance(null);
+        return $this->resolveDbInstance();
     }
 
     /**
-     * @param Database|null $dbArg
-     * @return Database
+     * @return DatabaseClient
      */
-    protected function resolveDbInstance(?Database $dbArg = null): Database
+    protected function resolveDbInstance(): DatabaseClient
     {
-        if ($dbArg) {
-            return $dbArg;
-        }
-
         if ($this->dbInstance) {
             return $this->dbInstance;
         }
