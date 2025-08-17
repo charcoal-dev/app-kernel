@@ -12,7 +12,7 @@ namespace Charcoal\App\Kernel\Support;
  * Class ErrorHelper
  * @package Charcoal\App\Kernel\Support
  */
-class ErrorHelper
+class ErrorHelper extends \Charcoal\Base\Support\ErrorHelper
 {
     /**
      * @param \Throwable $t
