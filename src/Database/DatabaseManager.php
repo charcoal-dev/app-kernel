@@ -9,7 +9,9 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Database;
 
 use Charcoal\App\Kernel\AbstractApp;
+use Charcoal\App\Kernel\Config\Snapshot\DatabaseManagerConfig;
 use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
+use Charcoal\App\Kernel\Internal\Services\AppServiceConfigAwareInterface;
 use Charcoal\App\Kernel\Orm\Db\TableRegistry;
 use Charcoal\Base\Abstracts\BaseFactoryRegistry;
 use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
@@ -22,27 +24,45 @@ use Charcoal\Database\DatabaseClient;
  * @package Charcoal\App\Kernel
  * @template-extends BaseFactoryRegistry<DatabaseClient>
  */
-class DatabaseManager extends BaseFactoryRegistry
+class DatabaseManager extends BaseFactoryRegistry implements AppServiceConfigAwareInterface
 {
-    protected readonly AbstractApp $app;
+    protected ?DatabaseManagerConfig $config;
     public readonly TableRegistry $tables;
 
     use RegistryKeysLowercaseTrimmed;
     use NoDumpTrait;
     use NotCloneableTrait;
 
-    public function __construct()
+    public function __construct(AbstractApp $app)
     {
+        $this->config = $app->config->database;
         $this->tables = new TableRegistry();
     }
 
     /**
-     * @param AbstractApp $app
-     * @return void
+     * @param DatabaseEnumInterface $key
+     * @return DatabaseClient
      */
-    public function bootstrap(AbstractApp $app): void
+    public function getDb(DatabaseEnumInterface $key): DatabaseClient
     {
-        $this->app = $app;
+        return $this->getExistingOrCreate($key->getConfigKey());
+    }
+
+    /**
+     * @param string $key
+     * @return DatabaseClient
+     * @throws \Charcoal\Database\Exceptions\DbConnectionException
+     */
+    protected function create(string $key): DatabaseClient
+    {
+        $config = $this->config->databases[$key];
+        if (!$config) {
+            throw new \DomainException("Database config not found for key: " . $key);
+        }
+
+        // Todo: resolve secret as per reference
+
+        return new DatabaseClient($config);
     }
 
     /**
@@ -69,35 +89,9 @@ class DatabaseManager extends BaseFactoryRegistry
     }
 
     /**
-     * @param string $key
-     * @return DatabaseClient
-     * @throws \Charcoal\Database\Exceptions\DbConnectionException
-     */
-    protected function create(string $key): DatabaseClient
-    {
-        $config = $this->app->config->database?->databases[$key];
-        if (!$config) {
-            throw new \DomainException("Database config not found for key: " . $key);
-        }
-
-        // Todo: resolve secret as per reference
-
-        return new DatabaseClient($config);
-    }
-
-    /**
-     * @param DatabaseEnumInterface $key
-     * @return DatabaseClient
-     */
-    public function getDb(DatabaseEnumInterface $key): DatabaseClient
-    {
-        return $this->getExistingOrCreate($key->getConfigKey());
-    }
-
-    /**
      * @return array
      */
-    public function getAllQueries(): array
+    public function queriesAggregate(): array
     {
         $queries = [];
         foreach ($this->instances as $dbId => $dbInstance) {
@@ -115,7 +109,7 @@ class DatabaseManager extends BaseFactoryRegistry
     /**
      * @return int
      */
-    public function flushAllQueries(): int
+    public function queriesFlush(): int
     {
         $flushed = 0;
         foreach ($this->instances as $db) {
