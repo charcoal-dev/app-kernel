@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Config;
+namespace Charcoal\App\Kernel\Config\Snapshot;
 
 use Charcoal\App\Kernel\Contracts\Enums\SecretsEnumInterface;
 use Charcoal\Database\Config\DbCredentials;

@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config\Builder;
 
-use Charcoal\App\Kernel\Config\DatabaseConfig;
+use Charcoal\App\Kernel\Config\Snapshot\DatabaseConfig;
 use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
 
 /**

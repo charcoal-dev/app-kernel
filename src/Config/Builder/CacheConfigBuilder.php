@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config\Builder;
 
-use Charcoal\App\Kernel\Config\CacheStoreConfig;
+use Charcoal\App\Kernel\Config\Snapshot\CacheStoreConfig;
 use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
 
 /**
