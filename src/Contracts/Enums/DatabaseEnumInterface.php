@@ -12,7 +12,6 @@ namespace Charcoal\App\Kernel\Contracts\Enums;
  * Interface DatabaseEnumInterface
  * @package Charcoal\App\Kernel\Contracts\Enums
  */
-interface DatabaseEnumInterface
+interface DatabaseEnumInterface extends ConfigEnumInterface
 {
-    public function getDatabaseKey(): string;
 }

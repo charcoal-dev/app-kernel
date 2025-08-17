@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Errors;
 
 use Charcoal\App\Kernel\AbstractApp;
-use Charcoal\App\Kernel\Contracts\AppBuildEnum;
+use Charcoal\App\Kernel\Contracts\Enums\AppBuildContextInterface;
 use Charcoal\App\Kernel\Contracts\Error\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Support\ErrorHelper;
 use Charcoal\Base\Traits\NoDumpTrait;
@@ -40,10 +40,10 @@ class ErrorHandler implements \IteratorAggregate
 
     /**
      * @param AbstractApp $app
-     * @param AppBuildEnum $context
+     * @param AppBuildContextInterface $context
      * @param ErrorLoggerInterface $logger
      */
-    public function __construct(AbstractApp $app, AppBuildEnum $context, public ErrorLoggerInterface $logger)
+    public function __construct(AbstractApp $app, AppBuildContextInterface $context, public ErrorLoggerInterface $logger)
     {
         $this->pathOffset = strlen($app->directories->root->path);
         $this->errorLoggable = [E_NOTICE, E_USER_NOTICE];

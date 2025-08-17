@@ -12,7 +12,6 @@ namespace Charcoal\App\Kernel\Contracts\Enums;
  * Interface CacheStoreEnumInterface
  * @package Charcoal\App\Kernel\Contracts\Enums
  */
-interface CacheStoreEnumInterface
+interface CacheStoreEnumInterface extends ConfigEnumInterface
 {
-    public function getServerKey(): string;
 }
