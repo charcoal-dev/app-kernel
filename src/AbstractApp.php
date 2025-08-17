@@ -16,6 +16,7 @@ use Charcoal\App\Kernel\Database\DatabaseManager;
 use Charcoal\App\Kernel\Errors\ErrorManager;
 use Charcoal\App\Kernel\Events\EventsManager;
 use Charcoal\App\Kernel\Internal\AppEnv;
+use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Internal\Services\ServicesBundle;
 use Charcoal\App\Kernel\Time\Clock;
 use Charcoal\Base\Traits\NotCloneableTrait;
@@ -34,32 +35,31 @@ abstract class AbstractApp extends AppSerializable
     public readonly Clock $clock;
     public readonly AppConfig $config;
     public readonly DatabaseManager $database;
-    // public readonly Directories $directories;
     public readonly ErrorManager $errors;
     public readonly EventsManager $events;
     public readonly Lifecycle $lifecycle;
+    public readonly PathRegistry $paths;
     // public readonly Security $security;
 
     use NotCloneableTrait;
 
     public function __construct(public readonly AppEnv $env, DirectoryNode $root)
     {
-
         $this->config = $this->declareErrorHandler($root->path)
             ->resolveConfig();
 
         // Register child modules as declared by the downstream app,
         // and provides them with AbstractPath to construct themselves:
-        foreach ($this->declareAppServices() as $service) {
+        foreach ($this->declareAppServices($root) as $service) {
             match (true) {
                 $service instanceof Clock => $this->clock = $service,
                 $service instanceof CacheManager => $this->cache = $service,
                 $service instanceof DatabaseManager => $this->database = $service,
                 $service instanceof EventsManager => $this->events = $service,
-                default => $this->$service = $service,
+                $service instanceof PathRegistry => $this->paths = $service,
+                default => throw new \RuntimeException("Unknown service: " . get_class($service)),
             };
         }
-
 
         //list($moduleClasses, $moduleProperties) = $this->registerModuleManifest($context);
 
@@ -78,16 +78,18 @@ abstract class AbstractApp extends AppSerializable
     }
 
     /**
+     * @param DirectoryNode $root
      * @return ServicesBundle
      * @api
      */
-    protected function declareAppServices(): ServicesBundle
+    protected function declareAppServices(DirectoryNode $root): ServicesBundle
     {
         return new ServicesBundle(
             new Clock($this),
             new EventsManager($this),
             new CacheManager($this),
             new DatabaseManager($this),
+            new PathRegistry($root->path)
         );
     }
 
@@ -143,10 +145,10 @@ abstract class AbstractApp extends AppSerializable
             "clock" => $this->clock,
             //"cipher" => $this->cipher,
             "database" => $this->database,
-            //"directories" => $this->directories,
             "errors" => $this->errors,
             "events" => $this->events,
-            "lifecycle" => null
+            "lifecycle" => null,
+            "paths" => $this->paths,
         ];
 
         foreach ($this->context->moduleProperties as $property) {
@@ -164,14 +166,15 @@ abstract class AbstractApp extends AppSerializable
     {
         $this->env = $data["env"];
         $this->context = $data["context"];
-        $this->cache = $data["cache"];
         $this->config = $data["config"];
         $this->clock = $data["clock"];
+        $this->cache = $data["cache"];
         //$this->cipher = $data["cipher"];
         $this->database = $data["database"];
         //$this->directories = $data["directories"];
         $this->errors = $data["errors"];
         $this->events = $data["events"];
+        $this->paths = $data["paths"];
         foreach ($this->context->moduleProperties as $property) {
             $this->$property = $data[$property];
         }
