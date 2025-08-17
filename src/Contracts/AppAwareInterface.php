@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Contracts;
 
-use Charcoal\App\Kernel\AppBuild;
+use Charcoal\App\Kernel\AbstractApp;
 
 /**
  * Interface AppAwareInterface
@@ -17,8 +17,8 @@ use Charcoal\App\Kernel\AppBuild;
 interface AppAwareInterface
 {
     /**
-     * @param AppBuild $app
+     * @param AbstractApp $app
      * @return void
      */
-    public function bootstrap(AppBuild $app): void;
+    public function bootstrap(AbstractApp $app): void;
 }

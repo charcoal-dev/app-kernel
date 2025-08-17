@@ -6,13 +6,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Contracts;
+namespace Charcoal\App\Kernel\Contracts\Time;
 
 /**
  * Interface ClockInterface
  * @package Charcoal\App\Kernel\Contracts
  */
-interface ClockInterface
+interface ClockInterface extends TimezoneInterface
 {
     public function __construct(TimezoneInterface $timezone);
 

@@ -6,13 +6,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Contracts\StorageHooks;
+namespace Charcoal\App\Kernel\Contracts\Orm\Entity;
 
 use Charcoal\Base\Enums\FetchOrigin;
 
 /**
  * Interface StorageHooksInterface
- * @package Charcoal\App\Kernel\Contracts\StorageHooks
+ * @package Charcoal\App\Kernel\Contracts\Orm\Entity
  */
 interface StorageHooksInterface
 {

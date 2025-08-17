@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Contracts\Orm\Entity;
 
-use Charcoal\App\Kernel\Entity\Exception\ChecksumComputeException;
-use Charcoal\App\Kernel\Entity\Exception\ChecksumMismatchException;
+use Charcoal\App\Kernel\Entity\Exceptions\ChecksumComputeException;
+use Charcoal\App\Kernel\Entity\Exceptions\ChecksumMismatchException;
 use Charcoal\Buffers\Frames\Bytes20;
 use Charcoal\Cipher\Cipher;
 
