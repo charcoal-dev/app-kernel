@@ -9,23 +9,23 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Errors;
 
 use Charcoal\App\Kernel\AbstractApp;
-use Charcoal\App\Kernel\Contracts\Enums\AppBuildContextInterface;
 use Charcoal\App\Kernel\Contracts\Error\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Support\ErrorHelper;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
-use Charcoal\Base\Traits\NotSerializableTrait;
 
 /**
- * Class ErrorHandler
+ * Class ErrorManager
  * @package Charcoal\App\Kernel\Errors
  */
-class ErrorHandler implements \IteratorAggregate
+class ErrorManager implements \IteratorAggregate
 {
     private static bool $handlingThrowable = false;
     private static bool $handlersSet = false;
 
+    public readonly ErrorLoggerInterface $logger;
     public readonly int $pathOffset;
+
     public int $debugBacktraceLevel = E_WARNING;
     public int $backtraceOffset = 3;
     public bool $exceptionHandlerShowTrace = true;
@@ -36,20 +36,17 @@ class ErrorHandler implements \IteratorAggregate
 
     use NoDumpTrait;
     use NotCloneableTrait;
-    use NotSerializableTrait;
 
     /**
      * @param AbstractApp $app
-     * @param AppBuildContextInterface $context
-     * @param ErrorLoggerInterface $logger
      */
-    public function __construct(AbstractApp $app, AppBuildContextInterface $context, public ErrorLoggerInterface $logger)
+    public function __construct(AbstractApp $app)
     {
         $this->pathOffset = strlen($app->directories->root->path);
         $this->errorLoggable = [E_NOTICE, E_USER_NOTICE];
         $this->errorLog = [];
         $this->errorLogCount = 0;
-        if ($context->deployErrorHandlers()) {
+        if ($app->env->errorHandlers()) {
             $this->setHandlers();
         }
     }
@@ -99,7 +96,7 @@ class ErrorHandler implements \IteratorAggregate
      * Erases the entire error log, returning all existing values in an Array
      * @return array
      */
-    public function flushClean(): array
+    public function drain(): array
     {
         $errorLog = $this->errorLog;
         $this->flush();
@@ -158,7 +155,11 @@ class ErrorHandler implements \IteratorAggregate
      * @return void
      * @throws \ErrorException
      */
-    public function trigger(string|\Throwable $error, int $level = E_USER_NOTICE, int $fileLineBacktraceIndex = 1): void
+    public function trigger(
+        string|\Throwable $error,
+        int               $level = E_USER_NOTICE,
+        int               $fileLineBacktraceIndex = 1
+    ): void
     {
         if ($error instanceof \Throwable) {
             $error = \Charcoal\App\Kernel\Support\ErrorHelper::exception2String($error);
@@ -195,21 +196,20 @@ class ErrorHandler implements \IteratorAggregate
     }
 
     /**
-     * Method required by \IteratorAggregate interface, returns \ArrayIterator
-     * @return \Traversable
-     */
-    public function getIterator(): \Traversable
-    {
-        return new \ArrayIterator($this->errorLog);
-    }
-
-    /**
      * Returns all logged errors
      * @return array
      */
     public function getAll(): array
     {
         return $this->errorLog;
+    }
+
+    /**
+     * @return \Traversable
+     */
+    public function getIterator(): \Traversable
+    {
+        return new \ArrayIterator($this->errorLog);
     }
 
     /**
@@ -278,7 +278,7 @@ class ErrorHandler implements \IteratorAggregate
             "class" => get_class($t),
             "message" => $t->getMessage(),
             "code" => $t->getCode(),
-            "file" => $this->getOffsetFilepath($t->getFile()),
+            "file" => $this->getRelativeFilepath($t->getFile()),
             "line" => $t->getLine(),
         ];
 
@@ -298,7 +298,7 @@ class ErrorHandler implements \IteratorAggregate
      * @param string $path
      * @return string
      */
-    final public function getOffsetFilepath(string $path): string
+    final public function getRelativeFilepath(string $path): string
     {
         return trim(substr($path, $this->pathOffset), DIRECTORY_SEPARATOR);
     }

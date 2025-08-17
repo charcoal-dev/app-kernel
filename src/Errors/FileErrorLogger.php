@@ -9,32 +9,29 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Errors;
 
 use Charcoal\App\Kernel\Contracts\Error\ErrorLoggerInterface;
-use Charcoal\Filesystem\Exception\FilesystemException;
-use Charcoal\Filesystem\File;
+use Charcoal\App\Kernel\Support\ErrorHelper;
+use Charcoal\Filesystem\Path\FilePath;
 
 /**
  * Class FileErrorLogger
  * @package Charcoal\App\Kernel\Errors
  */
-class FileErrorLogger implements ErrorLoggerInterface
+final class FileErrorLogger implements ErrorLoggerInterface
 {
-    public readonly string $logFilePath;
+    public readonly string $logFile;
     public bool $isWriting = true;
 
-    /**
-     * @throws FilesystemException
-     */
     public function __construct(
-        File          $logFile,
+        FilePath      $logFile,
         public bool   $useAnsiEscapeSeq = true,
         public string $eolChar = PHP_EOL
     )
     {
-        if (!$logFile->isWritable()) {
-            throw new \RuntimeException('Error log file is not writable');
+        if (!$logFile->writable) {
+            throw new \RuntimeException("Error log file is not writable");
         }
 
-        $this->logFilePath = $logFile->path;
+        $this->logFile = $logFile->absolute;
     }
 
     /**
@@ -99,8 +96,10 @@ class FileErrorLogger implements ErrorLoggerInterface
             $buffer = preg_replace("/\\e\[\d+m/", "", $buffer);
         }
 
-        if (!file_put_contents($this->logFilePath, $buffer)) {
-            throw new \RuntimeException('Failed to write to error log file');
+        error_clear_last();
+        if (!@file_put_contents($this->logFile, $buffer)) {
+            throw new \RuntimeException('Failed to write to error log file',
+                previous: ErrorHelper::lastErrorToRuntimeException());
         }
     }
 
