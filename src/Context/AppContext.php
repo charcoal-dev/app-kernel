@@ -10,7 +10,7 @@ namespace Charcoal\App\Kernel\Context;
 
 /**
  * Class AppContext
- * @package Charcoal\App\Kernel\Build
+ * @package Charcoal\App\Kernel\Context
  */
 final readonly class AppContext
 {
