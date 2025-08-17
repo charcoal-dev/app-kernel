@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Interfaces\Http;
 
-use Charcoal\App\Kernel\AppBuild;
+use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Http\Router\Controller\AbstractController;
 
@@ -18,7 +18,7 @@ use Charcoal\Http\Router\Controller\AbstractController;
  */
 abstract class AbstractRouteController extends AbstractController
 {
-    public readonly AppBuild $app;
+    public readonly AbstractApp $app;
     public readonly RemoteClient $userClient;
 
     /**
@@ -27,7 +27,7 @@ abstract class AbstractRouteController extends AbstractController
      */
     final protected function resolveEntrypoint(array $args): void
     {
-        if (!$args[0] instanceof AppBuild) {
+        if (!$args[0] instanceof AbstractApp) {
             throw new \InvalidArgumentException("First argument must be an instance of AppBuild");
         }
 
