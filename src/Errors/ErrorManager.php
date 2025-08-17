@@ -11,6 +11,7 @@ namespace Charcoal\App\Kernel\Errors;
 use Charcoal\App\Kernel\Contracts\Error\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Internal\AppEnv;
 use Charcoal\App\Kernel\Internal\Config\ErrorManagerConfig;
+use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\App\Kernel\Support\ErrorHelper;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Base\Traits\NoDumpTrait;
@@ -24,7 +25,7 @@ use Charcoal\Filesystem\Path\PathInfo;
  * Class ErrorManager
  * @package Charcoal\App\Kernel\Errors
  */
-class ErrorManager implements \IteratorAggregate
+class ErrorManager implements AppServiceInterface, \IteratorAggregate
 {
     private static bool $handlingThrowable = false;
     private static bool $handlersSet = false;
