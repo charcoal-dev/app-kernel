@@ -6,13 +6,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Interfaces\Cli;
+namespace Charcoal\App\Kernel\EntryPoint\Cli;
 
 use Charcoal\Base\Support\Helpers\ObjectHelper;
 
 /**
  * Class AbstractCliScript
- * @package Charcoal\App\Kernel\Interfaces\Cli
+ * @package Charcoal\App\Kernel\EntryPoint\Cli
  * @property AppCliHandler $cli
  */
 abstract class AbstractCliScript extends \Charcoal\Cli\Script\AbstractCliScript

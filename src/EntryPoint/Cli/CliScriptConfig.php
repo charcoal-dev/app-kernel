@@ -6,11 +6,11 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Interfaces\Cli;
+namespace Charcoal\App\Kernel\EntryPoint\Cli;
 
 /**
  * Class CliScriptConfig
- * @package Charcoal\App\Kernel\Interfaces\Cli
+ * @package Charcoal\App\Kernel\EntryPoint\Cli
  */
 class CliScriptConfig
 {

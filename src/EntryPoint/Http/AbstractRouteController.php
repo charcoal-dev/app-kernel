@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Interfaces\Http;
+namespace Charcoal\App\Kernel\EntryPoint\Http;
 
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
@@ -14,7 +14,7 @@ use Charcoal\Http\Router\Controller\AbstractController;
 
 /**
  * Class AbstractRouteController
- * @package Charcoal\App\Kernel\Interfaces\Http
+ * @package Charcoal\App\Kernel\EntryPoint\Http
  */
 abstract class AbstractRouteController extends AbstractController
 {

@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Interfaces\Cli;
+namespace Charcoal\App\Kernel\EntryPoint\Cli;
 
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
@@ -23,7 +23,7 @@ use Composer\InstalledVersions;
 
 /**
  * Class AppCliHandler
- * @package Charcoal\App\Kernel\Interfaces\Cli
+ * @package Charcoal\App\Kernel\EntryPoint\Cli
  */
 class AppCliHandler extends Console
 {

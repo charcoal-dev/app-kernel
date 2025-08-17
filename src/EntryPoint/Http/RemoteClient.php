@@ -6,13 +6,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Interfaces\Http;
+namespace Charcoal\App\Kernel\EntryPoint\Http;
 
 use Charcoal\Http\Router\Request\Request;
 
 /**
  * Class RemoteClient
- * @package Charcoal\App\Kernel\Interfaces\Http
+ * @package Charcoal\App\Kernel\EntryPoint\Http
  */
 readonly class RemoteClient
 {
