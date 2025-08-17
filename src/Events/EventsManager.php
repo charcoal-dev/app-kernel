@@ -8,12 +8,21 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Events;
 
-readonly class EventsManager
+use Charcoal\App\Kernel\AbstractApp;
+use Charcoal\App\Kernel\Internal\Services\AppServiceConfigAwareInterface;
+
+/**
+ * Class EventsManager
+ * @package Charcoal\App\Kernel\Events
+ */
+readonly class EventsManager implements AppServiceConfigAwareInterface
 {
     public DatabaseEvents $dataStore;
 
-    public function __construct()
+    /**
+     * @param AbstractApp $app
+     */
+    public function __construct(AbstractApp $app)
     {
-
     }
 }
