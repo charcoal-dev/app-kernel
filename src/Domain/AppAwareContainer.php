@@ -6,14 +6,14 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Container;
+namespace Charcoal\App\Kernel\Domain;
 
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
 
 /**
  * Class AppAwareContainer
- * @package Charcoal\App\Kernel\Container
+ * @package Charcoal\App\Kernel\Domain
  */
 abstract class AppAwareContainer extends AppAware
 {

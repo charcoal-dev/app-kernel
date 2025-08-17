@@ -6,14 +6,14 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Container;
+namespace Charcoal\App\Kernel\Domain;
 
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\Base\Traits\ControlledSerializableTrait;
 
 /**
  * Class AppAware
- * @package Charcoal\App\Kernel\Container
+ * @package Charcoal\App\Kernel\Domain
  */
 abstract class AppAware
 {

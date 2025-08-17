@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Context;
 
-use Charcoal\App\Kernel\Container\AppAware;
+use Charcoal\App\Kernel\Domain\AppAware;
 
 /**
  * Class ModuleManifest

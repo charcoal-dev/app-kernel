@@ -11,7 +11,7 @@ namespace Charcoal\App\Kernel\Orm\Module;
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Cache\Traits\CacheStoreOperationsTrait;
 use Charcoal\App\Kernel\Cache\Traits\RuntimeCacheOwnerTrait;
-use Charcoal\App\Kernel\Container\AppAwareContainer;
+use Charcoal\App\Kernel\Domain\AppAwareContainer;
 use Charcoal\App\Kernel\Contracts\Cache\CacheStoreOperationsInterface;
 use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
 use Charcoal\App\Kernel\Contracts\Orm\Module\CacheStoreAwareInterface;
