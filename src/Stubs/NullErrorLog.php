@@ -15,7 +15,7 @@ use Charcoal\App\Kernel\Errors\ErrorEntry;
  * Class NullErrorLog
  * @package Charcoal\App\Kernel\Stubs
  */
-class NullErrorLog implements ErrorLoggerInterface
+final class NullErrorLog implements ErrorLoggerInterface
 {
     /**
      * Does nothing with given ErrorEntry or \Throwable object >> /dev/null

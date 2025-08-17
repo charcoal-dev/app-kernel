@@ -15,7 +15,7 @@ use Charcoal\Cache\Contracts\CacheDriverInterface;
  * Class NullCache
  * @package Charcoal\App\Kernel\Stubs
  */
-class NullCache implements CacheDriverInterface
+final class NullCache implements CacheDriverInterface
 {
     public function createLink(CacheClient $cache): void
     {
