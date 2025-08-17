@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Database;
 
-use Charcoal\App\Kernel\AppBuild;
+use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
 use Charcoal\App\Kernel\Orm\Db\TableRegistry;
 use Charcoal\Base\Abstracts\BaseFactoryRegistry;
@@ -16,7 +16,6 @@ use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Database\DatabaseClient;
-use Charcoal\Database\Enums\DbDriver;
 
 /**
  * Class Databases
@@ -25,7 +24,7 @@ use Charcoal\Database\Enums\DbDriver;
  */
 class DatabaseManager extends BaseFactoryRegistry
 {
-    protected readonly AppBuild $app;
+    protected readonly AbstractApp $app;
     public readonly TableRegistry $tables;
 
     use RegistryKeysLowercaseTrimmed;
@@ -38,10 +37,10 @@ class DatabaseManager extends BaseFactoryRegistry
     }
 
     /**
-     * @param AppBuild $app
+     * @param AbstractApp $app
      * @return void
      */
-    public function bootstrap(AppBuild $app): void
+    public function bootstrap(AbstractApp $app): void
     {
         $this->app = $app;
     }
@@ -72,20 +71,18 @@ class DatabaseManager extends BaseFactoryRegistry
     /**
      * @param string $key
      * @return DatabaseClient
-     * @throws \Charcoal\Database\Exception\DbConnectionException
+     * @throws \Charcoal\Database\Exceptions\DbConnectionException
      */
     protected function create(string $key): DatabaseClient
     {
-        $cred = $this->app->config->database->get($key);
-        if ($cred->driver === DbDriver::MYSQL) {
-            if ($cred->username === "root" && !$cred->password) {
-                $cred->password = $this->app->config->database->mysqlRootPassword;
-            }
+        $config = $this->app->config->database?->databases[$key];
+        if (!$config) {
+            throw new \DomainException("Database config not found for key: " . $key);
         }
 
-        $db = new DatabaseClient($cred);
-        $this->app->events->onDbConnection()->trigger([$db]);
-        return $db;
+        // Todo: resolve secret as per reference
+
+        return new DatabaseClient($config);
     }
 
     /**
@@ -94,7 +91,7 @@ class DatabaseManager extends BaseFactoryRegistry
      */
     public function getDb(DatabaseEnumInterface $key): DatabaseClient
     {
-        return $this->getExistingOrCreate($key->getDatabaseKey());
+        return $this->getExistingOrCreate($key->getConfigKey());
     }
 
     /**
