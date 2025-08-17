@@ -17,7 +17,7 @@ use Charcoal\App\Kernel\Support\NetworkHelper;
 final readonly class DatabaseManagerConfig
 {
     /** @var array<string, DatabaseConfig> */
-    public array $configs;
+    public array $databases;
 
     /**
      * @param array<string, DatabaseConfig> $configs
@@ -45,5 +45,7 @@ final readonly class DatabaseManagerConfig
                 throw new \InvalidArgumentException("Invalid password: " . $key);
             }
         }
+
+        $this->databases = $configs;
     }
 }
