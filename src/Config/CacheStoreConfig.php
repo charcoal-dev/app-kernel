@@ -20,7 +20,7 @@ final readonly class CacheStoreConfig
         public CacheDriver $driver,
         public string      $hostname,
         public int         $port,
-        public int         $timeOut,
+        public int         $timeout,
     )
     {
     }
