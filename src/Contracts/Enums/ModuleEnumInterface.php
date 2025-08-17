@@ -9,12 +9,9 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Contracts\Enums;
 
 /**
- * Interface SecretsEnumInterface
+ * Interface ModuleEnumInterface
  * @package Charcoal\App\Kernel\Contracts\Enums
  */
-interface SecretsEnumInterface extends \UnitEnum
+interface ModuleEnumInterface extends ConfigEnumInterface
 {
-    public function getNamespace(): string;
-
-    public function getReferenceId(): string;
 }

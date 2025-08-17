@@ -6,13 +6,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Contracts\Time;
+namespace Charcoal\App\Kernel\Contracts\Enums;
 
 /**
  * Interface TimezoneInterface
  * @package Charcoal\App\Kernel\DateTime
  */
-interface TimezoneInterface
+interface TimezoneEnumInterface
 {
     /**
      * Return timezone ID that is acceptable with PHP \DateTime
