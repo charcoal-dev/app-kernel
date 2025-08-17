@@ -26,7 +26,7 @@ final readonly class DatabaseEvents extends StorageProviderEvents
     /**
      * @param DatabaseClient $db
      */
-    public function __construct(public DatabaseClient $db)
+    public function __construct(protected DatabaseClient $db)
     {
         parent::__construct($db);
     }
