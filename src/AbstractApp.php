@@ -8,18 +8,19 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel;
 
-use Charcoal\App\Kernel\Build\AppBuildStage;
-use Charcoal\App\Kernel\Build\AppSerializable;
-use Charcoal\App\Kernel\Build\BuildContext;
+use Charcoal\App\Kernel\Context\AppSerializable;
+use Charcoal\App\Kernel\Context\AppContext;
 use Charcoal\App\Kernel\Cache\CacheManager;
-use Charcoal\App\Kernel\Cipher\CipherKeychain;
-use Charcoal\App\Kernel\Contracts\AppBuildEnum;
-use Charcoal\App\Kernel\Contracts\Error\ErrorLoggerInterface;
+use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
 use Charcoal\App\Kernel\Database\DatabaseManager;
-use Charcoal\App\Kernel\Errors\ErrorHandler;
-use Charcoal\App\Kernel\Stubs\NullErrorLog;
+use Charcoal\App\Kernel\Errors\ErrorManager;
+use Charcoal\App\Kernel\Events\EventsManager;
+use Charcoal\App\Kernel\Internal\AppEnv;
+use Charcoal\App\Kernel\Internal\Services\ServicesBundle;
 use Charcoal\App\Kernel\Time\Clock;
 use Charcoal\Base\Traits\NotCloneableTrait;
+use Charcoal\Filesystem\Node\DirectoryNode;
+use Charcoal\Filesystem\Path\PathInfo;
 
 /**
  * Class AbstractApp
@@ -27,68 +28,67 @@ use Charcoal\Base\Traits\NotCloneableTrait;
  */
 abstract class AbstractApp extends AppSerializable
 {
-    public readonly BuildContext $build;
+    public readonly AppContext $context;
     public readonly CacheManager $cache;
+    // public readonly CipherKeychain $cipher;
+    public readonly Clock $clock;
     public readonly AppConfig $config;
     public readonly DatabaseManager $database;
-    public readonly ErrorHandler $errors;
-    public readonly Clock $clock;
+    // public readonly Directories $directories;
+    public readonly ErrorManager $errors;
+    public readonly EventsManager $events;
     public readonly Lifecycle $lifecycle;
+    // public readonly Security $security;
 
     use NotCloneableTrait;
 
-    public function __construct(
-        AppBuildEnum                   $context,
-        ErrorLoggerInterface           $errorLog = new NullErrorLog(),
-        public readonly Directories    $directories,
-        public readonly CipherKeychain $cipher,
-        public readonly Events         $events,
-    )
+    public function __construct(public readonly AppEnv $env, DirectoryNode $root)
     {
-        $this->config = $this->declareErrorHandler($errorLog, $context)
+
+        $this->config = $this->declareErrorHandler($root->path)
             ->resolveConfig();
 
-        $this->declareConfigAwareComponents();
-
         // Register child modules as declared by the downstream app,
-        // and provides them with AppBuildStage to construct themselves:
-        list($moduleClasses, $moduleProperties) = $this->registerModuleManifest($context,
-            new AppBuildStage(
-                $this->cache,
-                $this->clock,
-                $this->config,
-                $this->database,
-                $this->directories,
-                $this->errors,
-                $this->events
-            )
-        );
+        // and provides them with AbstractPath to construct themselves:
+        foreach ($this->declareAppServices() as $service) {
+            match (true) {
+                $service instanceof Clock => $this->clock = $service,
+                $service instanceof CacheManager => $this->cache = $service,
+                $service instanceof DatabaseManager => $this->database = $service,
+                $service instanceof EventsManager => $this->events = $service,
+                default => $this->$service = $service,
+            };
+        }
 
-        $this->build = new BuildContext($context, $this->clock->now(), $moduleClasses, $moduleProperties);
+
+        //list($moduleClasses, $moduleProperties) = $this->registerModuleManifest($context);
+
+        $this->context = new AppContext($this->clock->now(), $moduleClasses, $moduleProperties);
         $this->isReady("New app instance instantiated");
     }
 
     /**
-     * @param ErrorLoggerInterface $logger
-     * @param AppBuildEnum $context
+     * @param PathInfo $root
      * @return $this
-     * @internal
      */
-    protected function declareErrorHandler(ErrorLoggerInterface $logger, AppBuildEnum $context): static
+    protected function declareErrorHandler(PathInfo $root): static
     {
-        new ErrorHandler($this, $context, $logger);
+        new ErrorManager($this->env, $root);
         return $this;
     }
 
     /**
-     * @return void
-     * @internal
+     * @return ServicesBundle
+     * @api
      */
-    protected function declareConfigAwareComponents(): void
+    protected function declareAppServices(): ServicesBundle
     {
-        $this->clock = new Clock($this->config->timezone);
-        $this->database = new DatabaseManager();
-        $this->cache = new CacheManager();
+        return new ServicesBundle(
+            new Clock($this),
+            new EventsManager($this),
+            new CacheManager($this),
+            new DatabaseManager($this),
+        );
     }
 
     /**
@@ -109,7 +109,6 @@ abstract class AbstractApp extends AppSerializable
         $this->lifecycle->log($message);
 
         // All set!
-        $this->errors->exceptionHandlerShowTrace = false;
     }
 
     /**
@@ -118,10 +117,6 @@ abstract class AbstractApp extends AppSerializable
      */
     public function bootstrap(): void
     {
-        // Bootstrap dependants:
-        $this->database->bootstrap($this);
-        $this->cache->bootstrap($this);
-
         // All declared services and modules:
         foreach ($this->build->moduleProperties as $property) {
             $this->$property->bootstrap($this);
@@ -141,12 +136,14 @@ abstract class AbstractApp extends AppSerializable
     public function __serialize(): array
     {
         $data = [
+            "env" => $this->env,
             "build" => $this->build,
             "cache" => $this->cache,
-            "cipher" => $this->cipher,
             "config" => $this->config,
+            "clock" => $this->clock,
+            //"cipher" => $this->cipher,
             "database" => $this->database,
-            "directories" => $this->directories,
+            //"directories" => $this->directories,
             "errors" => $this->errors,
             "events" => $this->events,
             "lifecycle" => null
@@ -177,7 +174,7 @@ abstract class AbstractApp extends AppSerializable
             $this->$property = $data[$property];
         }
 
-        if ($this->build->enum->deployErrorHandlers()) {
+        if ($this->errors->policy->enabled) {
             $this->errors->setHandlers();
         }
 

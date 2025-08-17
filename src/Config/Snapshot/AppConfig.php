@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config\Snapshot;
 
-use Charcoal\App\Kernel\Contracts\Time\TimezoneInterface;
+use Charcoal\App\Kernel\Contracts\Enums\TimezoneEnumInterface;
 
 /**
  * Class AppConfig
@@ -17,7 +17,7 @@ use Charcoal\App\Kernel\Contracts\Time\TimezoneInterface;
 readonly class AppConfig
 {
     public function __construct(
-        public TimezoneInterface      $timezone,
+        public TimezoneEnumInterface  $timezone,
         public ?CacheManagerConfig    $cache,
         public ?DatabaseManagerConfig $database,
     )

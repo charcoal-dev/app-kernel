@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Contracts\StorageHooks;
+namespace Charcoal\App\Kernel\Orm;
 
 use Charcoal\App\Kernel\Contracts\Orm\Entity\StorageHooksInterface;
 use Charcoal\Base\Enums\FetchOrigin;

@@ -9,14 +9,13 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm\Repository;
 
 use Charcoal\App\Kernel\Contracts\Enums\TableRegistryEnumInterface;
-use Charcoal\App\Kernel\Contracts\StorageHooks\StorageHooksInvokerTrait;
 use Charcoal\App\Kernel\Orm\Db\AppAwareTable;
 use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
 use Charcoal\App\Kernel\Orm\Module\OrmAwareModule;
 use Charcoal\App\Kernel\Orm\Repository\Traits\EntityFetchTrait;
+use Charcoal\App\Kernel\Orm\StorageHooksInvokerTrait;
 use Charcoal\Base\Enums\ExceptionAction;
 use Charcoal\Base\Traits\ControlledSerializableTrait;
-use Charcoal\Cache\Exception\CacheException;
 
 /**
  * Class AbstractOrmRepository
@@ -96,7 +95,8 @@ abstract class OrmAwareRepository
     /**
      * @param AbstractOrmEntity|string|int $entity
      * @return void
-     * @throws CacheException
+     * @throws \Charcoal\Cache\Exceptions\CacheDriverException
+     * @api
      */
     protected function deleteFromCache(AbstractOrmEntity|string|int $entity): void
     {

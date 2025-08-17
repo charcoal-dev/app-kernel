@@ -40,7 +40,7 @@ trait EntityUpdatableTrait
      * @param string $primaryColumnName
      * @return void
      * @throws EntityOrmException
-     * @throws \Charcoal\App\Kernel\Entity\Exception\ChecksumComputeException
+     * @throws \Charcoal\App\Kernel\Entity\Exceptions\ChecksumComputeException
      */
     protected function dbUpdateLockedEntity(
         bool         $isChecksumAware,
@@ -94,7 +94,7 @@ trait EntityUpdatableTrait
      * @param string $checksumColumn
      * @return int
      * @throws EntityOrmException
-     * @throws \Charcoal\App\Kernel\Entity\Exception\ChecksumComputeException
+     * @throws \Charcoal\App\Kernel\Entity\Exceptions\ChecksumComputeException
      */
     protected function dbUpdateChecksumAwareEntity(
         AbstractOrmEntity $entity,
@@ -106,7 +106,11 @@ trait EntityUpdatableTrait
     {
         if (!$entity instanceof ChecksumAwareEntityInterface) {
             throw new \RuntimeException(static::class . " does not implement ChecksumAwareEntityInterface");
-        } elseif (!$this instanceof ChecksumAwareRepositoryInterface) {
+        }
+
+        // Todo: resolve
+        /** @noinspection PhpInstanceofIsAlwaysTrueInspection */
+        if (!$this instanceof ChecksumAwareRepositoryInterface) {
             throw new \RuntimeException(static::class . " does not implement ChecksumAwareRepositoryInterface");
         }
 

@@ -9,35 +9,37 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel;
 
 use Charcoal\Filesystem\Directory;
-use Charcoal\Filesystem\Exception\FilesystemException;
 
 /**
  * Class Directories
  * @package Charcoal\App\Kernel
  */
-class Directories
+readonly class Directories
 {
+    /**
+     * @param Directory $root
+     */
     public function __construct(
-        public readonly Directory $root
+        public Directory $root
     )
     {
     }
 
-    protected function validateDirectory(string $dirPath, bool $checkReadable, bool $checkWritable): Directory
+    /**
+     * @throws \Charcoal\Filesystem\Exceptions\FilesystemException
+     * @api
+     */
+    protected function validateDirectory(string $dirPath, bool $readable, bool $writable): Directory
     {
-        try {
-            $dir = $this->root->getDirectory($dirPath, createIfNotExists: false);
-            if ($checkReadable && !$dir->isReadable()) {
-                throw new \RuntimeException(sprintf('Directory "%s" is not readable', $dirPath));
-            }
-
-            if ($checkWritable && !$dir->isWritable()) {
-                throw new \RuntimeException(sprintf('Directory "%s" is not writable', $dirPath));
-            }
-
-            return $dir;
-        } catch (FilesystemException $e) {
-            throw new \RuntimeException(sprintf('Directory "%s" error %s', $dirPath, $e->error->name));
+        $dir = $this->root->getDirectory($dirPath, createIfNotExists: false);
+        if ($readable && !$dir->isReadable()) {
+            throw new \RuntimeException(sprintf('Directory "%s" is not readable', $dirPath));
         }
+
+        if ($writable && !$dir->isWritable()) {
+            throw new \RuntimeException(sprintf('Directory "%s" is not writable', $dirPath));
+        }
+
+        return $dir;
     }
 }

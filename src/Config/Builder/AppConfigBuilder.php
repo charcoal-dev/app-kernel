@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Config\Builder;
 
 use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
-use Charcoal\App\Kernel\Contracts\Time\TimezoneInterface;
+use Charcoal\App\Kernel\Contracts\Enums\TimezoneEnumInterface;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
 
 /**
@@ -19,7 +19,7 @@ use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
 class AppConfigBuilder implements ConfigBuilderInterface
 {
     public function __construct(
-        public TimezoneInterface          $timezone,
+        public TimezoneEnumInterface      $timezone,
         public ?CacheConfigObjectsBuilder $cache,
         public ?DbConfigObjectsBuilder    $database,
     )

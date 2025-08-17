@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Time;
 
 use Charcoal\App\Kernel\AbstractApp;
-use Charcoal\App\Kernel\Contracts\Time\ClockInterface;
+use Charcoal\App\Kernel\Contracts\Time\ClockEnumInterface;
 use Charcoal\App\Kernel\Internal\Services\AppServiceConfigAwareInterface;
 use Charcoal\App\Kernel\Support\ErrorHelper;
 
@@ -17,7 +17,7 @@ use Charcoal\App\Kernel\Support\ErrorHelper;
  * Class Clock
  * @package Charcoal\App\Kernel\Time
  */
-final class Clock implements AppServiceConfigAwareInterface, ClockInterface
+final class Clock implements AppServiceConfigAwareInterface, ClockEnumInterface
 {
     use StaticClockTrait;
 

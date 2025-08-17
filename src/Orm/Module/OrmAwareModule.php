@@ -8,10 +8,10 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Module;
 
-use Charcoal\App\Kernel\Build\AppBuildPartial;
-use Charcoal\App\Kernel\Cache\CacheStoreOperationsTrait;
+use Charcoal\App\Kernel\Cache\Traits\CacheStoreOperationsTrait;
+use Charcoal\App\Kernel\Cache\Traits\RuntimeCacheOwnerTrait;
 use Charcoal\App\Kernel\Container\AppAwareContainer;
-use Charcoal\App\Kernel\Container\Traits\RuntimeCacheOwnerTrait;
+use Charcoal\App\Kernel\Context\AppBuildStage;
 use Charcoal\App\Kernel\Contracts\Cache\CacheStoreOperationsInterface;
 use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
 use Charcoal\App\Kernel\Contracts\Orm\Module\CacheStoreAwareInterface;
@@ -32,10 +32,10 @@ abstract class OrmAwareModule extends AppAwareContainer implements
     use CacheStoreOperationsTrait;
 
     /**
-     * @param AppBuildPartial $app
+     * @param AppBuildStage $app
      * @throws \ReflectionException
      */
-    protected function __construct(AppBuildPartial $app)
+    protected function __construct(AppBuildStage $app)
     {
         $this->declareDatabaseTables($app->database->tables);
 

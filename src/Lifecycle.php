@@ -1,9 +1,15 @@
 <?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
 declare(strict_types=1);
 
 namespace Charcoal\App\Kernel;
 
-use Charcoal\App\Kernel\Contracts\LifecycleBoundContextInterface;
+use Charcoal\App\Kernel\Contracts\Lifecycle\LifecycleBoundContextInterface;
+use Charcoal\App\Kernel\Support\ErrorHelper;
 
 /**
  * Class Lifecycle
@@ -89,7 +95,7 @@ class Lifecycle
      */
     public function exception(\Throwable $t): void
     {
-        $this->exceptions[] = Errors::Exception2Array($t);
+        $this->exceptions[] = ErrorHelper::Exception2Array($t);
         foreach ($this->boundContext as $context) {
             $context->exceptionFromLifecycle($t);
         }

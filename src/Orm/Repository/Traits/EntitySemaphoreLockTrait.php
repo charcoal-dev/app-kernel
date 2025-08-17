@@ -29,7 +29,7 @@ trait EntitySemaphoreLockTrait
      * @param LockFlag|null $dbLockFlag
      * @return LockedEntity
      * @throws EntityLockedException
-     * @throws \Charcoal\Semaphore\Exception\SemaphoreLockException
+     * @throws \Charcoal\Semaphore\Exceptions\SemaphoreLockException
      */
     protected function getLockedEntity(
         string    $entityLockId,

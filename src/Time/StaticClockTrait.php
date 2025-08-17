@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Time;
 
-use Charcoal\App\Kernel\Build\AppBuildStage;
+use Charcoal\App\Kernel\Context\AppBuildStage;
 
 /**
  * Trait StaticClockTrait
