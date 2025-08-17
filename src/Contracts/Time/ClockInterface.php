@@ -14,8 +14,6 @@ namespace Charcoal\App\Kernel\Contracts\Time;
  */
 interface ClockInterface extends TimezoneInterface
 {
-    public function __construct(TimezoneInterface $timezone);
-
     public function now(): \DateTimeImmutable;
 
     public function timestamp(): int;

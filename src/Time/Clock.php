@@ -8,23 +8,32 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Time;
 
-use Charcoal\App\Kernel\Contracts\ClockInterface;
-use Charcoal\App\Kernel\Contracts\TimezoneInterface;
+use Charcoal\App\Kernel\AbstractApp;
+use Charcoal\App\Kernel\Contracts\Time\ClockInterface;
+use Charcoal\App\Kernel\Internal\Services\AppServiceConfigAwareInterface;
+use Charcoal\App\Kernel\Support\ErrorHelper;
 
 /**
  * Class Clock
  * @package Charcoal\App\Kernel\Time
  */
-final readonly class Clock implements ClockInterface
+final class Clock implements AppServiceConfigAwareInterface, ClockInterface
 {
+    use StaticClockTrait;
+
     private \DateTimeZone $timezone;
 
     /**
-     * @throws \DateInvalidTimeZoneException
+     * @param AbstractApp $app
      */
-    public function __construct(TimezoneInterface $timezone)
+    public function __construct(AbstractApp $app)
     {
-        $this->timezone = new \DateTimeZone($timezone->getTimezoneId());
+        try {
+            date_default_timezone_set($app->config->timezone->getTimezoneId());
+            $this->timezone = new \DateTimeZone($app->config->timezone->getTimezoneId());
+        } catch (\Exception $e) {
+            throw new \RuntimeException(ErrorHelper::exception2String($e), 0, $e);
+        }
     }
 
     /**
@@ -41,5 +50,13 @@ final readonly class Clock implements ClockInterface
     public function timestamp(): int
     {
         return $this->now()->getTimestamp();
+    }
+
+    /**
+     * @return string
+     */
+    public function getTimezoneId(): string
+    {
+        return $this->timezone->getName();
     }
 }
