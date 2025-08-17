@@ -38,7 +38,7 @@ trait ChecksumAwareRepositoryTrait
     /**
      * @param AbstractOrmEntity|null $entity
      * @return Bytes20
-     * @throws \Charcoal\App\Kernel\Entity\Exception\ChecksumComputeException
+     * @throws \Charcoal\App\Kernel\Entity\Exceptions\ChecksumComputeException
      */
     protected function entityChecksumCalculate(AbstractOrmEntity $entity = null): Bytes20
     {
@@ -58,7 +58,7 @@ trait ChecksumAwareRepositoryTrait
     /**
      * @param AbstractOrmEntity|null $entity
      * @return bool
-     * @throws \Charcoal\App\Kernel\Entity\Exception\ChecksumComputeException
+     * @throws \Charcoal\App\Kernel\Entity\Exceptions\ChecksumComputeException
      */
     protected function entityChecksumVerify(AbstractOrmEntity $entity = null): bool
     {
@@ -69,8 +69,8 @@ trait ChecksumAwareRepositoryTrait
     /**
      * @param AbstractOrmEntity|null $entity
      * @return void
-     * @throws \Charcoal\App\Kernel\Entity\Exception\ChecksumComputeException
-     * @throws \Charcoal\App\Kernel\Entity\Exception\ChecksumMismatchException
+     * @throws \Charcoal\App\Kernel\Entity\Exceptions\ChecksumComputeException
+     * @throws \Charcoal\App\Kernel\Entity\Exceptions\ChecksumMismatchException
      */
     protected function entityChecksumValidate(AbstractOrmEntity $entity = null): void
     {

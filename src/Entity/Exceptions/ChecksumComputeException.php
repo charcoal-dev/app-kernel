@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Entity\Exception;
+namespace Charcoal\App\Kernel\Entity\Exceptions;
 
 use Charcoal\App\Kernel\Entity\AbstractEntity;
 
