@@ -9,14 +9,16 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Config\Builder;
 
 use Charcoal\App\Kernel\Config\Snapshot\DatabaseConfig;
+use Charcoal\App\Kernel\Config\Snapshot\DatabaseManagerConfig;
 use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
+use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
 
 /**
  * Class DbConfigBuilder
  * @package Charcoal\App\Kernel\Config\Builder
- * @extends AbstractConfigCollector<DatabaseEnumInterface, DatabaseConfig>
+ * @extends AbstractConfigObjectsCollector<DatabaseEnumInterface, DatabaseConfig, DatabaseManagerConfig>
  */
-final class DbConfigBuilder extends AbstractConfigCollector
+final class DbConfigObjectsBuilder extends AbstractConfigObjectsCollector implements ConfigBuilderInterface
 {
     /**
      * @param DatabaseEnumInterface $key
@@ -26,5 +28,13 @@ final class DbConfigBuilder extends AbstractConfigCollector
     public function set(DatabaseEnumInterface $key, DatabaseConfig $config): void
     {
         $this->storeConfig($key, $config);
+    }
+
+    /**
+     * @return DatabaseManagerConfig
+     */
+    public function build(): DatabaseManagerConfig
+    {
+        return new DatabaseManagerConfig($this->getCollection());
     }
 }

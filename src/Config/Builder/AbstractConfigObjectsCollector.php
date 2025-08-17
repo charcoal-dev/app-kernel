@@ -9,17 +9,16 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Config\Builder;
 
 use Charcoal\App\Kernel\Contracts\Enums\ConfigEnumInterface;
-use Charcoal\App\Kernel\Internal\Config\ConfigCollectorInterface;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
 
 /**
- * Class AbstractConfigCollector
+ * Class AbstractConfigObjectsCollector
  * @package Charcoal\App\Kernel\Config\Builder
  * @template TKey of ConfigEnumInterface
  * @template TConfig of object
- * @template-implements ConfigCollectorInterface<TConfig>
+ * @template TCompiled of object
  */
-abstract class AbstractConfigCollector implements ConfigCollectorInterface
+abstract class AbstractConfigObjectsCollector
 {
     /** @var array<string, TConfig> */
     private array $configs = [];
@@ -64,4 +63,10 @@ abstract class AbstractConfigCollector implements ConfigCollectorInterface
     {
         return $this->configs;
     }
+
+    /**
+     * @return TCompiled
+     * @api
+     */
+    abstract public function build(): object;
 }

@@ -8,15 +8,17 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config\Builder;
 
+use Charcoal\App\Kernel\Config\Snapshot\CacheManagerConfig;
 use Charcoal\App\Kernel\Config\Snapshot\CacheStoreConfig;
 use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
+use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
 
 /**
  * Class CacheConfigBuilder
  * @package Charcoal\App\Kernel\Config\Builder
- * @template-extends AbstractConfigCollector<CacheStoreEnumInterface, CacheStoreConfig>
+ * @extends AbstractConfigObjectsCollector<CacheStoreEnumInterface, CacheStoreConfig, CacheManagerConfig>
  */
-final class CacheConfigBuilder extends AbstractConfigCollector
+final class CacheConfigObjectsBuilder extends AbstractConfigObjectsCollector implements ConfigSnapshotInterface
 {
     /**
      * @param CacheStoreEnumInterface $key
@@ -26,5 +28,13 @@ final class CacheConfigBuilder extends AbstractConfigCollector
     public function set(CacheStoreEnumInterface $key, CacheStoreConfig $config): void
     {
         $this->storeConfig($key, $config);
+    }
+
+    /**
+     * @return CacheManagerConfig
+     */
+    public function build(): CacheManagerConfig
+    {
+        return new CacheManagerConfig($this->getCollection());
     }
 }
