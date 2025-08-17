@@ -15,11 +15,11 @@ use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
 use Charcoal\Base\Enums\ExceptionAction;
 use Charcoal\Base\Enums\FetchOrigin;
 use Charcoal\Base\Enums\Sort;
-use Charcoal\Cache\Exception\CacheException;
+use Charcoal\Cache\Exceptions\CacheException;
 use Charcoal\Database\Enums\LockFlag;
-use Charcoal\Database\Exception\DatabaseException;
-use Charcoal\Database\Orm\Exception\OrmException;
-use Charcoal\Database\Orm\Exception\OrmModelNotFoundException;
+use Charcoal\Database\Exceptions\DatabaseException;
+use Charcoal\Database\Orm\Exceptions\OrmException;
+use Charcoal\Database\Orm\Exceptions\OrmModelNotFoundException;
 
 /**
  * Trait EntityFetchTrait

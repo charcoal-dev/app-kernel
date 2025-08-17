@@ -26,7 +26,7 @@ class TableRegistry
      */
     public function register(AppAwareTable $table): void
     {
-        $db = $table->enum->getDatabase()->getDatabaseKey();
+        $db = $table->enum->getDatabase()->getConfigKey();
         $table = $table->enum->getTableName();
         if (!isset($this->map[$db][$table])) {
             $this->map[$db][$table] = $table;
@@ -40,10 +40,10 @@ class TableRegistry
      */
     public function resolve(TableRegistryEnumInterface $dbTable): AppAwareTable
     {
-        $found = $this->map[$dbTable->getDatabase()->getDatabaseKey()][$dbTable->getTableName()] ?? null;
+        $found = $this->map[$dbTable->getDatabase()->getConfigKey()][$dbTable->getTableName()] ?? null;
         if (!$found) {
             throw new \OutOfBoundsException(
-                "Database \"{$dbTable->getDatabase()->getDatabaseKey()}\" " .
+                "Database \"{$dbTable->getDatabase()->getConfigKey()}\" " .
                 "table \"{$dbTable->getTableName()}\" not found in registry"
             );
         }
@@ -58,7 +58,7 @@ class TableRegistry
      */
     public function getDatabaseTables(DatabaseEnumInterface $db): array
     {
-        return $this->map[$db->getDatabaseKey()] ?? [];
+        return $this->map[$db->getConfigKey()] ?? [];
     }
 
     /**

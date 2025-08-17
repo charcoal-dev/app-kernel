@@ -8,17 +8,17 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Module;
 
+use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Cache\Traits\CacheStoreOperationsTrait;
 use Charcoal\App\Kernel\Cache\Traits\RuntimeCacheOwnerTrait;
 use Charcoal\App\Kernel\Container\AppAwareContainer;
-use Charcoal\App\Kernel\Context\AppBuildStage;
 use Charcoal\App\Kernel\Contracts\Cache\CacheStoreOperationsInterface;
 use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
 use Charcoal\App\Kernel\Contracts\Orm\Module\CacheStoreAwareInterface;
 use Charcoal\App\Kernel\Orm\Db\TableRegistry;
 use Charcoal\App\Kernel\Orm\Repository\OrmAwareRepository;
 use Charcoal\Cipher\Cipher;
-use Charcoal\Semaphore\FilesystemSemaphore;
+use Charcoal\Semaphore\Filesystem\FilesystemSemaphore;
 
 /**
  * Class OrmAwareModule
@@ -32,10 +32,10 @@ abstract class OrmAwareModule extends AppAwareContainer implements
     use CacheStoreOperationsTrait;
 
     /**
-     * @param AppBuildStage $app
+     * @param AbstractApp $app
      * @throws \ReflectionException
      */
-    protected function __construct(AppBuildStage $app)
+    protected function __construct(AbstractApp $app)
     {
         $this->declareDatabaseTables($app->database->tables);
 

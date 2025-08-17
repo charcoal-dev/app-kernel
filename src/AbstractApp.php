@@ -118,7 +118,7 @@ abstract class AbstractApp extends AppSerializable
     public function bootstrap(): void
     {
         // All declared services and modules:
-        foreach ($this->build->moduleProperties as $property) {
+        foreach ($this->context->moduleProperties as $property) {
             $this->$property->bootstrap($this);
         }
 
@@ -137,7 +137,7 @@ abstract class AbstractApp extends AppSerializable
     {
         $data = [
             "env" => $this->env,
-            "build" => $this->build,
+            "context" => $this->context,
             "cache" => $this->cache,
             "config" => $this->config,
             "clock" => $this->clock,
@@ -149,7 +149,7 @@ abstract class AbstractApp extends AppSerializable
             "lifecycle" => null
         ];
 
-        foreach ($this->build->moduleProperties as $property) {
+        foreach ($this->context->moduleProperties as $property) {
             $data[$property] = $this->$property;
         }
 
@@ -162,15 +162,17 @@ abstract class AbstractApp extends AppSerializable
      */
     public function __unserialize(array $data): void
     {
-        $this->build = $data["build"];
+        $this->env = $data["env"];
+        $this->context = $data["context"];
         $this->cache = $data["cache"];
-        $this->cipher = $data["cipher"];
         $this->config = $data["config"];
+        $this->clock = $data["clock"];
+        //$this->cipher = $data["cipher"];
         $this->database = $data["database"];
-        $this->directories = $data["directories"];
+        //$this->directories = $data["directories"];
         $this->errors = $data["errors"];
         $this->events = $data["events"];
-        foreach ($this->build->moduleProperties as $property) {
+        foreach ($this->context->moduleProperties as $property) {
             $this->$property = $data[$property];
         }
 

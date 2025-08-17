@@ -8,13 +8,13 @@ declare(strict_types=1);
 
 namespace Charcoal\Tests\App\Fixtures\Enums;
 
-use Charcoal\App\Kernel\Contracts\Time\TimezoneInterface;
+use Charcoal\App\Kernel\Contracts\Enums\TimezoneEnumInterface;
 
 /**
  * Class Timezone
  * @package Charcoal\Tests\App\Fixtures\Enums
  */
-enum Timezone: string implements TimezoneInterface
+enum TimezoneEnum: string implements TimezoneEnumInterface
 {
     case UTC = "UTC";
     case EUROPE_LONDON = "Europe/London";

@@ -12,6 +12,7 @@ use Charcoal\App\Kernel\Contracts\Orm\Entity\SemaphoreLockHooksInterface;
 use Charcoal\App\Kernel\Orm\Entity\LockedEntity;
 use Charcoal\App\Kernel\Orm\Exception\EntityLockedException;
 use Charcoal\Database\Enums\LockFlag;
+use Charcoal\Semaphore\Exceptions\SemaphoreUnlockException;
 
 /**
  * Trait EntitySemaphoreLockTrait
@@ -52,7 +53,10 @@ trait EntitySemaphoreLockTrait
         }
 
         if ($autoReleaseLock) {
-            $lock->setAutoRelease();
+            try {
+                $lock->setAutoRelease();
+            } catch (SemaphoreUnlockException) {
+            }
         }
 
         try {

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="vendor/autoload.php"
+         colors="true"
+         stopOnFailure="false"
+         failOnRisky="true"
+         failOnWarning="true"
+         testdox="true">
+    <testsuites>
+        <testsuite name="Charcoal App Kernel Tests">
+            <directory suffix="Test.php">./tests/unit</directory>
+        </testsuite>
+        <testsuite name="Charcoal Sandbox Apps">
+            <directory suffix="Test.php">./tests/sandbox/TestApp/entrypoint</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

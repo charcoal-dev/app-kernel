@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Entity;
 
-use Charcoal\Semaphore\AbstractLock;
+use Charcoal\Semaphore\Contracts\SemaphoreLockInterface;
 
 /**
  * Class LockedEntity
@@ -17,8 +17,8 @@ use Charcoal\Semaphore\AbstractLock;
 readonly class LockedEntity
 {
     public function __construct(
-        public AbstractOrmEntity $entity,
-        public AbstractLock      $lock,
+        public AbstractOrmEntity      $entity,
+        public SemaphoreLockInterface $lock,
     )
     {
 

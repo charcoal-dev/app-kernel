@@ -16,24 +16,33 @@
     "php": "^8.3",
     "ext-pdo": "*",
     "ext-json": "*",
-    "charcoal-dev/base": "^0.0.13",
+    "ext-pcntl": "*",
+    "charcoal-dev/base": "^0.0.16",
     "charcoal-dev/buffers": "^0.2.1",
-    "charcoal-dev/cache": "^0.2.2",
-    "charcoal-dev/cache-redis-client": "^0.2.0",
-    "charcoal-dev/cli": "^0.2.0",
-    "charcoal-dev/database": "^0.2.3",
-    "charcoal-dev/db-orm": "^0.2.2",
-    "charcoal-dev/events": "^0.1.5",
-    "charcoal-dev/filesystem": "^0.2.0",
-    "charcoal-dev/http-router": "^0.2.1",
-    "charcoal-dev/cipher": "^0.2.0",
-    "charcoal-dev/semaphore": "^0.2.1"
+    "charcoal-dev/cache": "^0.2.3",
+    "charcoal-dev/cache-redis-client": "^0.2.2",
+    "charcoal-dev/cli": "^0.2.2",
+    "charcoal-dev/database": "^0.2.5",
+    "charcoal-dev/db-orm": "^0.2.4",
+    "charcoal-dev/events": "^0.1.7",
+    "charcoal-dev/filesystem": "^0.2.3",
+    "charcoal-dev/http-commons": "^0.2.6",
+    "charcoal-dev/http-router": "^0.2.2",
+    "charcoal-dev/cipher": "^0.2.1",
+    "charcoal-dev/semaphore": "^0.2.4"
   },
   "autoload": {
     "psr-4": {
       "Charcoal\\App\\Kernel\\": [
         "src"
       ]
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Charcoal\\Tests\\App\\Unit\\": "tests/unit/",
+      "Charcoal\\Tests\\App\\Fixtures\\": "tests/fixtures/",
+      "Charcoal\\Tests\\App\\Sandbox\\TestApp\\": "tests/sandbox/TestApp/src/"
     }
   },
   "minimum-stability": "dev"

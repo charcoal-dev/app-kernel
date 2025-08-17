@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config\Snapshot;
 
-use Charcoal\App\Kernel\Contracts\Enums\SecretsEnumInterface;
 use Charcoal\Database\Config\DbCredentials;
 use Charcoal\Database\Enums\DbConnectionStrategy;
 use Charcoal\Database\Enums\DbDriver;
@@ -20,18 +19,18 @@ use Charcoal\Database\Enums\DbDriver;
 final readonly class DatabaseConfig extends DbCredentials
 {
     public function __construct(
-        DbDriver                     $driver,
-        string                       $dbName,
+        DbDriver $driver,
+        string   $dbName,
         #[\SensitiveParameter]
-        string                       $host = "localhost",
-        ?int                         $port = null,
+        string   $host = "localhost",
+        ?int     $port = null,
         #[\SensitiveParameter]
-        ?string                      $username = null,
+        ?string  $username = null,
         #[\SensitiveParameter]
-        ?string                      $password = null,
+        ?string  $password = null,
         #[\SensitiveParameter]
-        public ?SecretsEnumInterface $passwordRef = null,
-        DbConnectionStrategy         $strategy = DbConnectionStrategy::Lazy,
+                 #public ?SecretsEnumInterface $passwordRef = null,
+        DbConnectionStrategy $strategy = DbConnectionStrategy::Lazy,
     )
     {
         parent::__construct($driver, $dbName, $host, $port, $username, $password, $strategy);

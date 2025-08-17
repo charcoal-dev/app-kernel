@@ -1,0 +1,17 @@
+{
+  "timezone": "UTC",
+  "cache": {
+    "providers": {
+      "primary": {
+        "driver": "redis",
+        "host": "10.0.12.3",
+        "port": 6379,
+        "timeout": 1
+      }
+    }
+  },
+  "database": [
+    "@import:database.json"
+  ],
+  "http": "s"
+}

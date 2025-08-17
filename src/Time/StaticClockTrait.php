@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Time;
 
-use Charcoal\App\Kernel\Context\AppBuildStage;
+use Charcoal\App\Kernel\AbstractApp;
 
 /**
  * Trait StaticClockTrait
@@ -28,10 +28,10 @@ trait StaticClockTrait
     }
 
     /**
-     * @param AppBuildStage $app
+     * @param AbstractApp $app
      * @return static
      */
-    public static function staticScopeInit(AppBuildStage $app): static
+    public static function staticScopeInit(AbstractApp $app): static
     {
         return static::$instance = $app->clock;
     }

@@ -36,7 +36,7 @@ final class NullCache implements CacheDriverInterface
 
     public function metaUniqueId(): string
     {
-        return static::class;
+        return self::class;
     }
 
     public function metaPingSupported(): bool
