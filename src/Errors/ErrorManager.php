@@ -8,11 +8,17 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Errors;
 
-use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Contracts\Error\ErrorLoggerInterface;
+use Charcoal\App\Kernel\Internal\AppEnv;
+use Charcoal\App\Kernel\Internal\Config\ErrorManagerConfig;
 use Charcoal\App\Kernel\Support\ErrorHelper;
+use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
+use Charcoal\Filesystem\Exceptions\FilesystemException;
+use Charcoal\Filesystem\Path\DirectoryPath;
+use Charcoal\Filesystem\Path\FilePath;
+use Charcoal\Filesystem\Path\PathInfo;
 
 /**
  * Class ErrorManager
@@ -22,31 +28,40 @@ class ErrorManager implements \IteratorAggregate
 {
     private static bool $handlingThrowable = false;
     private static bool $handlersSet = false;
+    private static int $debugBacktraceOffset = 3;
 
-    public readonly ErrorLoggerInterface $logger;
+    public readonly ErrorManagerConfig $policy;
+    public readonly ?ErrorLoggerInterface $logger;
     public readonly int $pathOffset;
-
-    public int $debugBacktraceLevel = E_WARNING;
-    public int $backtraceOffset = 3;
-    public bool $exceptionHandlerShowTrace = true;
-
     private array $errorLoggable;
     private array $errorLog;
-    private int $errorLogCount;
 
     use NoDumpTrait;
     use NotCloneableTrait;
 
     /**
-     * @param AbstractApp $app
+     * @param AppEnv $env
+     * @param DirectoryPath $root
      */
-    public function __construct(AbstractApp $app)
+    public function __construct(public readonly AppEnv $env, PathInfo $root)
     {
-        $this->pathOffset = strlen($app->directories->root->path);
+        $this->policy = $env->errorManagerPolicy();
+        $this->pathOffset = strlen($root->absolute);
         $this->errorLoggable = [E_NOTICE, E_USER_NOTICE];
         $this->errorLog = [];
-        $this->errorLogCount = 0;
-        if ($app->env->errorHandlers()) {
+        if ($this->policy->enabled) {
+            try {
+                $this->logger = is_string($this->policy->errorLogFile) ?
+                    new FileErrorLogger(new FilePath($root->absolute . DIRECTORY_SEPARATOR .
+                        $this->policy->errorLogFile)) : null;
+            } catch (FilesystemException $e) {
+                throw new \RuntimeException(sprintf("Failed to resolve error log file: [%s]: %s (path: %s)",
+                    ObjectHelper::baseClassName($e),
+                    $e->getMessage(),
+                    $this->policy->errorLogFile
+                ), previous: $e);
+            }
+
             $this->setHandlers();
         }
     }
@@ -54,6 +69,7 @@ class ErrorManager implements \IteratorAggregate
     /**
      * @param int ...$levels
      * @return void
+     * @api
      */
     public function setLoggableErrors(int ...$levels): void
     {
@@ -69,7 +85,18 @@ class ErrorManager implements \IteratorAggregate
     }
 
     /**
+     * @param int|null $trims
+     * @return int
+     */
+    public function debugBacktraceOffset(?int $trims): int
+    {
+        return is_int($trims) && $trims >= 0 ? static::$debugBacktraceOffset = $trims :
+            static::$debugBacktraceOffset;
+    }
+
+    /**
      * @return bool
+     * @api
      */
     public function hasHandlersSet(): bool
     {
@@ -79,6 +106,7 @@ class ErrorManager implements \IteratorAggregate
     /**
      * Initializes Error & Exception handlers. Called on construct and unserialize
      * @return void
+     * @internal
      */
     public function setHandlers(): void
     {
@@ -95,6 +123,7 @@ class ErrorManager implements \IteratorAggregate
     /**
      * Erases the entire error log, returning all existing values in an Array
      * @return array
+     * @api
      */
     public function drain(): array
     {
@@ -106,46 +135,46 @@ class ErrorManager implements \IteratorAggregate
     /**
      * Erases entire error log
      * @return void
+     * @api
      */
     public function flush(): void
     {
         $this->errorLog = [];
-        $this->errorLogCount = 0;
     }
 
     /**
      * @return array
+     * @internal
      */
     public function __serialize(): array
     {
-        if ($this->errorLogCount > 0) {
+        if (count($this->errorLog) > 0) {
             throw new \LogicException('App instance cannot be serialized with errors logged');
         }
 
         return [
+            "env" => $this->env,
+            "policy" => $this->policy,
+            "pathOffset" => $this->pathOffset,
             "logger" => $this->logger,
             "errorLoggable" => $this->errorLoggable,
-            "pathOffset" => $this->pathOffset,
-            "debugBacktraceLevel" => $this->debugBacktraceLevel,
-            "backtraceOffset" => $this->backtraceOffset,
-            "exceptionHandlerShowTrace" => $this->exceptionHandlerShowTrace
+            "errorLog" => [],
         ];
     }
 
     /**
      * @param array $data
      * @return void
+     * @internal
      */
     public function __unserialize(array $data): void
     {
+        $this->env = $data["env"];
+        $this->policy = $data["policy"];
         $this->pathOffset = $data["pathOffset"];
         $this->logger = $data["logger"];
-        $this->debugBacktraceLevel = $data["debugBacktraceLevel"];
-        $this->backtraceOffset = $data["backtraceOffset"];
-        $this->exceptionHandlerShowTrace = $data["exceptionHandlerShowTrace"];
         $this->errorLoggable = $data["errorLoggable"];
         $this->errorLog = [];
-        $this->errorLogCount = 0;
     }
 
     /**
@@ -154,6 +183,7 @@ class ErrorManager implements \IteratorAggregate
      * @param int $fileLineBacktraceIndex
      * @return void
      * @throws \ErrorException
+     * @api
      */
     public function trigger(
         string|\Throwable $error,
@@ -179,25 +209,27 @@ class ErrorManager implements \IteratorAggregate
      * Appends an error message in runtime memory
      * @param ErrorEntry $errorMsg
      * @return void
+     * @api
      */
     public function append(ErrorEntry $errorMsg): void
     {
         $this->errorLog[] = $errorMsg;
-        $this->errorLogCount++;
     }
 
     /**
      * Returns the number of errors currently in runtime memory
      * @return int
+     * @api
      */
     public function count(): int
     {
-        return $this->errorLogCount;
+        return count($this->errorLog);
     }
 
     /**
      * Returns all logged errors
      * @return array
+     * @api
      */
     public function getAll(): array
     {
@@ -214,6 +246,7 @@ class ErrorManager implements \IteratorAggregate
 
     /**
      * @return void
+     * @internal
      */
     public function handleShutdown(): void
     {
@@ -237,6 +270,7 @@ class ErrorManager implements \IteratorAggregate
      * @param int $line
      * @return bool
      * @throws \ErrorException
+     * @internal
      */
     public function handleError(int $level, string $message, string $file, int $line): bool
     {
@@ -266,6 +300,7 @@ class ErrorManager implements \IteratorAggregate
      * Default exception handler function
      * @param \Throwable $t
      * @return never
+     * @internal
      */
     public function handleThrowable(\Throwable $t): never
     {
@@ -282,7 +317,7 @@ class ErrorManager implements \IteratorAggregate
             "line" => $t->getLine(),
         ];
 
-        if ($this->exceptionHandlerShowTrace) {
+        if ($this->env->isDebug()) {
             $exception["trace"] = $t->getTrace();
         }
 
@@ -297,6 +332,7 @@ class ErrorManager implements \IteratorAggregate
      * Returns neat filepath
      * @param string $path
      * @return string
+     * @internal
      */
     final public function getRelativeFilepath(string $path): string
     {
@@ -306,6 +342,7 @@ class ErrorManager implements \IteratorAggregate
     /**
      * @param int $level
      * @return bool
+     * @internal
      */
     public function isFatalError(int $level): bool
     {
@@ -316,6 +353,7 @@ class ErrorManager implements \IteratorAggregate
      * Converts error level integer to appropriate string
      * @param int $level
      * @return string
+     * @api
      */
     final public function getErrorLevelStr(int $level): string
     {
