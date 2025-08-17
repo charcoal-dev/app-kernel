@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Interfaces\Cli;
 
-use Charcoal\App\Kernel\AppBuild;
+use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Base\Traits\NoDumpTrait;
@@ -34,17 +34,17 @@ class AppCliHandler extends Console
     use NotSerializableTrait;
 
     /**
-     * @param AppBuild $app
+     * @param AbstractApp $app
      * @param string $scriptsNamespace
      * @param array $args
      * @param string|null $defaultScriptName
-     * @throws \Charcoal\Events\Exception\SubscriptionClosedException
+     * @throws \Charcoal\Events\Exceptions\SubscriptionClosedException
      */
     public function __construct(
-        public readonly AppBuild $app,
-        string                   $scriptsNamespace,
-        array                    $args,
-        ?string                  $defaultScriptName,
+        public readonly AbstractApp $app,
+        string                      $scriptsNamespace,
+        array                       $args,
+        ?string                     $defaultScriptName,
     )
     {
         parent::__construct($scriptsNamespace, $args, $defaultScriptName);
