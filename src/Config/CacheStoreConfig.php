@@ -8,11 +8,13 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config;
 
+use Charcoal\App\Kernel\Cache\CacheDriver;
+
 /**
- * Class CacheConfig
+ * Class CacheStoreConfig
  * @package Charcoal\App\Kernel\Config
  */
-readonly class CacheServerConfig
+final readonly class CacheStoreConfig
 {
     public function __construct(
         public CacheDriver $driver,

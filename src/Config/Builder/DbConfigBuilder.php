@@ -8,22 +8,22 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config\Builder;
 
+use Charcoal\App\Kernel\Config\DatabaseConfig;
 use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
-use Charcoal\Database\DbCredentials;
 
 /**
  * Class DbConfigBuilder
  * @package Charcoal\App\Kernel\Config\Builder
- * @extends AbstractConfigCollector<DatabaseEnumInterface, DbCredentials>
+ * @extends AbstractConfigCollector<DatabaseEnumInterface, DatabaseConfig>
  */
 final class DbConfigBuilder extends AbstractConfigCollector
 {
     /**
      * @param DatabaseEnumInterface $key
-     * @param DbCredentials $config
+     * @param DatabaseConfig $config
      * @return void
      */
-    public function set(DatabaseEnumInterface $key, DbCredentials $config): void
+    public function set(DatabaseEnumInterface $key, DatabaseConfig $config): void
     {
         $this->storeConfig($key, $config);
     }
