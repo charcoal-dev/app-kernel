@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Container\Traits;
 
-use Charcoal\App\Kernel\Cache\RuntimeCache;
+use Charcoal\App\Kernel\Cache\Runtime\RuntimeCache;
 use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
 
 /**
