@@ -8,8 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Cache;
 
-use Charcoal\App\Kernel\AppBuild;
-use Charcoal\App\Kernel\Config\CacheDriver;
+use Charcoal\App\Kernel\Config\Snapshot\CacheManagerConfig;
 use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
 use Charcoal\Base\Abstracts\BaseFactoryRegistry;
 use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
@@ -24,24 +23,12 @@ use Charcoal\Cache\CacheClient;
  */
 class CacheManager extends BaseFactoryRegistry
 {
-    protected readonly AppBuild $app;
-
     use RegistryKeysLowercaseTrimmed;
     use NoDumpTrait;
     use NotCloneableTrait;
 
-    public function __construct()
+    public function __construct(protected readonly ?CacheManagerConfig $config)
     {
-    }
-
-    /**
-     * Bootstrap this service
-     * @param AppBuild $app
-     * @return void
-     */
-    public function bootstrap(AppBuild $app): void
-    {
-        $this->app = $app;
     }
 
     /**
@@ -50,7 +37,7 @@ class CacheManager extends BaseFactoryRegistry
      */
     public function get(CacheStoreEnumInterface $key): CacheClient
     {
-        return $this->getExistingOrCreate($key->getServerKey());
+        return $this->getExistingOrCreate($key->getConfigKey());
     }
 
     /**
@@ -59,8 +46,13 @@ class CacheManager extends BaseFactoryRegistry
      */
     protected function create(string $key): CacheClient
     {
+        $config = $this->config?->providers[$key];
+        if (!$config) {
+            throw new \DomainException("Cache store provider config not found for key: " . $key);
+        }
+
         return new CacheClient(
-            CacheDriver::CreateClient($this->app->config->cache->get($key)),
+            CacheDriver::CreateClient($config),
             useChecksumsByDefault: false,
             nullIfExpired: true,
             deleteIfExpired: true
