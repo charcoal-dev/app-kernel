@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Container;
 
-use Charcoal\App\Kernel\AppBuild;
+use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
 
 /**
@@ -51,10 +51,10 @@ abstract class AppAwareContainer extends AppAware
 
     /**
      * Bootstrap itself and all AppAware children
-     * @param AppBuild $app
+     * @param AbstractApp $app
      * @return void
      */
-    final public function bootstrap(AppBuild $app): void
+    final public function bootstrap(AbstractApp $app): void
     {
         parent::bootstrap($app);
         foreach ($this->containerChildren as $childPropertyKey) {
