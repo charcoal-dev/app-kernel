@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Cache;
 
-use Charcoal\App\Kernel\Config\CacheStoreConfig;
+use Charcoal\App\Kernel\Config\Snapshot\CacheStoreConfig;
 use Charcoal\App\Kernel\Stubs\NullCache;
 use Charcoal\Cache\Contracts\CacheDriverInterface;
 use Charcoal\Cache\Drivers\RedisClient;
@@ -26,7 +26,7 @@ enum CacheDriver: string
     {
         return match ($config->driver) {
             self::NULL => new NullCache(),
-            self::REDIS => new RedisClient($config->hostname, $config->port, $config->timeOut),
+            self::REDIS => new RedisClient($config->hostname, $config->port, $config->timeout),
         };
     }
 }

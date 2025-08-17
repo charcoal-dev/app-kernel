@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Cache;
+namespace Charcoal\App\Kernel\Cache\Runtime;
 
 use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
 use Charcoal\Base\Traits\NoDumpTrait;
@@ -15,7 +15,7 @@ use Charcoal\Base\Traits\NotSerializableTrait;
 
 /**
  * Class RuntimeCache
- * @package Charcoal\App\Kernel\Cache
+ * @package Charcoal\App\Kernel\Cache\Runtime
  */
 final class RuntimeCache
 {

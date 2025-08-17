@@ -6,16 +6,16 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Cache;
+namespace Charcoal\App\Kernel\Cache\Traits;
 
 use Charcoal\App\Kernel\Entity\AbstractEntity;
 use Charcoal\Cache\CacheClient;
 use Charcoal\Cache\CachedReferenceKey;
-use Charcoal\Cache\Exception\CacheException;
+use Charcoal\Cache\Exceptions\CacheException;
 
 /**
- * Trait CacheStoreOpsTrait
- * @package Charcoal\App\Kernel\Cache
+ * Trait CacheStoreOperationsTrait
+ * @package Charcoal\App\Kernel\Cache\Traits
  */
 trait CacheStoreOperationsTrait
 {
@@ -55,8 +55,8 @@ trait CacheStoreOperationsTrait
      * @param string $key
      * @return mixed
      * @throws CacheException
-     * @throws \Charcoal\Cache\Exception\CacheDriverOpException
-     * @throws \Charcoal\Cache\Exception\CachedEntityException
+     * @throws \Charcoal\Cache\Exceptions\CacheDriverOpException
+     * @throws \Charcoal\Cache\Exceptions\CachedEntityException
      */
     public function getFromCache(string $key): mixed
     {
@@ -75,7 +75,7 @@ trait CacheStoreOperationsTrait
     /**
      * @param string $key
      * @return void
-     * @throws \Charcoal\Cache\Exception\CacheDriverException
+     * @throws \Charcoal\Cache\Exceptions\CacheDriverException
      */
     public function deleteFromCache(string $key): void
     {
