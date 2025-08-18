@@ -14,7 +14,7 @@ use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
  * Class CacheStores
  * @package Charcoal\Tests\App\Fixtures\Enums
  */
-enum CacheStores implements CacheStoreEnumInterface
+enum CacheStore implements CacheStoreEnumInterface
 {
     case Primary;
     case Secondary;

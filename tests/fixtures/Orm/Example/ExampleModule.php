@@ -1,0 +1,58 @@
+<?php
+/**
+ * Part of the "charcoal-dev/app-kernel" package.
+ * @link https://github.com/charcoal-dev/app-kernel
+ */
+
+declare(strict_types=1);
+
+namespace Charcoal\Tests\App\Fixtures\Orm\Example;
+
+use Charcoal\App\Kernel\Contracts\Orm\Module\CacheStoreAwareInterface;
+use Charcoal\App\Kernel\Orm\Db\TableRegistry;
+use Charcoal\App\Kernel\Orm\Module\OrmModuleBase;
+use Charcoal\App\Kernel\Orm\Module\CacheStoreAwareTrait;
+use Charcoal\App\Kernel\Orm\Repository\OrmRepositoryBase;
+use Charcoal\Cache\CacheClient;
+use Charcoal\Cipher\Cipher;
+use Charcoal\Semaphore\Filesystem\FilesystemSemaphore;
+use Charcoal\Tests\App\Fixtures\Enums\CacheStore;
+
+/**
+ * Class ExampleModule
+ * @package Charcoal\Tests\App\Fixtures\Orm\Example
+ */
+class ExampleModule extends OrmModuleBase implements CacheStoreAwareInterface
+{
+    use CacheStoreAwareTrait;
+
+    public function normalizeStorageKey(string $key): string
+    {
+        return strtolower(trim($key));
+    }
+
+    public function getCacheStore(): ?CacheClient
+    {
+        return null;
+    }
+
+    protected function declareDatabaseTables(TableRegistry $tables): void
+    {
+        $tables->register(new ExampleTableBase($this));
+    }
+
+    public function getCipherFor(OrmRepositoryBase $resolveFor): ?Cipher
+    {
+        return null;
+    }
+
+    public function getSemaphore(): FilesystemSemaphore
+    {
+        throw new \Exception("Not implemented");
+    }
+
+    public function declareCacheStoreEnum(): ?CacheStore
+    {
+        return CacheStore::Secondary;
+    }
+}
