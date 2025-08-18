@@ -55,6 +55,7 @@ final class Diagnostics implements ErrorLoggerInterface
     /**
      * @param MonotonicTimestamp $startTime
      * @return void
+     * @internal
      */
     public function setStartupTime(MonotonicTimestamp $startTime): void
     {
@@ -70,8 +71,9 @@ final class Diagnostics implements ErrorLoggerInterface
     }
 
     /**
-     * @param bool $log
-     * @return ExecutionMetrics
+     * Take a runtime metrics snapshot for runtime execution debugging/inspection.
+     * Provides memory/CPU usage metrics.
+     * @api
      */
     public function metricsSnapshot(bool $log = false): ExecutionMetrics
     {
@@ -84,9 +86,8 @@ final class Diagnostics implements ErrorLoggerInterface
     }
 
     /**
-     * @param bool $metrics
-     * @param bool $clean
-     * @return ExecutionSnapshot
+     * Take an immutable snapshot of the diagnostics for runtime execution debugging/inspection.
+     * @api
      */
     public function snapshot(bool $metrics = true, bool $clean = true): ExecutionSnapshot
     {
@@ -104,11 +105,7 @@ final class Diagnostics implements ErrorLoggerInterface
     }
 
     /**
-     * @param LogLevel $level
-     * @param string $message
-     * @param array $context
-     * @param \Exception|null $exception
-     * @return void
+     * @internal
      */
     private function logEntry(
         LogLevel    $level,
@@ -125,6 +122,7 @@ final class Diagnostics implements ErrorLoggerInterface
 
     /**
      * Logs a verbose/internal/arbitrary message with the specified context.
+     * @api
      */
     public function verbose(string $message, array $context = [], ?\Throwable $exception = null): void
     {
@@ -133,6 +131,7 @@ final class Diagnostics implements ErrorLoggerInterface
 
     /**
      * Logs a debugging message with the specified context.
+     * @api
      */
     public function debug(string $message, array $context = [], ?\Throwable $exception = null): void
     {
@@ -141,6 +140,7 @@ final class Diagnostics implements ErrorLoggerInterface
 
     /**
      * Logs an informational message with the specified context.
+     * @api
      */
     public function info(string $message, array $context = []): void
     {
@@ -149,6 +149,7 @@ final class Diagnostics implements ErrorLoggerInterface
 
     /**
      * Logs a notice message with the specified context.
+     * @api
      */
     public function notice(string $message, array $context = []): void
     {
@@ -157,6 +158,7 @@ final class Diagnostics implements ErrorLoggerInterface
 
     /**
      * Logs a warning message with the specified context and optional exception.
+     * @api
      */
     public function warning(
         string                       $message,
@@ -169,6 +171,7 @@ final class Diagnostics implements ErrorLoggerInterface
 
     /**
      * Logs an error message with the specified context and optional exception.
+     * @api
      */
     public function error(
         string                       $message,
@@ -181,6 +184,7 @@ final class Diagnostics implements ErrorLoggerInterface
 
     /**
      * Logs a critical message with the specified context and optional exception.
+     * @api
      */
     public function critical(
         string                       $message,
@@ -192,8 +196,6 @@ final class Diagnostics implements ErrorLoggerInterface
     }
 
     /**
-     * @param ErrorEntry $errorEntry
-     * @return void
      * @internal
      */
     private function logFromError(ErrorEntry $errorEntry): void
@@ -209,8 +211,6 @@ final class Diagnostics implements ErrorLoggerInterface
     }
 
     /**
-     * @param ErrorEntry $error
-     * @return void
      * @internal
      */
     public function handleError(ErrorEntry $error): void
@@ -219,8 +219,7 @@ final class Diagnostics implements ErrorLoggerInterface
     }
 
     /**
-     * @param \Throwable $exception
-     * @return void
+     * @internal
      */
     public function handleException(\Throwable $exception): void
     {
