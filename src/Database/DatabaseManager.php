@@ -71,6 +71,7 @@ class DatabaseManager extends BaseFactoryRegistry implements AppServiceInterface
      */
     public function collectSerializableData(): array
     {
+        $data["config"] = $this->config;
         $data["tables"] = $this->tables;
         $data["instances"] = null;
         return $data;
@@ -83,6 +84,7 @@ class DatabaseManager extends BaseFactoryRegistry implements AppServiceInterface
      */
     public function __unserialize(array $data): void
     {
+        $this->config = $data["config"];
         $this->tables = $data["tables"];
         $this->instances = [];
     }

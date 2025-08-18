@@ -70,6 +70,7 @@ class CacheManager extends BaseFactoryRegistry implements AppServiceInterface
      */
     public function __unserialize(array $data): void
     {
+        $this->config = $data["config"];
         $this->instances = [];
     }
 
@@ -78,7 +79,9 @@ class CacheManager extends BaseFactoryRegistry implements AppServiceInterface
      */
     protected function collectSerializableData(): array
     {
-        return [];
+        return [
+            "config" => $this->config,
+        ];
     }
 
     /**
