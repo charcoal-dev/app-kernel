@@ -6,13 +6,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Time;
+namespace Charcoal\App\Kernel\Clock;
 
 use Charcoal\App\Kernel\AbstractApp;
 
 /**
  * Trait StaticClockTrait
- * @package Charcoal\App\Kernel\Time
+ * @package Charcoal\App\Kernel\Clock
  * @internal
  */
 trait StaticClockTrait

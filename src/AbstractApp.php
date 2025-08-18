@@ -18,7 +18,7 @@ use Charcoal\App\Kernel\Internal\AppEnv;
 use Charcoal\App\Kernel\Internal\AppSerializable;
 use Charcoal\App\Kernel\Internal\DomainBundle;
 use Charcoal\App\Kernel\Internal\PathRegistry;
-use Charcoal\App\Kernel\Time\Clock;
+use Charcoal\App\Kernel\Clock\Clock;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Filesystem\Node\DirectoryNode;
 use Charcoal\Filesystem\Path\PathInfo;
@@ -109,6 +109,10 @@ abstract class AbstractApp extends AppSerializable
         $this->lifecycle = new Lifecycle();
         $this->lifecycle->log($message);
 
+        // Make clock available in static scope
+        Clock::staticScopeInit($this->clock);
+
+        // Invoke hooks
         $this->onReadyCallback();
     }
 

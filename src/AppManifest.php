@@ -15,7 +15,7 @@ use Charcoal\App\Kernel\Events\EventsManager;
 use Charcoal\App\Kernel\Internal\DomainBundle;
 use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Internal\Services\ServicesBundle;
-use Charcoal\App\Kernel\Time\Clock;
+use Charcoal\App\Kernel\Clock\Clock;
 use Charcoal\Filesystem\Node\DirectoryNode;
 
 /**
