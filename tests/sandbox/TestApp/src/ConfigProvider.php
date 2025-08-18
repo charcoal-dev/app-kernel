@@ -19,7 +19,7 @@ final class ConfigProvider
 {
     public static function getConfig(): AppConfig
     {
-        return static::getConfig_1cacheNull_1sqliteDb_UTC();
+        return self::getConfig_1cacheNull_1sqliteDb_UTC();
     }
 
     public static function getConfig_1cacheNull_1sqliteDb_UTC(): AppConfig

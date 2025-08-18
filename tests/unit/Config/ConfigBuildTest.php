@@ -36,17 +36,6 @@ class ConfigBuildTest extends TestCase
             $rc->implementsInterface(ConfigBuilderInterface::class),
             'CacheConfigObject must implement ConfigCollectorInterface.'
         );
-
-        $rc2 = new \ReflectionClass(CacheManagerConfig::class);
-        $this->assertTrue($rc->isFinal(), 'CacheConfigObject must be final.');
-        $this->assertTrue(
-            $rc->isSubclassOf(AbstractConfigObjectsCollector::class),
-            'CacheConfigObject must extend AbstractConfigCollector.'
-        );
-        $this->assertTrue(
-            $rc->implementsInterface(ConfigBuilderInterface::class),
-            'CacheConfigObject must implement ConfigCollectorInterface.'
-        );
     }
 
     /**

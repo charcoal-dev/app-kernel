@@ -12,6 +12,12 @@ namespace Charcoal\App\Kernel\Diagnostics\Events;
  * Interface ExceptionCaughtBroadcast
  * @package Charcoal\App\Kernel\Diagnostics\Events
  */
-interface ExceptionCaughtBroadcast extends DiagnosticsEventsContext
+readonly class ExceptionCaughtBroadcast implements DiagnosticsEventsContext
 {
+    public function __construct(
+        public \Throwable $caught,
+    )
+    {
+
+    }
 }

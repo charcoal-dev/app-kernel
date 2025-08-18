@@ -13,7 +13,6 @@ use Charcoal\App\Kernel\Contracts\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Diagnostics\Events\DiagnosticsEvents;
 use Charcoal\App\Kernel\Diagnostics\Events\DiagnosticsEventsContext;
 use Charcoal\App\Kernel\Diagnostics\Events\ExceptionCaughtBroadcast;
-use Charcoal\App\Kernel\Diagnostics\Events\LogEntryBroadcast;
 use Charcoal\App\Kernel\Enums\LogLevel;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
@@ -47,7 +46,7 @@ final class Diagnostics implements ErrorLoggerInterface
     {
         $this->logEntryEvent = new DiagnosticsEvents("app.diagnostics.logEntry", [
             DiagnosticsEventsContext::class,
-            LogEntryBroadcast::class,
+            LogEntry::class,
             ExceptionCaughtBroadcast::class,
         ]);
     }
