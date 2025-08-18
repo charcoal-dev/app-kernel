@@ -14,9 +14,10 @@ namespace Charcoal\App\Kernel\Diagnostics;
  */
 enum LogLevel: int
 {
-    case Debug = 0;
-    case Info = 1;
-    case Warning = 2;
-    case Error = 3;
-    case Critical = 4;
+    case Verbose = 0;
+    case Debug = 10;
+    case Info = 20;
+    case Warning = 30;
+    case Error = 40;
+    case Critical = 90;
 }

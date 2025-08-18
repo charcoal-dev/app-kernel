@@ -6,9 +6,8 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Diagnostics\ExecutionSnapshot\Immutable;
+namespace Charcoal\App\Kernel\Diagnostics;
 
-use Charcoal\App\Kernel\Diagnostics\LogEntry;
 use Charcoal\App\Kernel\Support\DtoHelper;
 
 /**

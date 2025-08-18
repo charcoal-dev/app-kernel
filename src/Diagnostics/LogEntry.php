@@ -9,12 +9,13 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Diagnostics;
 
 use Charcoal\App\Kernel\Clock\Clock;
+use Charcoal\App\Kernel\Diagnostics\Events\LogEntryBroadcast;
 
 /**
  * Class LogEntry
  * @package Charcoal\App\Kernel\Diagnostics
  */
-final readonly class LogEntry
+final readonly class LogEntry implements LogEntryBroadcast
 {
     public \DateTimeImmutable $timestamp;
 
