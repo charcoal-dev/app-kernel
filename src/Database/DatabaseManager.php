@@ -33,7 +33,7 @@ class DatabaseManager extends BaseFactoryRegistry implements AppServiceInterface
     use NoDumpTrait;
     use NotCloneableTrait;
 
-    public function __construct(protected readonly ?DatabaseManagerConfig $config)
+    public function __construct(public readonly ?DatabaseManagerConfig $config)
     {
         $this->tables = new TableRegistry();
     }
@@ -54,7 +54,7 @@ class DatabaseManager extends BaseFactoryRegistry implements AppServiceInterface
      */
     protected function create(string $key): DatabaseClient
     {
-        $config = $this->config->databases[$key];
+        $config = $this->config?->databases[$key];
         if (!$config) {
             throw new \DomainException("Database config not found for key: " . $key);
         }
