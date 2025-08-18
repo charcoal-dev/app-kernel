@@ -6,14 +6,12 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Internal;
-
-use Charcoal\App\Kernel\Internal\Config\ErrorManagerConfig;
+namespace Charcoal\App\Kernel\Enums;
 
 /**
- * Class AppEnv
- * @package Charcoal\App\Kernel\Internal
- * @internal
+ * Represents the application environment.
+ * Provides utility methods to determine debug and error handling behavior
+ * based on the environment.
  */
 enum AppEnv: string
 {
@@ -33,13 +31,10 @@ enum AppEnv: string
     }
 
     /**
-     * @return ErrorManagerConfig
+     * @return bool
      */
-    public function getErrorManagerPolicy(): ErrorManagerConfig
+    public function deployErrorHandlers(): bool
     {
-        return new ErrorManagerConfig(
-            $this !== self::Test,
-            $this !== self::Test ? "./log/error.log" : null
-        );
+        return $this !== self::Test;
     }
 }
