@@ -17,7 +17,7 @@ use Charcoal\Semaphore\Contracts\SemaphoreLockInterface;
 readonly class LockedEntity
 {
     public function __construct(
-        public AbstractOrmEntity      $entity,
+        public OrmEntityBase          $entity,
         public SemaphoreLockInterface $lock,
     )
     {

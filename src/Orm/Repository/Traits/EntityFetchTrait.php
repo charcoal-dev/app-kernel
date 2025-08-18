@@ -9,9 +9,9 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
 use Charcoal\App\Kernel\Contracts\Orm\Entity\CacheableEntityInterface;
-use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
+use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
 use Charcoal\App\Kernel\Orm\Exception\EntityNotFoundException;
-use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
+use Charcoal\App\Kernel\Orm\Exception\EntityRepositoryException;
 use Charcoal\Base\Enums\ExceptionAction;
 use Charcoal\Base\Enums\FetchOrigin;
 use Charcoal\Base\Enums\Sort;
@@ -32,16 +32,16 @@ trait EntityFetchTrait
      * @param array $queryData
      * @param LockFlag|null $lock
      * @param bool $invokeStorageHooks
-     * @return AbstractOrmEntity|array
+     * @return OrmEntityBase|array
      * @throws EntityNotFoundException
-     * @throws EntityOrmException
+     * @throws EntityRepositoryException
      */
     protected function getFromDb(
         string    $whereStmt,
         array     $queryData = [],
         ?LockFlag $lock = null,
         bool      $invokeStorageHooks = true
-    ): AbstractOrmEntity|array
+    ): OrmEntityBase|array
     {
         try {
             $entity = $this->table->queryFind($whereStmt, $queryData, limit: 1, lock: $lock)->getNext();
@@ -50,7 +50,7 @@ trait EntityFetchTrait
         } catch (OrmModelNotFoundException) {
             throw new EntityNotFoundException();
         } catch (OrmException $e) {
-            throw new EntityOrmException(static::class, $e);
+            throw new EntityRepositoryException($this, $e);
         }
     }
 
@@ -62,9 +62,9 @@ trait EntityFetchTrait
      * @param int $offset
      * @param int $limit
      * @param LockFlag|null $lock
-     * @return array|AbstractOrmEntity[]
+     * @return array|OrmEntityBase[]
      * @throws EntityNotFoundException
-     * @throws EntityOrmException
+     * @throws EntityRepositoryException
      */
     protected function getMultipleFromDb(
         string    $whereStmt,
@@ -82,7 +82,7 @@ trait EntityFetchTrait
         } catch (OrmModelNotFoundException) {
             throw new EntityNotFoundException();
         } catch (OrmException $e) {
-            throw new EntityOrmException(static::class, $e);
+            throw new EntityRepositoryException($this, $e);
         }
     }
 
@@ -91,16 +91,16 @@ trait EntityFetchTrait
      * @param int|string $value
      * @param LockFlag|null $lock
      * @param bool $invokeStorageHooks
-     * @return AbstractOrmEntity|array
+     * @return OrmEntityBase|array
      * @throws EntityNotFoundException
-     * @throws EntityOrmException
+     * @throws EntityRepositoryException
      */
     protected function getFromDbColumn(
         string     $column,
         int|string $value,
         ?LockFlag  $lock = null,
         bool       $invokeStorageHooks = true
-    ): AbstractOrmEntity|array
+    ): OrmEntityBase|array
     {
         return $this->getFromDb("`$column`=?", [$value], $lock, $invokeStorageHooks);
     }
@@ -111,7 +111,7 @@ trait EntityFetchTrait
      * @param string $idColumn
      * @return int
      * @throws EntityNotFoundException
-     * @throws EntityOrmException
+     * @throws EntityRepositoryException
      */
     protected function getPrimaryIdFromUnique(string $column, int|string $value, string $idColumn = "id"): int
     {
@@ -121,7 +121,7 @@ trait EntityFetchTrait
                 [$value]
             )->getNext()[$idColumn] ?? -1);
         } catch (DatabaseException $e) {
-            throw new EntityOrmException(static::class, $e);
+            throw new EntityRepositoryException($this, $e);
         }
 
         if ($entityId > 0) {
@@ -134,12 +134,12 @@ trait EntityFetchTrait
     /**
      * @param CacheException $e
      * @return void
-     * @throws EntityOrmException
+     * @throws EntityRepositoryException
      */
     protected function handleCacheException(CacheException $e): void
     {
         if ($this->onCacheException === ExceptionAction::Throw) {
-            throw new EntityOrmException(static::class, $e);
+            throw new EntityRepositoryException($this, $e);
         } elseif ($this->onCacheException === ExceptionAction::Log) {
             trigger_error(static::class . ' caught CacheException', E_USER_NOTICE);
             $this->module->app->lifecycle->exception(
@@ -155,9 +155,9 @@ trait EntityFetchTrait
      * @param array $dbQueryData
      * @param bool $storeInCache
      * @param int $cacheTtl
-     * @return AbstractOrmEntity
+     * @return OrmEntityBase
      * @throws EntityNotFoundException
-     * @throws EntityOrmException
+     * @throws EntityRepositoryException
      */
     protected function getEntity(
         int|string $primaryId,
@@ -166,18 +166,18 @@ trait EntityFetchTrait
         array      $dbQueryData,
         bool       $storeInCache,
         int        $cacheTtl = 0,
-    ): AbstractOrmEntity
+    ): OrmEntityBase
     {
         $entityId = $this->getStorageKey($primaryId);
         $entity = $this->module->runtimeMemory->get($entityId);
-        if ($entity instanceof AbstractOrmEntity) {
+        if ($entity instanceof OrmEntityBase) {
             return $this->invokeStorageHooks($entity, FetchOrigin::RUNTIME);
         }
 
         if ($useCacheStore) {
             try {
                 $entity = $this->module->getFromCache($entityId);
-                if ($entity instanceof AbstractOrmEntity) {
+                if ($entity instanceof OrmEntityBase) {
                     $this->module->runtimeMemory->store($entityId, $entity);
                     return $this->invokeStorageHooks($entity, FetchOrigin::CACHE);
                 }

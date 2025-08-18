@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
-use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
-use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
+use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
+use Charcoal\App\Kernel\Orm\Exception\EntityRepositoryException;
 use Charcoal\Base\Vectors\StringVector;
 
 /**
@@ -19,20 +19,20 @@ use Charcoal\Base\Vectors\StringVector;
 trait EntityUpsertTrait
 {
     /**
-     * @param AbstractOrmEntity|array $entity
+     * @param OrmEntityBase|array $entity
      * @param StringVector $variableColumnNames
      * @return int
-     * @throws EntityOrmException
+     * @throws EntityRepositoryException
      */
     protected function dbUpsertEntity(
-        AbstractOrmEntity|array $entity,
-        StringVector            $variableColumnNames,
+        OrmEntityBase|array $entity,
+        StringVector        $variableColumnNames,
     ): int
     {
         try {
             return $this->table->querySave($entity, $variableColumnNames)->rowsCount;
         } catch (\Throwable $t) {
-            throw new EntityOrmException(static::class, $t);
+            throw new EntityRepositoryException($this, $t);
         }
     }
 }

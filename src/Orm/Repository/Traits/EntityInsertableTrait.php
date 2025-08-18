@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
-use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
-use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
+use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
+use Charcoal\App\Kernel\Orm\Exception\EntityRepositoryException;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
 
 /**
@@ -19,16 +19,16 @@ use Charcoal\Base\Support\Helpers\ObjectHelper;
 trait EntityInsertableTrait
 {
     /**
-     * @param AbstractOrmEntity $object
+     * @param OrmEntityBase $object
      * @return void
-     * @throws EntityOrmException
+     * @throws EntityRepositoryException
      */
-    protected function dbInsert(AbstractOrmEntity $object): void
+    protected function dbInsert(OrmEntityBase $object): void
     {
         try {
             $insertOp = $this->table->queryInsert($object, false);
         } catch (\Throwable $t) {
-            throw new EntityOrmException(static::class, $t);
+            throw new EntityRepositoryException($this, $t);
         }
 
         if ($insertOp->rowsCount !== 1) {
@@ -37,13 +37,13 @@ trait EntityInsertableTrait
     }
 
     /**
-     * @param AbstractOrmEntity $object
+     * @param OrmEntityBase $object
      * @param string $idColumn
      * @param int|null $overrideId
      * @return void
-     * @throws EntityOrmException
+     * @throws EntityRepositoryException
      */
-    protected function dbInsertAndSetId(AbstractOrmEntity $object, string $idColumn = "id", ?int $overrideId = null): void
+    protected function dbInsertAndSetId(OrmEntityBase $object, string $idColumn = "id", ?int $overrideId = null): void
     {
         if (isset($object->$idColumn)) {
             throw new \LogicException('Cannot insert ' . ObjectHelper::baseClassName($object::class) .
@@ -56,7 +56,7 @@ trait EntityInsertableTrait
         try {
             $object->$idColumn = $this->table->getDb()->lastInsertId();
         } catch (\Throwable $t) {
-            throw new EntityOrmException(static::class, $t);
+            throw new EntityRepositoryException($this, $t);
         }
     }
 }

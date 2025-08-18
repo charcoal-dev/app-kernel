@@ -9,21 +9,21 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm\Repository;
 
 use Charcoal\App\Kernel\Contracts\Enums\TableRegistryEnumInterface;
-use Charcoal\App\Kernel\Orm\Db\AppAwareTable;
-use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
-use Charcoal\App\Kernel\Orm\Module\OrmAwareModule;
+use Charcoal\App\Kernel\Orm\Db\OrmTableBase;
+use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
+use Charcoal\App\Kernel\Orm\Module\OrmModuleBase;
 use Charcoal\App\Kernel\Orm\Repository\Traits\EntityFetchTrait;
-use Charcoal\App\Kernel\Orm\StorageHooksInvokerTrait;
+use Charcoal\App\Kernel\Orm\Repository\Traits\StorageHooksInvokerTrait;
 use Charcoal\Base\Enums\ExceptionAction;
 use Charcoal\Base\Traits\ControlledSerializableTrait;
 
 /**
- * Class AbstractOrmRepository
+ * Class OrmRepositoryBase
  * @package Charcoal\App\Kernel\Orm\Repository
  */
-abstract class OrmAwareRepository
+abstract class OrmRepositoryBase
 {
-    public readonly AppAwareTable $table;
+    public readonly OrmTableBase $table;
 
     protected int $entityCacheTtl = 86400;
     protected int $entityChecksumIterations = 0x64;
@@ -33,13 +33,13 @@ abstract class OrmAwareRepository
     use EntityFetchTrait;
 
     /**
-     * @param OrmAwareModule $module
+     * @param OrmModuleBase $module
      * @param TableRegistryEnumInterface $dbTableEnum
      * @param ExceptionAction $onCacheException
      * @param bool $serializeTable
      */
     public function __construct(
-        protected readonly OrmAwareModule             $module,
+        protected readonly OrmModuleBase              $module,
         protected readonly TableRegistryEnumInterface $dbTableEnum,
         public readonly ExceptionAction               $onCacheException = ExceptionAction::Log,
         public readonly bool                          $serializeTable = true,
@@ -93,22 +93,22 @@ abstract class OrmAwareRepository
     }
 
     /**
-     * @param AbstractOrmEntity|string|int $entity
+     * @param OrmEntityBase|string|int $entity
      * @return void
      * @throws \Charcoal\Cache\Exceptions\CacheDriverException
      * @api
      */
-    protected function deleteFromCache(AbstractOrmEntity|string|int $entity): void
+    protected function deleteFromCache(OrmEntityBase|string|int $entity): void
     {
-        $this->module->deleteFromCache($entity instanceof AbstractOrmEntity ?
+        $this->module->deleteFromCache($entity instanceof OrmEntityBase ?
             $this->getStorageKeyFor($entity) : $this->getStorageKey($entity));
     }
 
     /**
-     * @param AbstractOrmEntity $entity
+     * @param OrmEntityBase $entity
      * @return string
      */
-    protected function getStorageKeyFor(AbstractOrmEntity $entity): string
+    protected function getStorageKeyFor(OrmEntityBase $entity): string
     {
         $entityClass = $this->table->entityClass;
         if (!$entity instanceof $entityClass) {

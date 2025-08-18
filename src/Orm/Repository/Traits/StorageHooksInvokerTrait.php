@@ -6,14 +6,14 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Orm;
+namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
 use Charcoal\App\Kernel\Contracts\Orm\Entity\StorageHooksInterface;
 use Charcoal\Base\Enums\FetchOrigin;
 
 /**
  * Trait StorageHooksInvokerTrait
- * @package Charcoal\App\Kernel\Contracts\StorageHooks
+ * @package Charcoal\App\Kernel\Orm\Repository\Traits
  */
 trait StorageHooksInvokerTrait
 {

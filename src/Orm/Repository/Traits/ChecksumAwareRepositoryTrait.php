@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
 use Charcoal\App\Kernel\Contracts\Orm\Entity\ChecksumAwareEntityInterface;
-use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
+use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
 use Charcoal\Buffers\Frames\Bytes20;
 use Charcoal\Cipher\Cipher;
 
@@ -36,53 +36,53 @@ trait ChecksumAwareRepositoryTrait
     }
 
     /**
-     * @param AbstractOrmEntity|null $entity
+     * @param OrmEntityBase|null $entity
      * @return Bytes20
      * @throws \Charcoal\App\Kernel\Entity\Exceptions\ChecksumComputeException
      */
-    protected function entityChecksumCalculate(AbstractOrmEntity $entity = null): Bytes20
+    protected function entityChecksumCalculate(OrmEntityBase $entity = null): Bytes20
     {
         return $this->isChecksumAware($entity)
             ->calculateChecksum($this->getCipher(), $this->entityChecksumIterations);
     }
 
     /**
-     * @param AbstractOrmEntity|null $entity
+     * @param OrmEntityBase|null $entity
      * @return string
      */
-    public function entityChecksumRawString(AbstractOrmEntity $entity = null): string
+    public function entityChecksumRawString(OrmEntityBase $entity = null): string
     {
         return $this->isChecksumAware($entity)->checksumRawString();
     }
 
     /**
-     * @param AbstractOrmEntity|null $entity
+     * @param OrmEntityBase|null $entity
      * @return bool
      * @throws \Charcoal\App\Kernel\Entity\Exceptions\ChecksumComputeException
      */
-    protected function entityChecksumVerify(AbstractOrmEntity $entity = null): bool
+    protected function entityChecksumVerify(OrmEntityBase $entity = null): bool
     {
         return $this->isChecksumAware($entity)
             ->verifyChecksum($this->getCipher(), $this->entityChecksumIterations);
     }
 
     /**
-     * @param AbstractOrmEntity|null $entity
+     * @param OrmEntityBase|null $entity
      * @return void
      * @throws \Charcoal\App\Kernel\Entity\Exceptions\ChecksumComputeException
      * @throws \Charcoal\App\Kernel\Entity\Exceptions\ChecksumMismatchException
      */
-    protected function entityChecksumValidate(AbstractOrmEntity $entity = null): void
+    protected function entityChecksumValidate(OrmEntityBase $entity = null): void
     {
         $this->isChecksumAware($entity)
             ->validateChecksum($this->getCipher(), $this->entityChecksumIterations);
     }
 
     /**
-     * @param AbstractOrmEntity|null $entity
+     * @param OrmEntityBase|null $entity
      * @return ChecksumAwareEntityInterface
      */
-    private function isChecksumAware(AbstractOrmEntity $entity = null): ChecksumAwareEntityInterface
+    private function isChecksumAware(OrmEntityBase $entity = null): ChecksumAwareEntityInterface
     {
         if (!$entity instanceof ChecksumAwareEntityInterface) {
             throw new \LogicException(static::class . " does not implement ChecksumAwareEntityInterface");

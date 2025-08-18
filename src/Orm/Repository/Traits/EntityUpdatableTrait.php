@@ -10,9 +10,9 @@ namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
 use Charcoal\App\Kernel\Contracts\Orm\Entity\ChecksumAwareEntityInterface;
 use Charcoal\App\Kernel\Contracts\Orm\Repository\ChecksumAwareRepositoryInterface;
-use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
+use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
 use Charcoal\App\Kernel\Orm\Entity\LockedEntity;
-use Charcoal\App\Kernel\Orm\Exception\EntityOrmException;
+use Charcoal\App\Kernel\Orm\Exception\EntityRepositoryException;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Base\Vectors\StringVector;
 
@@ -39,7 +39,7 @@ trait EntityUpdatableTrait
      * @param int|string $primaryColumnValue
      * @param string $primaryColumnName
      * @return void
-     * @throws EntityOrmException
+     * @throws EntityRepositoryException
      * @throws \Charcoal\App\Kernel\Entity\Exceptions\ChecksumComputeException
      */
     protected function dbUpdateLockedEntity(
@@ -68,18 +68,18 @@ trait EntityUpdatableTrait
     }
 
     /**
-     * @param AbstractOrmEntity $entity
+     * @param OrmEntityBase $entity
      * @param StringVector $changeLog
      * @param int|string $primaryColumnValue
      * @param string $primaryColumnName
      * @return int
-     * @throws EntityOrmException
+     * @throws EntityRepositoryException
      */
     protected function dbUpdateEntity(
-        AbstractOrmEntity $entity,
-        StringVector      $changeLog,
-        int|string        $primaryColumnValue,
-        string            $primaryColumnName = "id",
+        OrmEntityBase $entity,
+        StringVector  $changeLog,
+        int|string    $primaryColumnValue,
+        string        $primaryColumnName = "id",
     ): int
     {
         $changeData = $this->extractChangeLogData($entity, $changeLog);
@@ -87,23 +87,24 @@ trait EntityUpdatableTrait
     }
 
     /**
-     * @param AbstractOrmEntity $entity
+     * @param OrmEntityBase $entity
      * @param StringVector $changeLog
      * @param int|string $primaryColumnValue
      * @param string $primaryColumnName
      * @param string $checksumColumn
      * @return int
-     * @throws EntityOrmException
+     * @throws EntityRepositoryException
      * @throws \Charcoal\App\Kernel\Entity\Exceptions\ChecksumComputeException
      */
     protected function dbUpdateChecksumAwareEntity(
-        AbstractOrmEntity $entity,
-        StringVector      $changeLog,
-        int|string        $primaryColumnValue,
-        string            $primaryColumnName = "id",
-        string            $checksumColumn = "checksum",
+        OrmEntityBase $entity,
+        StringVector  $changeLog,
+        int|string    $primaryColumnValue,
+        string        $primaryColumnName = "id",
+        string        $checksumColumn = "checksum",
     ): int
     {
+        /** @noinspection PhpConditionAlreadyCheckedInspection */
         if (!$entity instanceof ChecksumAwareEntityInterface) {
             throw new \RuntimeException(static::class . " does not implement ChecksumAwareEntityInterface");
         }
@@ -124,7 +125,7 @@ trait EntityUpdatableTrait
      * @param int|string $primaryColumnValue
      * @param string $primaryColumnName
      * @return int
-     * @throws EntityOrmException
+     * @throws EntityRepositoryException
      */
     private function dbUpdateRow(
         array      $changeData,
@@ -135,20 +136,20 @@ trait EntityUpdatableTrait
         try {
             $update = $this->table->queryUpdate($changeData, $primaryColumnValue, $primaryColumnName);
         } catch (\Throwable $t) {
-            throw new EntityOrmException(static::class, $t);
+            throw new EntityRepositoryException($this, $t);
         }
 
         return $update->rowsCount;
     }
 
     /**
-     * @param AbstractOrmEntity $entity
+     * @param OrmEntityBase $entity
      * @param StringVector $changeLog
      * @return array
      */
     private function extractChangeLogData(
-        AbstractOrmEntity $entity,
-        StringVector      $changeLog
+        OrmEntityBase $entity,
+        StringVector  $changeLog
     ): array
     {
         $changes = $changeLog->filterUnique()->getArray();
@@ -156,8 +157,6 @@ trait EntityUpdatableTrait
             throw new \InvalidArgumentException("No changes to update");
         }
 
-        $changeData = [];
-        $entity->extractValues($changeData, ...$changes);
-        return $changeData;
+        return $entity->extract(...$changes);
     }
 }

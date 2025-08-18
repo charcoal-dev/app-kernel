@@ -9,22 +9,27 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm\Db;
 
 use Charcoal\App\Kernel\Contracts\Enums\TableRegistryEnumInterface;
-use Charcoal\App\Kernel\Orm\Entity\AbstractOrmEntity;
-use Charcoal\App\Kernel\Orm\Module\OrmAwareModule;
+use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
+use Charcoal\App\Kernel\Orm\Module\OrmModuleBase;
 use Charcoal\Database\DatabaseClient;
 
 /**
- * Class AppAwareTable
+ * Class OrmTableBase
  * @package Charcoal\App\Kernel\Orm\Db
  */
-abstract class AppAwareTable extends \Charcoal\Database\Orm\AbstractOrmTable
+abstract class OrmTableBase extends \Charcoal\Database\Orm\AbstractOrmTable
 {
     public readonly TableRegistryEnumInterface $enum;
 
+    /**
+     * @param OrmModuleBase $module
+     * @param TableRegistryEnumInterface $dbTableEnum
+     * @param class-string<OrmEntityBase>|null $entityClass
+     */
     public function __construct(
-        public readonly OrmAwareModule $module,
-        TableRegistryEnumInterface     $dbTableEnum,
-        public readonly ?string        $entityClass
+        public readonly OrmModuleBase $module,
+        TableRegistryEnumInterface    $dbTableEnum,
+        public readonly ?string       $entityClass
     )
     {
         $this->enum = $dbTableEnum;
@@ -42,9 +47,9 @@ abstract class AppAwareTable extends \Charcoal\Database\Orm\AbstractOrmTable
 
     /**
      * @param array $row
-     * @return AbstractOrmEntity|null
+     * @return OrmEntityBase|null
      */
-    public function newChildObject(array $row): ?AbstractOrmEntity
+    public function newChildObject(array $row): ?OrmEntityBase
     {
         $entityClass = $this->entityClass;
         if (!$entityClass) {

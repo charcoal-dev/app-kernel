@@ -12,10 +12,10 @@ use Charcoal\App\Kernel\Contracts\Orm\Entity\CacheableEntityInterface;
 use Charcoal\App\Kernel\Entity\AbstractEntity;
 
 /**
- * Class AbstractOrmEntity
+ * Class OrmEntityBase
  * @package Charcoal\App\Kernel\Orm\Entity
  */
-abstract class AbstractOrmEntity extends AbstractEntity
+abstract class OrmEntityBase extends AbstractEntity
 {
     /**
      * @return array

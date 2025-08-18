@@ -21,10 +21,10 @@ class TableRegistry
 
     /**
      * Registers an AbstractOrmTable instance in DatabaseTableRegistry
-     * @param AppAwareTable $table
+     * @param OrmTableBase $table
      * @return void
      */
-    public function register(AppAwareTable $table): void
+    public function register(OrmTableBase $table): void
     {
         $db = $table->enum->getDatabase()->getConfigKey();
         $table = $table->enum->getTableName();
@@ -36,9 +36,9 @@ class TableRegistry
     /**
      * Resolves argument Database and Table to retrieve AbstractOrmTable instance
      * @param TableRegistryEnumInterface $dbTable
-     * @return AppAwareTable
+     * @return OrmTableBase
      */
-    public function resolve(TableRegistryEnumInterface $dbTable): AppAwareTable
+    public function resolve(TableRegistryEnumInterface $dbTable): OrmTableBase
     {
         $found = $this->map[$dbTable->getDatabase()->getConfigKey()][$dbTable->getTableName()] ?? null;
         if (!$found) {

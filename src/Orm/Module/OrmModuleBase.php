@@ -16,15 +16,15 @@ use Charcoal\App\Kernel\Contracts\Cache\CacheStoreOperationsInterface;
 use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
 use Charcoal\App\Kernel\Contracts\Orm\Module\CacheStoreAwareInterface;
 use Charcoal\App\Kernel\Orm\Db\TableRegistry;
-use Charcoal\App\Kernel\Orm\Repository\OrmAwareRepository;
+use Charcoal\App\Kernel\Orm\Repository\OrmRepositoryBase;
 use Charcoal\Cipher\Cipher;
 use Charcoal\Semaphore\Filesystem\FilesystemSemaphore;
 
 /**
- * Class OrmAwareModule
- * @package Charcoal\App\Kernel\Orm
+ * Class OrmModuleBase
+ * @package Charcoal\App\Kernel\Orm\Module
  */
-abstract class OrmAwareModule extends AppAwareContainer implements
+abstract class OrmModuleBase extends AppAwareContainer implements
     RuntimeCacheOwnerInterface,
     CacheStoreOperationsInterface
 {
@@ -48,7 +48,7 @@ abstract class OrmAwareModule extends AppAwareContainer implements
 
     abstract protected function declareDatabaseTables(TableRegistry $tables): void;
 
-    abstract public function getCipherFor(OrmAwareRepository $resolveFor): ?Cipher;
+    abstract public function getCipherFor(OrmRepositoryBase $resolveFor): ?Cipher;
 
     abstract public function getSemaphore(): FilesystemSemaphore;
 
@@ -72,7 +72,7 @@ abstract class OrmAwareModule extends AppAwareContainer implements
      */
     protected function inspectIncludeChild(mixed $value): bool
     {
-        if ($value instanceof OrmAwareRepository) {
+        if ($value instanceof OrmRepositoryBase) {
             return true;
         }
 
@@ -86,7 +86,7 @@ abstract class OrmAwareModule extends AppAwareContainer implements
      */
     protected function bootstrapChildren(string $childPropertyKey): void
     {
-        if ($this->$childPropertyKey instanceof OrmAwareRepository) {
+        if ($this->$childPropertyKey instanceof OrmRepositoryBase) {
             $this->$childPropertyKey->resolveDatabaseTable();
             return;
         }
