@@ -18,7 +18,7 @@ use Charcoal\Events\Subscriptions\Subscription;
  * information- or functionality-specific to log entry recording events.
  * @internal
  */
-class DiagnosticsEvents extends BehaviorEvent
+final class DiagnosticsEvents extends BehaviorEvent
 {
     /**
      * @return Subscription

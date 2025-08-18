@@ -33,9 +33,8 @@ abstract class OrmModuleBase extends AbstractModule implements
 
     /**
      * @param AbstractApp $app
-     * @throws \ReflectionException
      */
-    protected function __construct(AbstractApp $app)
+    final public function __construct(AbstractApp $app)
     {
         $this->declareDatabaseTables($app->database->tables);
 

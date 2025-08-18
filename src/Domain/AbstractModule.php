@@ -13,6 +13,7 @@ use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
 use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
 use Charcoal\App\Kernel\Contracts\Domain\AppBootstrappableInterface;
 use Charcoal\App\Kernel\Contracts\Domain\ModuleBindableInterface;
+use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Base\Traits\ControlledSerializableTrait;
 
 /**
@@ -28,9 +29,6 @@ abstract class AbstractModule implements AppBindableInterface, AppBootstrappable
     /** @var string[] property keys to be automatically serialized and bootstrapped */
     private array $moduleChildren = [];
 
-    /**
-     * @throws \ReflectionException
-     */
     protected function __construct()
     {
         if ($this instanceof RuntimeCacheOwnerInterface) {
@@ -38,13 +36,21 @@ abstract class AbstractModule implements AppBindableInterface, AppBootstrappable
         }
 
         // Determine children for this AbstractModule instance to be automatically serialized
-        $reflect = new \ReflectionClass($this);
-        foreach ($reflect->getProperties() as $property) {
-            if ($property->isInitialized($this)) {
-                if ($this->inspectIncludeChild($property->getValue($this))) {
-                    $this->moduleChildren[] = $property->getName();
+        try {
+            $reflect = new \ReflectionClass($this);
+            foreach ($reflect->getProperties() as $property) {
+                if ($property->isInitialized($this)) {
+                    if ($this->inspectIncludeChild($property->getValue($this))) {
+                        $this->moduleChildren[] = $property->getName();
+                    }
                 }
             }
+        } catch (\ReflectionException $e) {
+            throw new \RuntimeException(
+                sprintf('Failed to create "%s" module, caught "%s" exception',
+                    ObjectHelper::baseClassName($this),
+                    ObjectHelper::baseClassName($e::class))
+            );
         }
     }
 
