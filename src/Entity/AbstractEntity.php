@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Entity;
 
+use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Vectors\StringVector;
 
 /**
@@ -16,26 +17,13 @@ use Charcoal\Base\Vectors\StringVector;
  */
 abstract class AbstractEntity
 {
+    use ControlledSerializableTrait;
+
     /**
      * Returns identifier a UUID or UID or ID or identifier of sorts for instance
      * @return int|string|null
      */
     abstract public function getPrimaryId(): int|string|null;
-
-    /**
-     * Forces all child classes to explicitly implement "collectSerializableData" method
-     * @return array
-     */
-    public function __serialize(): array
-    {
-        return $this->collectSerializableData();
-    }
-
-    /**
-     * Returns all serializable properties, can be used with "extractValues" method of this class
-     * @return array
-     */
-    abstract protected function collectSerializableData(): array;
 
     /**
      * Restores all possible public properties from serialized dataset
@@ -45,7 +33,7 @@ abstract class AbstractEntity
     public function __unserialize(array $data): void
     {
         foreach ($data as $prop => $value) {
-            if (property_exists($this, $prop)) {
+            if (property_exists($this, $prop) && (!isset($this->$prop) && !is_null($value))) {
                 $this->$prop = $value;
             }
         }
@@ -74,14 +62,16 @@ abstract class AbstractEntity
     }
 
     /**
-     * @param array $dataSet
      * @param string ...$props
-     * @return void
+     * @return array
      */
-    public function extractValues(array &$dataSet, string ...$props): void
+    public function extract(string ...$props): array
     {
+        $dataSet = [];
         foreach ($props as $prop) {
-            $dataSet[$prop] = $this->$prop;
+            $dataSet[$prop] = $this->$prop ?? null;
         }
+
+        return $dataSet;
     }
 }

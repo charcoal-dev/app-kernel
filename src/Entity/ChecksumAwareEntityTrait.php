@@ -18,6 +18,7 @@ use Charcoal\Cipher\Cipher;
 /**
  * Trait ChecksumAwareTrait
  * @package Charcoal\App\Kernel\Entity
+ * @mixin AbstractEntity
  */
 trait ChecksumAwareEntityTrait
 {
