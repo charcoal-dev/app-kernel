@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
 use Charcoal\App\Kernel\Contracts\Orm\Entity\StorageHooksInterface;
+use Charcoal\App\Kernel\Diagnostics\Diagnostics;
 use Charcoal\Base\Enums\FetchOrigin;
 
 /**
@@ -31,15 +32,15 @@ trait StorageHooksInvokerTrait
     {
         // Invoke StorageHooksInterface
         if ($entity instanceof StorageHooksInterface) {
-            $lifecycleEntry = $entity->onRetrieve($origin);
-            if ($lifecycleEntry) {
-                $this->module->app->lifecycle->log($lifecycleEntry, $origin->value, true);
+            $logEntry = $entity->onRetrieve($origin);
+            if ($logEntry) {
+                Diagnostics::app()->verbose($logEntry);
             }
 
             if ($storedInCache) {
-                $lifecycleEntry = $entity->onCacheStore();
-                if ($lifecycleEntry) {
-                    $this->module->app->lifecycle->log($lifecycleEntry, null, true);
+                $logEntry = $entity->onCacheStore();
+                if ($logEntry) {
+                    Diagnostics::app()->verbose($logEntry);
                 }
             }
         }

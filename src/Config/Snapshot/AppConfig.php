@@ -9,12 +9,13 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Config\Snapshot;
 
 use Charcoal\App\Kernel\Contracts\Enums\TimezoneEnumInterface;
+use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
 
 /**
  * Class AppConfig
  * @package Charcoal\App\Kernel
  */
-readonly class AppConfig
+readonly class AppConfig implements ConfigSnapshotInterface
 {
     public function __construct(
         public TimezoneEnumInterface  $timezone,

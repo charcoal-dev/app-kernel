@@ -39,7 +39,7 @@ final class ConfigProvider
             new DatabaseConfig(
                 DbDriver::SQLITE,
                 "tmp/test-app.db",
-                strategy: DbConnectionStrategy::Lazy
+                strategy: DbConnectionStrategy::Normal
             )
         );
 

@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
 use Charcoal\App\Kernel\Contracts\Orm\Entity\SemaphoreLockHooksInterface;
+use Charcoal\App\Kernel\Diagnostics\Diagnostics;
 use Charcoal\App\Kernel\Orm\Entity\LockedEntity;
 use Charcoal\App\Kernel\Orm\Exceptions\EntityLockedException;
 use Charcoal\Database\Enums\LockFlag;
@@ -62,9 +63,9 @@ trait EntitySemaphoreLockTrait
         try {
             $entity = $this->getFromDb($whereStmt, $queryData, $dbLockFlag);
             if ($entity instanceof SemaphoreLockHooksInterface) {
-                $lifecycleLog = $entity->onLockObtained();
-                if ($lifecycleLog) {
-                    $this->module->app->lifecycle->log($lifecycleLog, null, true);
+                $logEntry = $entity->onLockObtained();
+                if ($logEntry) {
+                    Diagnostics::app()->verbose($logEntry);
                 }
             }
 

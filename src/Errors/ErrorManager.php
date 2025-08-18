@@ -33,7 +33,6 @@ class ErrorManager implements AppServiceInterface
     public const array LOGGABLE_LEVELS = [E_NOTICE, E_USER_NOTICE,
         E_DEPRECATED, E_USER_DEPRECATED, E_WARNING, E_USER_WARNING];
 
-    private static ?self $instance = null;
     private static int $debugBacktraceOffset = 3;
     private static bool $handlingThrowable = false;
     private static bool $handlersSet = false;
