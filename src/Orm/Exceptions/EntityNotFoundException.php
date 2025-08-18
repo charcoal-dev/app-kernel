@@ -6,11 +6,11 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Orm\Exception;
+namespace Charcoal\App\Kernel\Orm\Exceptions;
 
 /**
  * Class EntityNotFoundException
- * @package Charcoal\App\Kernel\Orm\Exception
+ * @package Charcoal\App\Kernel\Orm\Exceptions
  */
 class EntityNotFoundException extends \Exception
 {

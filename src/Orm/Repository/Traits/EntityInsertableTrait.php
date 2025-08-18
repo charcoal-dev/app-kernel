@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
 use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
-use Charcoal\App\Kernel\Orm\Exception\EntityRepositoryException;
+use Charcoal\App\Kernel\Orm\Exceptions\EntityRepositoryException;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
 
 /**

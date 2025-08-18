@@ -12,7 +12,7 @@ use Charcoal\App\Kernel\Contracts\Orm\Entity\ChecksumAwareEntityInterface;
 use Charcoal\App\Kernel\Contracts\Orm\Repository\ChecksumAwareRepositoryInterface;
 use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
 use Charcoal\App\Kernel\Orm\Entity\LockedEntity;
-use Charcoal\App\Kernel\Orm\Exception\EntityRepositoryException;
+use Charcoal\App\Kernel\Orm\Exceptions\EntityRepositoryException;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Base\Vectors\StringVector;
 

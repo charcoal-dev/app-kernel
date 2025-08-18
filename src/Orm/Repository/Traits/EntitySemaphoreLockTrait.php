@@ -10,7 +10,7 @@ namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
 use Charcoal\App\Kernel\Contracts\Orm\Entity\SemaphoreLockHooksInterface;
 use Charcoal\App\Kernel\Orm\Entity\LockedEntity;
-use Charcoal\App\Kernel\Orm\Exception\EntityLockedException;
+use Charcoal\App\Kernel\Orm\Exceptions\EntityLockedException;
 use Charcoal\Database\Enums\LockFlag;
 use Charcoal\Semaphore\Exceptions\SemaphoreUnlockException;
 

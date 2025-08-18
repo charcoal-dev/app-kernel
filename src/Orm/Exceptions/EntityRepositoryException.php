@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Orm\Exception;
+namespace Charcoal\App\Kernel\Orm\Exceptions;
 
 use Charcoal\App\Kernel\Orm\Repository\OrmRepositoryBase;
 use Charcoal\Base\Exceptions\WrappedException;
@@ -15,7 +15,7 @@ use Charcoal\Database\Orm\Exceptions\OrmException;
 
 /**
  * Class EntityRepositoryException
- * @package Charcoal\App\Kernel\Orm\Exception
+ * @package Charcoal\App\Kernel\Orm\Exceptions
  */
 class EntityRepositoryException extends WrappedException
 {

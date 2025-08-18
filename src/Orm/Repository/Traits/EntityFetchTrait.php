@@ -10,8 +10,8 @@ namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
 use Charcoal\App\Kernel\Contracts\Orm\Entity\CacheableEntityInterface;
 use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
-use Charcoal\App\Kernel\Orm\Exception\EntityNotFoundException;
-use Charcoal\App\Kernel\Orm\Exception\EntityRepositoryException;
+use Charcoal\App\Kernel\Orm\Exceptions\EntityNotFoundException;
+use Charcoal\App\Kernel\Orm\Exceptions\EntityRepositoryException;
 use Charcoal\Base\Enums\ExceptionAction;
 use Charcoal\Base\Enums\FetchOrigin;
 use Charcoal\Base\Enums\Sort;
