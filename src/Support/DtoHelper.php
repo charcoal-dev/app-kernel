@@ -15,15 +15,13 @@ namespace Charcoal\App\Kernel\Support;
 class DtoHelper extends \Charcoal\Base\Support\Helpers\DtoHelper
 {
     /**
-     * @param \Throwable $t
-     * @param bool $previous
-     * @param bool $trace
-     * @return array
+     * Converts and sanitizes \Throwable object to a DTO
      */
     public static function getExceptionObject(
         \Throwable $t,
         bool       $previous = true,
         bool       $trace = true,
+        int        $pathOffset = 0
     ): array
     {
         $dto = [
@@ -34,13 +32,25 @@ class DtoHelper extends \Charcoal\Base\Support\Helpers\DtoHelper
             "line" => $t->getLine(),
         ];
 
+        $offset = min(max(0, $pathOffset), strlen($dto["file"]));
+        if ($offset > 0) {
+            $dto["file"] = substr($dto["file"], $offset);
+        }
+
         if ($previous) {
             $dto["previous"] = $t->getPrevious() ?
-                static::getExceptionObject($t->getPrevious()) : null;
+                static::getExceptionObject($t->getPrevious(), $previous, $trace, $pathOffset) : null;
         }
 
         if ($trace) {
-            $dto["trace"] = array_map(function (array $trace) {
+            $dto["trace"] = array_map(function (array $trace) use ($pathOffset) {
+                if ($pathOffset > 0 && isset($trace["file"])) {
+                    $offset = min(max(0, $pathOffset), strlen($trace["file"]));
+                    if ($offset > 0) {
+                        $trace["file"] = substr($trace["trace"], $offset);
+                    }
+                }
+
                 unset($trace["args"], $trace["object"]);
                 return $trace;
             }, $t->getTrace());
@@ -49,13 +59,9 @@ class DtoHelper extends \Charcoal\Base\Support\Helpers\DtoHelper
         return $dto;
     }
 
+
     /**
-     * @param array|object $object
-     * @param int $maxDepth
-     * @param bool $normalizeCommonShapes
-     * @param bool $checkRecursion
-     * @param string|callable|null $onRecursion
-     * @return array
+     * Converts an input array or object into a type-safe array representation.
      */
     public static function typeSafeArray(
         array|object         $object,
