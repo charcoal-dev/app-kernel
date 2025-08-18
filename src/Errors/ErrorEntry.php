@@ -28,7 +28,7 @@ final readonly class ErrorEntry
     {
         $this->filePath = $errors->getRelativeFilepath($file);
         $this->levelStr = $errors->getErrorLevelStr($this->level);
-        $this->backtrace = $errors->env->isDebug() ?
-            array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), $errors->debugBacktraceOffset(null)) : null;
+        $this->backtrace = $errors->debugging ? array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS),
+            $errors->debugBacktraceOffset(null)) : null;
     }
 }

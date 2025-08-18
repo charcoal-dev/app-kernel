@@ -17,6 +17,7 @@ class ErrorHelper extends \Charcoal\Base\Support\ErrorHelper
     /**
      * @param \Throwable $t
      * @return array
+     * @deprecated
      */
     public static function exception2Array(\Throwable $t): array
     {

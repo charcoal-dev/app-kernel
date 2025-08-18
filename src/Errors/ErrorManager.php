@@ -34,6 +34,7 @@ class ErrorManager implements AppServiceInterface, \IteratorAggregate
     public readonly ErrorManagerConfig $policy;
     public readonly ?ErrorLoggerInterface $logger;
     public readonly int $pathOffset;
+    public bool $debugging;
     private array $errorLoggable;
     private array $errorLog;
 
@@ -44,26 +45,24 @@ class ErrorManager implements AppServiceInterface, \IteratorAggregate
      * @param AppEnv $env
      * @param DirectoryPath $root
      */
-    public function __construct(public readonly AppEnv $env, PathInfo $root)
+    public function __construct(AppEnv $env, PathInfo $root)
     {
         $this->policy = $env->errorManagerPolicy();
         $this->pathOffset = strlen($root->absolute);
+        $this->debugging = $env->isDebug();
         $this->errorLoggable = [E_NOTICE, E_USER_NOTICE];
         $this->errorLog = [];
-        if ($this->policy->enabled) {
-            try {
-                $this->logger = is_string($this->policy->errorLogFile) ?
-                    new FileErrorLogger(new FilePath($root->absolute . DIRECTORY_SEPARATOR .
-                        $this->policy->errorLogFile)) : null;
-            } catch (FilesystemException $e) {
-                throw new \RuntimeException(sprintf("Failed to resolve error log file: [%s]: %s (path: %s)",
-                    ObjectHelper::baseClassName($e),
-                    $e->getMessage(),
-                    $this->policy->errorLogFile
-                ), previous: $e);
-            }
 
-            $this->setHandlers();
+        try {
+            $this->logger = is_string($this->policy->errorLogFile) ?
+                new FileErrorLogger(new FilePath($root->absolute . DIRECTORY_SEPARATOR .
+                    $this->policy->errorLogFile)) : null;
+        } catch (FilesystemException $e) {
+            throw new \RuntimeException(sprintf("Failed to resolve error log file: [%s]: %s (path: %s)",
+                ObjectHelper::baseClassName($e),
+                $e->getMessage(),
+                $this->policy->errorLogFile
+            ), previous: $e);
         }
     }
 
@@ -154,9 +153,9 @@ class ErrorManager implements AppServiceInterface, \IteratorAggregate
         }
 
         return [
-            "env" => $this->env,
             "policy" => $this->policy,
             "pathOffset" => $this->pathOffset,
+            "debugging" => $this->debugging,
             "logger" => $this->logger,
             "errorLoggable" => $this->errorLoggable,
             "errorLog" => [],
@@ -170,9 +169,9 @@ class ErrorManager implements AppServiceInterface, \IteratorAggregate
      */
     public function __unserialize(array $data): void
     {
-        $this->env = $data["env"];
         $this->policy = $data["policy"];
         $this->pathOffset = $data["pathOffset"];
+        $this->debugging = $data["debugging"];
         $this->logger = $data["logger"];
         $this->errorLoggable = $data["errorLoggable"];
         $this->errorLog = [];
@@ -318,7 +317,7 @@ class ErrorManager implements AppServiceInterface, \IteratorAggregate
             "line" => $t->getLine(),
         ];
 
-        if ($this->env->isDebug()) {
+        if ($this->debugging) {
             $exception["trace"] = $t->getTrace();
         }
 
