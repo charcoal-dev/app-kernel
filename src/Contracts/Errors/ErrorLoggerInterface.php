@@ -6,18 +6,17 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Contracts\Error;
+namespace Charcoal\App\Kernel\Contracts\Errors;
 
 use Charcoal\App\Kernel\Errors\ErrorEntry;
 
 /**
  * Interface ErrorLoggerInterface
- * @package Charcoal\App\Kernel\Contracts\Error
+ * @package Charcoal\App\Kernel\Contracts\Errors
  */
 interface ErrorLoggerInterface
 {
-    /**
-     * Log given ErrorEntry or \Throwable object
-     */
-    public function write(\Throwable|ErrorEntry $error): void;
+    public function handleError(ErrorEntry $error): void;
+
+    public function handleException(\Throwable $exception): void;
 }

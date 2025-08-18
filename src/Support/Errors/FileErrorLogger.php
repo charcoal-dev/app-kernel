@@ -6,21 +6,27 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Errors;
+namespace Charcoal\App\Kernel\Support\Errors;
 
-use Charcoal\App\Kernel\Contracts\Error\ErrorLoggerInterface;
+use Charcoal\App\Kernel\Contracts\Errors\ErrorLoggerInterface;
+use Charcoal\App\Kernel\Errors\ErrorEntry;
 use Charcoal\App\Kernel\Support\ErrorHelper;
 use Charcoal\Filesystem\Path\FilePath;
 
 /**
  * Class FileErrorLogger
- * @package Charcoal\App\Kernel\Errors
+ * @package Charcoal\App\Kernel\Support\Errors
  */
-final class FileErrorLogger implements ErrorLoggerInterface
+class FileErrorLogger implements ErrorLoggerInterface
 {
     public readonly string $logFile;
     public bool $isWriting = true;
 
+    /**
+     * @param FilePath $logFile
+     * @param bool $useAnsiEscapeSeq
+     * @param string $eolChar
+     */
     public function __construct(
         FilePath      $logFile,
         public bool   $useAnsiEscapeSeq = true,
@@ -35,9 +41,11 @@ final class FileErrorLogger implements ErrorLoggerInterface
     }
 
     /**
-     * Main-exposed method
+     * @param \Throwable|ErrorEntry $error
+     * @return void
+     * @internal
      */
-    public function write(\Throwable|ErrorEntry $error): void
+    protected function write(\Throwable|ErrorEntry $error): void
     {
         if (!$this->isWriting) {
             return;
@@ -50,7 +58,7 @@ final class FileErrorLogger implements ErrorLoggerInterface
     /**
      * Prepares & formats a \Throwable object and writes into the log file
      */
-    private function writeException(\Throwable $t): void
+    protected function writeException(\Throwable $t): void
     {
         $buffer[] = "";
         $buffer[] = str_repeat(".", 10);
@@ -70,13 +78,13 @@ final class FileErrorLogger implements ErrorLoggerInterface
     /**
      * Prepares & formats an ErrorEntry object and writes into the log file
      */
-    private function writeError(ErrorEntry $error): void
+    protected function writeError(ErrorEntry $error): void
     {
         $buffer[] = "";
         $buffer[] = sprintf("\e[36m[%s]\e[0m", date("d-m-Y H:i"));
-        $buffer[] = sprintf("\e[33mError:\e[0m \e[31m%s\e[0m", $error->levelStr);
+        $buffer[] = sprintf("\e[33mError:\e[0m \e[31m%s\e[0m", $error->level);
         $buffer[] = sprintf("\e[33mMessage:\e[0m %s", $error->message);
-        $buffer[] = sprintf("\e[33mFile:\e[0m \e[34m%s\e[0m", $error->filePath);
+        $buffer[] = sprintf("\e[33mFile:\e[0m \e[34m%s\e[0m", $error->filepath);
         $buffer[] = sprintf("\e[33mLine:\e[0m \e[36m%d\e[0m", $error->line);
         if ($error->backtrace) {
             $this->bufferTrace($buffer, $error->backtrace);
@@ -89,7 +97,7 @@ final class FileErrorLogger implements ErrorLoggerInterface
     /**
      * Writes buffer data to log file
      */
-    private function writeToFile(array $buffer): void
+    protected function writeToFile(array $buffer): void
     {
         $buffer = implode($this->eolChar, $buffer);
         if (!$this->useAnsiEscapeSeq) {
@@ -106,7 +114,7 @@ final class FileErrorLogger implements ErrorLoggerInterface
     /**
      * Prepares & formats debug backtrace and appends to buffer
      */
-    private function bufferTrace(array &$buffer, array $trace): void
+    protected function bufferTrace(array &$buffer, array $trace): void
     {
         if (!$trace) {
             return;
@@ -135,5 +143,25 @@ final class FileErrorLogger implements ErrorLoggerInterface
                 $buffer[] = "├─ " . $traceString;
             }
         }
+    }
+
+    /**
+     * @param ErrorEntry $error
+     * @return void
+     * @internal
+     */
+    public function handleError(ErrorEntry $error): void
+    {
+        $this->write($error);
+    }
+
+    /**
+     * @param \Throwable $exception
+     * @return void
+     * @internal
+     */
+    public function handleException(\Throwable $exception): void
+    {
+        $this->write($exception);
     }
 }

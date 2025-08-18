@@ -8,62 +8,78 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Errors;
 
-use Charcoal\App\Kernel\Contracts\Error\ErrorLoggerInterface;
-use Charcoal\App\Kernel\Internal\AppEnv;
-use Charcoal\App\Kernel\Internal\Config\ErrorManagerConfig;
+use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
-use Charcoal\App\Kernel\Support\ErrorHelper;
-use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
-use Charcoal\Filesystem\Exceptions\FilesystemException;
-use Charcoal\Filesystem\Path\DirectoryPath;
-use Charcoal\Filesystem\Path\FilePath;
 use Charcoal\Filesystem\Path\PathInfo;
 
 /**
  * Class ErrorManager
  * @package Charcoal\App\Kernel\Errors
  */
-class ErrorManager implements AppServiceInterface, \IteratorAggregate
+class ErrorManager implements AppServiceInterface
 {
+    public const array FATAL_ERRORS = [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR,
+        E_PARSE, E_USER_ERROR, E_RECOVERABLE_ERROR];
+
+    public const array LOGGABLE_LEVELS = [E_NOTICE, E_USER_NOTICE,
+        E_DEPRECATED, E_USER_DEPRECATED];
+
+    private static ?self $instance = null;
     private static bool $handlingThrowable = false;
     private static bool $handlersSet = false;
+
     private static int $debugBacktraceOffset = 3;
 
-    public readonly ErrorManagerConfig $policy;
-    public readonly ?ErrorLoggerInterface $logger;
+    private ErrorLoggers $loggers;
+    private array $loggable;
+    public readonly bool $policy;
     public readonly int $pathOffset;
     public bool $debugging;
-    private array $errorLoggable;
-    private array $errorLog;
 
     use NoDumpTrait;
     use NotCloneableTrait;
 
     /**
      * @param AppEnv $env
-     * @param DirectoryPath $root
+     * @param PathInfo $root
+     * @param ErrorLoggers|null $loggers
      */
-    public function __construct(AppEnv $env, PathInfo $root)
+    protected function __construct(AppEnv $env, PathInfo $root, ErrorLoggers $loggers = null)
     {
-        $this->policy = $env->getErrorManagerPolicy();
+        $this->policy = $env->deployErrorHandlers();
         $this->pathOffset = strlen($root->absolute);
         $this->debugging = $env->isDebug();
-        $this->errorLoggable = [E_NOTICE, E_USER_NOTICE];
-        $this->errorLog = [];
+        $this->loggable = static::LOGGABLE_LEVELS;
+        $this->loggers = $loggers ?? new ErrorLoggers();
+    }
 
-        try {
-            $this->logger = is_string($this->policy->errorLogFile) ?
-                new FileErrorLogger(new FilePath($root->absolute . DIRECTORY_SEPARATOR .
-                    $this->policy->errorLogFile)) : null;
-        } catch (FilesystemException $e) {
-            throw new \RuntimeException(sprintf("Failed to resolve error log file: [%s]: %s (path: %s)",
-                ObjectHelper::baseClassName($e),
-                $e->getMessage(),
-                $this->policy->errorLogFile
-            ), previous: $e);
+    /**
+     * @param AppEnv $env
+     * @param PathInfo $root
+     * @param ErrorLoggers|null $loggers
+     * @return static
+     */
+    public static function initialize(AppEnv $env, PathInfo $root, ErrorLoggers $loggers = null): static
+    {
+        if (isset(static::$instance)) {
+            throw new \LogicException("Errors service instance already exists");
         }
+
+        return static::$instance = new self($env, $root, $loggers);
+    }
+
+    /**
+     * @return static
+     */
+    public static function getInstance(): static
+    {
+        if (!isset(static::$instance)) {
+            throw new \LogicException("Errors service instance not initialized");
+        }
+
+        return static::$instance;
     }
 
     /**
@@ -73,14 +89,14 @@ class ErrorManager implements AppServiceInterface, \IteratorAggregate
      */
     public function setLoggableErrors(int ...$levels): void
     {
-        $this->errorLoggable = [];
+        $this->loggable = [];
         $levels = array_unique($levels);
         foreach ($levels as $level) {
-            if (!in_array($level, [E_NOTICE, E_USER_NOTICE, E_DEPRECATED, E_USER_DEPRECATED])) {
+            if (!in_array($level, static::LOGGABLE_LEVELS)) {
                 throw new \LogicException('Invalid error level to log: ' . $level);
             }
 
-            $this->errorLoggable[] = $level;
+            $this->loggable[] = $level;
         }
     }
 
@@ -121,50 +137,20 @@ class ErrorManager implements AppServiceInterface, \IteratorAggregate
     }
 
     /**
-     * Erases the entire error log, returning all existing values in an Array
-     * @return array
-     * @api
-     */
-    public function drain(): array
-    {
-        $errorLog = $this->errorLog;
-        $this->flush();
-        return $errorLog;
-    }
-
-    /**
-     * Erases entire error log
-     * @return void
-     * @api
-     */
-    public function flush(): void
-    {
-        $this->errorLog = [];
-    }
-
-    /**
-     * @return array
      * @internal
      */
     public function __serialize(): array
     {
-        if (count($this->errorLog) > 0) {
-            throw new \LogicException('App instance cannot be serialized with errors logged');
-        }
-
         return [
             "policy" => $this->policy,
             "pathOffset" => $this->pathOffset,
             "debugging" => $this->debugging,
-            "logger" => $this->logger,
-            "errorLoggable" => $this->errorLoggable,
-            "errorLog" => [],
+            "loggable" => $this->loggable,
+            "loggers" => null,
         ];
     }
 
     /**
-     * @param array $data
-     * @return void
      * @internal
      */
     public function __unserialize(array $data): void
@@ -172,16 +158,11 @@ class ErrorManager implements AppServiceInterface, \IteratorAggregate
         $this->policy = $data["policy"];
         $this->pathOffset = $data["pathOffset"];
         $this->debugging = $data["debugging"];
-        $this->logger = $data["logger"];
-        $this->errorLoggable = $data["errorLoggable"];
-        $this->errorLog = [];
+        $this->loggable = $data["loggable"];
+        $this->loggers = new ErrorLoggers();
     }
 
     /**
-     * @param string|\Throwable $error
-     * @param int $level
-     * @param int $fileLineBacktraceIndex
-     * @return void
      * @throws \ErrorException
      * @api
      */
@@ -203,45 +184,6 @@ class ErrorManager implements AppServiceInterface, \IteratorAggregate
         $this->handleError($level, $error,
             $trace[$fileLineBacktraceIndex]["file"] ?? "",
             intval($trace[$fileLineBacktraceIndex]["line"] ?? -1));
-    }
-
-    /**
-     * Appends an error message in runtime memory
-     * @param ErrorEntry $errorMsg
-     * @return void
-     * @api
-     */
-    public function append(ErrorEntry $errorMsg): void
-    {
-        $this->errorLog[] = $errorMsg;
-    }
-
-    /**
-     * Returns the number of errors currently in runtime memory
-     * @return int
-     * @api
-     */
-    public function count(): int
-    {
-        return count($this->errorLog);
-    }
-
-    /**
-     * Returns all logged errors
-     * @return array
-     * @api
-     */
-    public function getAll(): array
-    {
-        return $this->errorLog;
-    }
-
-    /**
-     * @return \Traversable
-     */
-    public function getIterator(): \Traversable
-    {
-        return new \ArrayIterator($this->errorLog);
     }
 
     /**
@@ -280,16 +222,9 @@ class ErrorManager implements AppServiceInterface, \IteratorAggregate
             $this->handleThrowable(new \ErrorException($message, 0, $level, $file, $line));
         }
 
-        if (in_array($level, $this->errorLoggable)) {
+        if (in_array($level, $this->loggable)) {
             $err = new ErrorEntry($this, $level, $message, $file, $line);
-            $this->append($err);
-
-            try {
-                $this->logger->write($err);
-            } catch (\Exception $e) {
-                throw new \ErrorException(ErrorHelper::exception2String($e), 0);
-            }
-
+            $this->loggers->handleError($err);
             return true;
         }
 
@@ -313,7 +248,7 @@ class ErrorManager implements AppServiceInterface, \IteratorAggregate
             "class" => get_class($t),
             "message" => $t->getMessage(),
             "code" => $t->getCode(),
-            "file" => $this->getRelativeFilepath($t->getFile()),
+            "file" => static::getRelativeFilepath($t->getFile()),
             "line" => $t->getLine(),
         ];
 
@@ -344,33 +279,8 @@ class ErrorManager implements AppServiceInterface, \IteratorAggregate
      * @return bool
      * @internal
      */
-    public function isFatalError(int $level): bool
+    public static function isFatalError(int $level): bool
     {
-        return in_array($level, [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_PARSE, E_USER_ERROR, E_RECOVERABLE_ERROR]);
-    }
-
-    /**
-     * Converts error level integer to appropriate string
-     * @param int $level
-     * @return string
-     * @api
-     */
-    final public function getErrorLevelStr(int $level): string
-    {
-        return match ($level) {
-            1 => "Fatal Error",
-            2, 512 => "Warning",
-            4 => "Parse Error",
-            8, 1024 => "Notice",
-            16 => "Core Error",
-            32 => "Core Warning",
-            64 => "Compile Error",
-            128 => "Compile Warning",
-            256 => "Error",
-            2048 => "Strict",
-            4096 => "Recoverable",
-            8192, 16384 => "Deprecated",
-            default => "Unknown",
-        };
+        return in_array($level, static::FATAL_ERRORS, true);
     }
 }
