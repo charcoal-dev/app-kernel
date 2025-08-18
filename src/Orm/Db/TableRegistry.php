@@ -27,14 +27,14 @@ class TableRegistry
     public function register(OrmTableBase $table): void
     {
         $db = $table->enum->getDatabase()->getConfigKey();
-        $table = $table->enum->getTableName();
-        if (!isset($this->map[$db][$table])) {
-            $this->map[$db][$table] = $table;
+        $tableId = $table->enum->getTableName();
+        if (!isset($this->map[$db][$tableId])) {
+            $this->map[$db][$tableId] = $table;
         }
     }
 
     /**
-     * Resolves argument Database and Table to retrieve AbstractOrmTable instance
+     * Resolves argument Database and Table to retrieve OrmTableBase instance
      * @param TableRegistryEnumInterface $dbTable
      * @return OrmTableBase
      */
