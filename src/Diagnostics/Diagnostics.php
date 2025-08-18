@@ -70,6 +70,15 @@ final class Diagnostics implements ErrorLoggerInterface
     }
 
     /**
+     * Resets the static instance to null.
+     * @internal
+     */
+    final public static function reset(): void
+    {
+        self::$instance = null;
+    }
+
+    /**
      * Take a runtime metrics snapshot for runtime execution debugging/inspection.
      * Provides memory/CPU usage metrics.
      * @api

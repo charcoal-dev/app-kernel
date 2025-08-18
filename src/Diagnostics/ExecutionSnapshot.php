@@ -32,8 +32,11 @@ final readonly class ExecutionSnapshot
         $this->metrics = $metrics;
 
         // Unload metrics
+        $logsImmutable = [];
         foreach ($logs as $log) {
-            $this->logs[] = new LogEntryDto($log);
+            $logsImmutable[] = new LogEntryDto($log);
         }
+
+        $this->logs = $logsImmutable;
     }
 }
