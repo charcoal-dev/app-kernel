@@ -8,9 +8,8 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Internal;
 
-use Charcoal\App\Kernel\Clock\MonotonicTimestamp;
-use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
 use Charcoal\App\Kernel\Enums\AppEnv;
+use Charcoal\Filesystem\Path\PathInfo;
 
 /**
  * Class AppContext
@@ -19,13 +18,15 @@ use Charcoal\App\Kernel\Enums\AppEnv;
 final readonly class AppContext
 {
     /**
-     * @param MonotonicTimestamp $startTime
      * @param AppEnv $env
-     * @param array<string, class-string<AppBindableInterface>> $domain
+     * @param \DateTimeImmutable $timestamp
+     * @param PathInfo $root
+     * @param array $domain
      */
     public function __construct(
         public AppEnv             $env,
-        public MonotonicTimestamp $startTime,
+        public \DateTimeImmutable $timestamp,
+        public PathInfo           $root,
         public array              $domain,
     )
     {
