@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Events;
 
+use Charcoal\App\Kernel\AbstractApp;
+use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
 use Charcoal\App\Kernel\Internal\Events\StorageProviderEvents;
 use Charcoal\Cache\CacheClient;
 use Charcoal\Cache\Events\Connection\ConnectionError;
@@ -22,10 +24,15 @@ use Charcoal\Events\Subscriptions\Subscription;
  */
 final readonly class CacheEvents extends StorageProviderEvents
 {
-    public function __construct(protected CacheClient $cache)
-    {
-        parent::__construct($cache);
+    protected CacheClient $store;
 
+    /**
+     * @param AbstractApp $app
+     * @param CacheStoreEnumInterface $store
+     */
+    public function __construct(AbstractApp $app, CacheStoreEnumInterface $store)
+    {
+        $this->store = $app->cache->getStore($store);
     }
 
     /**

@@ -40,7 +40,7 @@ class CacheManager extends BaseFactoryRegistry implements AppServiceConfigAwareI
      * @param CacheStoreEnumInterface $key
      * @return CacheClient
      */
-    public function get(CacheStoreEnumInterface $key): CacheClient
+    public function getStore(CacheStoreEnumInterface $key): CacheClient
     {
         return $this->getExistingOrCreate($key->getConfigKey());
     }

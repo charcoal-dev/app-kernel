@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Events;
 
+use Charcoal\App\Kernel\AbstractApp;
+use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
 use Charcoal\App\Kernel\Internal\Events\StorageProviderEvents;
 use Charcoal\Database\DatabaseClient;
 use Charcoal\Database\Events\Connection\ConnectionError;
@@ -23,12 +25,15 @@ use Charcoal\Events\Subscriptions\Subscription;
  */
 final readonly class DatabaseEvents extends StorageProviderEvents
 {
+    protected DatabaseClient $db;
+
     /**
-     * @param DatabaseClient $db
+     * @param AbstractApp $app
+     * @param DatabaseEnumInterface $db
      */
-    public function __construct(protected DatabaseClient $db)
+    public function __construct(AbstractApp $app, DatabaseEnumInterface $db)
     {
-        parent::__construct($db);
+        $this->db = $app->database->getDb($db);
     }
 
     /**

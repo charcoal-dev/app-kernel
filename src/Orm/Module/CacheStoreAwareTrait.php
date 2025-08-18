@@ -38,6 +38,6 @@ trait CacheStoreAwareTrait
             return null;
         }
 
-        return $this->cacheStore = $this->app->cache->get($this->cacheStoreEnum);
+        return $this->cacheStore = $this->app->cache->getStore($this->cacheStoreEnum);
     }
 }
