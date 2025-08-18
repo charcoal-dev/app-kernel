@@ -8,39 +8,59 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Clock;
 
-use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Contracts\Clock\ClockInterface;
-use Charcoal\App\Kernel\Internal\Services\AppServiceConfigAwareInterface;
+use Charcoal\App\Kernel\Contracts\Enums\TimezoneEnumInterface;
+use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\App\Kernel\Support\ErrorHelper;
+use Charcoal\Base\Traits\InstanceOnStaticScopeTrait;
+use Charcoal\Base\Traits\NotCloneableTrait;
 
 /**
- * Class Clock
- * @package Charcoal\App\Kernel\Clock
+ * Provides functionalities to manage time and datetime operations with timezone awareness.
+ * Implements methods for retrieving timestamps, creating immutable datetime objects,
+ * and accessing the system's configured timezone.
  */
-final class Clock implements AppServiceConfigAwareInterface, ClockInterface
+final class Clock implements AppServiceInterface, ClockInterface
 {
-    use StaticClockTrait;
+    use InstanceOnStaticScopeTrait;
+    use NotCloneableTrait;
 
     private \DateTimeZone $timezone;
 
     /**
-     * @param AbstractApp $app
+     * @param TimezoneEnumInterface $timezone
      */
-    public function __construct(AbstractApp $app)
+    public function __construct(TimezoneEnumInterface $timezone)
     {
         try {
-            date_default_timezone_set($app->config->timezone->getTimezoneId());
-            $this->timezone = new \DateTimeZone($app->config->timezone->getTimezoneId());
+            date_default_timezone_set($timezone->getTimezoneId());
+            $this->timezone = new \DateTimeZone($timezone->getTimezoneId());
         } catch (\Exception $e) {
             throw new \RuntimeException(ErrorHelper::exception2String($e), 0, $e);
         }
     }
 
     /**
+     * @return int
+     */
+    public static function getTimestamp(): int
+    {
+        return self::now()->getTimestamp();
+    }
+
+    /**
+     * @return \DateTimeImmutable
+     */
+    public static function now(): \DateTimeImmutable
+    {
+        return self::getInstance()->getImmutable("now");
+    }
+
+    /**
      * @param string $datetime
      * @return \DateTimeImmutable
      */
-    public function immutable(string $datetime = "now"): \DateTimeImmutable
+    public function getImmutable(string $datetime = "now"): \DateTimeImmutable
     {
         return new \DateTimeImmutable($datetime, $this->timezone);
     }
@@ -50,7 +70,7 @@ final class Clock implements AppServiceConfigAwareInterface, ClockInterface
      */
     public function timestamp(): int
     {
-        return $this->immutable("now")->getTimestamp();
+        return $this->getImmutable("now")->getTimestamp();
     }
 
     /**
