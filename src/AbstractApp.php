@@ -72,6 +72,7 @@ abstract class AbstractApp extends AppSerializable
         }
 
         // Instantiate all domain defined modules and services
+        Clock::initializeStatic($this->clock);
         $this->domain = $manifest->getDomain($this);
 
         // Set context and invoke isReady > onReady hooks
