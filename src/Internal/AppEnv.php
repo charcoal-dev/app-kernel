@@ -35,7 +35,7 @@ enum AppEnv: string
     /**
      * @return ErrorManagerConfig
      */
-    public function errorManagerPolicy(): ErrorManagerConfig
+    public function getErrorManagerPolicy(): ErrorManagerConfig
     {
         return new ErrorManagerConfig(
             $this !== self::Test,
