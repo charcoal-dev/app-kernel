@@ -24,14 +24,14 @@ use Charcoal\Cache\CacheClient;
  * @package Charcoal\App\Kernel
  * @template-extends BaseFactoryRegistry<CacheClient>
  */
-class CacheManager extends BaseFactoryRegistry implements AppServiceInterface
+final class CacheManager extends BaseFactoryRegistry implements AppServiceInterface
 {
     use ControlledSerializableTrait;
     use RegistryKeysLowercaseTrimmed;
     use NoDumpTrait;
     use NotCloneableTrait;
 
-    public function __construct(protected readonly ?CacheManagerConfig $config)
+    public function __construct(public readonly ?CacheManagerConfig $config)
     {
     }
 
