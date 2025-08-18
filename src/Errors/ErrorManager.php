@@ -8,11 +8,14 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Errors;
 
+use Charcoal\App\Kernel\Contracts\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
+use Charcoal\Base\Traits\InstanceOnStaticScopeTrait;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Filesystem\Path\PathInfo;
+use Charcoal\Http\Router\Exceptions\ResponseDispatchedException;
 
 /**
  * Class ErrorManager
@@ -20,17 +23,20 @@ use Charcoal\Filesystem\Path\PathInfo;
  */
 class ErrorManager implements AppServiceInterface
 {
+    use InstanceOnStaticScopeTrait;
+    use NoDumpTrait;
+    use NotCloneableTrait;
+
     public const array FATAL_ERRORS = [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR,
         E_PARSE, E_USER_ERROR, E_RECOVERABLE_ERROR];
 
     public const array LOGGABLE_LEVELS = [E_NOTICE, E_USER_NOTICE,
-        E_DEPRECATED, E_USER_DEPRECATED];
+        E_DEPRECATED, E_USER_DEPRECATED, E_WARNING, E_USER_WARNING];
 
     private static ?self $instance = null;
+    private static int $debugBacktraceOffset = 3;
     private static bool $handlingThrowable = false;
     private static bool $handlersSet = false;
-
-    private static int $debugBacktraceOffset = 3;
 
     private ErrorLoggers $loggers;
     private array $loggable;
@@ -38,48 +44,37 @@ class ErrorManager implements AppServiceInterface
     public readonly int $pathOffset;
     public bool $debugging;
 
-    use NoDumpTrait;
-    use NotCloneableTrait;
-
     /**
      * @param AppEnv $env
      * @param PathInfo $root
      * @param ErrorLoggers|null $loggers
+     * @internal
      */
-    protected function __construct(AppEnv $env, PathInfo $root, ErrorLoggers $loggers = null)
+    final public function __construct(AppEnv $env, PathInfo $root, ?ErrorLoggers $loggers = null)
     {
         $this->policy = $env->deployErrorHandlers();
         $this->pathOffset = strlen($root->absolute);
         $this->debugging = $env->isDebug();
-        $this->loggable = static::LOGGABLE_LEVELS;
+        $this->loggable = [E_NOTICE, E_USER_NOTICE, E_DEPRECATED, E_USER_DEPRECATED];
         $this->loggers = $loggers ?? new ErrorLoggers();
     }
 
     /**
-     * @param AppEnv $env
-     * @param PathInfo $root
-     * @param ErrorLoggers|null $loggers
-     * @return static
+     * @param ErrorLoggerInterface $logger
+     * @return void
      */
-    public static function initialize(AppEnv $env, PathInfo $root, ErrorLoggers $loggers = null): static
+    final public function subscribe(ErrorLoggerInterface $logger): void
     {
-        if (isset(static::$instance)) {
-            throw new \LogicException("Errors service instance already exists");
-        }
-
-        return static::$instance = new self($env, $root, $loggers);
+        $this->loggers->register($logger);
     }
 
     /**
-     * @return static
+     * @param ErrorLoggerInterface $logger
+     * @return void
      */
-    public static function getInstance(): static
+    final public function unsubscribe(ErrorLoggerInterface $logger): void
     {
-        if (!isset(static::$instance)) {
-            throw new \LogicException("Errors service instance not initialized");
-        }
-
-        return static::$instance;
+        $this->loggers->unregister($logger);
     }
 
     /**
@@ -87,7 +82,7 @@ class ErrorManager implements AppServiceInterface
      * @return void
      * @api
      */
-    public function setLoggableErrors(int ...$levels): void
+    final public function setLoggableErrors(int ...$levels): void
     {
         $this->loggable = [];
         $levels = array_unique($levels);
@@ -114,7 +109,7 @@ class ErrorManager implements AppServiceInterface
      * @return bool
      * @api
      */
-    public function hasHandlersSet(): bool
+    final public function hasHandlersSet(): bool
     {
         return static::$handlersSet;
     }
@@ -124,7 +119,7 @@ class ErrorManager implements AppServiceInterface
      * @return void
      * @internal
      */
-    public function setHandlers(): void
+    final public function setHandlers(): void
     {
         if (static::$handlersSet) {
             return;
@@ -166,7 +161,7 @@ class ErrorManager implements AppServiceInterface
      * @throws \ErrorException
      * @api
      */
-    public function trigger(
+    final public function trigger(
         string|\Throwable $error,
         int               $level = E_USER_NOTICE,
         int               $fileLineBacktraceIndex = 1
@@ -182,7 +177,7 @@ class ErrorManager implements AppServiceInterface
 
         $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         $this->handleError($level, $error,
-            $trace[$fileLineBacktraceIndex]["file"] ?? "",
+            $trace[$fileLineBacktraceIndex]["file"] ?? "~",
             intval($trace[$fileLineBacktraceIndex]["line"] ?? -1));
     }
 
@@ -190,17 +185,12 @@ class ErrorManager implements AppServiceInterface
      * @return void
      * @internal
      */
-    public function handleShutdown(): void
+    final public function handleShutdown(): void
     {
         $error = error_get_last();
         if ($error && $this->isFatalError($error["type"])) {
-            $this->handleThrowable(new \ErrorException(
-                    $error["message"],
-                    0,
-                    $error["type"],
-                    $error["file"],
-                    $error["line"]
-                )
+            $this->handleThrowable(
+                new \ErrorException($error["message"], 0, $error["type"], $error["file"], $error["line"])
             );
         }
     }
@@ -214,7 +204,7 @@ class ErrorManager implements AppServiceInterface
      * @throws \ErrorException
      * @internal
      */
-    public function handleError(int $level, string $message, string $file, int $line): bool
+    final public function handleError(int $level, string $message, string $file, int $line): bool
     {
         if (error_reporting() === 0) return false;
 
@@ -237,8 +227,12 @@ class ErrorManager implements AppServiceInterface
      * @return never
      * @internal
      */
-    public function handleThrowable(\Throwable $t): never
+    final public function handleThrowable(\Throwable $t): never
     {
+        if ($t instanceof ResponseDispatchedException) {
+            exit(0);
+        }
+
         if (static::$handlingThrowable) {
             exit(1);
         }
@@ -256,11 +250,20 @@ class ErrorManager implements AppServiceInterface
             $exception["trace"] = $t->getTrace();
         }
 
+        $this->onTerminate($exception);
+    }
+
+    /**
+     * @param array $exceptionDto
+     * @return never
+     */
+    protected function onTerminate(array $exceptionDto): never
+    {
         if (php_sapi_name() !== "cli") {
             header("Content-Type: application/json", response_code: 500);
         }
 
-        exit(json_encode(["FatalError" => $exception]));
+        exit(json_encode(["FatalError" => $exceptionDto]));
     }
 
     /**
