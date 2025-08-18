@@ -13,7 +13,6 @@ use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
 use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
 use Charcoal\App\Kernel\Contracts\Domain\AppBootstrappableInterface;
 use Charcoal\App\Kernel\Contracts\Domain\ModuleBindableInterface;
-use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Base\Traits\ControlledSerializableTrait;
 
 /**
@@ -34,24 +33,6 @@ abstract class AbstractModule implements AppBindableInterface, AppBootstrappable
         if ($this instanceof RuntimeCacheOwnerInterface) {
             $this->initializePrivateRuntimeCache();
         }
-
-        // Determine children for this AbstractModule instance to be automatically serialized
-        try {
-            $reflect = new \ReflectionClass($this);
-            foreach ($reflect->getProperties() as $property) {
-                if ($property->isInitialized($this)) {
-                    if ($this->inspectIncludeChild($property->getValue($this))) {
-                        $this->moduleChildren[] = $property->getName();
-                    }
-                }
-            }
-        } catch (\ReflectionException $e) {
-            throw new \RuntimeException(
-                sprintf('Failed to create "%s" module, caught "%s" exception',
-                    ObjectHelper::baseClassName($this),
-                    ObjectHelper::baseClassName($e::class))
-            );
-        }
     }
 
     /**
@@ -71,6 +52,17 @@ abstract class AbstractModule implements AppBindableInterface, AppBootstrappable
     final public function bootstrap(AbstractApp $app): void
     {
         $this->app = $app;
+
+        // Determine children for this AbstractModule instance to be automatically serialized
+        $reflect = new \ReflectionClass($this);
+        foreach ($reflect->getProperties() as $property) {
+            if ($property->isInitialized($this)) {
+                if ($this->inspectIncludeChild($property->getValue($this))) {
+                    $this->moduleChildren[] = $property->getName();
+                }
+            }
+        }
+
         foreach ($this->moduleChildren as $childPropertyKey) {
             if (isset($this->$childPropertyKey)) {
                 $this->bootstrapChildren($childPropertyKey);
@@ -94,7 +86,7 @@ abstract class AbstractModule implements AppBindableInterface, AppBootstrappable
      */
     protected function collectSerializableData(): array
     {
-        $data = ["containerChildren" => $this->moduleChildren];
+        $data = ["moduleChildren" => $this->moduleChildren];
         foreach ($this->moduleChildren as $child) {
             $data[$child] = $this->$child;
         }
@@ -113,8 +105,8 @@ abstract class AbstractModule implements AppBindableInterface, AppBootstrappable
             $this->initializePrivateRuntimeCache();
         }
 
-        $this->containerChildren = $data["containerChildren"];
-        foreach ($this->containerChildren as $child) {
+        $this->moduleChildren = $data["moduleChildren"];
+        foreach ($this->moduleChildren as $child) {
             if (!isset($this->$child) && isset($data[$child])) {
                 $this->$child = $data[$child];
             }
