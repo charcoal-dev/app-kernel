@@ -12,10 +12,10 @@ use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\Base\Traits\ControlledSerializableTrait;
 
 /**
- * Class AppAware
+ * Class AbstractAppAware
  * @package Charcoal\App\Kernel\Domain
  */
-abstract class AppAware
+abstract class AbstractAppAware
 {
     use ControlledSerializableTrait;
 

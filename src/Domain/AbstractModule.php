@@ -12,10 +12,10 @@ use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
 
 /**
- * Class AppAwareContainer
+ * Class AbstractModule
  * @package Charcoal\App\Kernel\Domain
  */
-abstract class AppAwareContainer extends AppAware
+abstract class AbstractModule extends AbstractAppAware
 {
     /** @var string[] property keys to be automatically serialized and bootstrapped */
     private array $containerChildren = [];
@@ -46,7 +46,7 @@ abstract class AppAwareContainer extends AppAware
      */
     protected function inspectIncludeChild(mixed $value): bool
     {
-        return $value instanceof AppAware;
+        return $value instanceof AbstractAppAware;
     }
 
     /**
@@ -70,7 +70,7 @@ abstract class AppAwareContainer extends AppAware
      */
     protected function bootstrapChildren(string $childPropertyKey): void
     {
-        if ($this->$childPropertyKey instanceof AppAware) {
+        if ($this->$childPropertyKey instanceof AbstractAppAware) {
             $this->$childPropertyKey->bootstrap($this->app);
         }
     }
