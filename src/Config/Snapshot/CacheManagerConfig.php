@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config\Snapshot;
 
-use Charcoal\App\Kernel\Cache\CacheDriver;
+use Charcoal\App\Kernel\Enums\CacheDriver;
 use Charcoal\App\Kernel\Support\NetworkHelper;
 
 /**

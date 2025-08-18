@@ -8,10 +8,9 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Database;
 
-use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Config\Snapshot\DatabaseManagerConfig;
 use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
-use Charcoal\App\Kernel\Internal\Services\AppServiceConfigAwareInterface;
+use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\App\Kernel\Orm\Db\TableRegistry;
 use Charcoal\Base\Abstracts\BaseFactoryRegistry;
 use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
@@ -24,18 +23,16 @@ use Charcoal\Database\DatabaseClient;
  * @package Charcoal\App\Kernel
  * @template-extends BaseFactoryRegistry<DatabaseClient>
  */
-class DatabaseManager extends BaseFactoryRegistry implements AppServiceConfigAwareInterface
+class DatabaseManager extends BaseFactoryRegistry implements AppServiceInterface
 {
-    protected ?DatabaseManagerConfig $config;
     public readonly TableRegistry $tables;
 
     use RegistryKeysLowercaseTrimmed;
     use NoDumpTrait;
     use NotCloneableTrait;
 
-    public function __construct(AbstractApp $app)
+    public function __construct(protected readonly ?DatabaseManagerConfig $config)
     {
-        $this->config = $app->config->database;
         $this->tables = new TableRegistry();
     }
 

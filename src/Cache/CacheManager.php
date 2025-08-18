@@ -8,11 +8,10 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Cache;
 
-use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Config\Snapshot\CacheManagerConfig;
 use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
 use Charcoal\App\Kernel\Enums\CacheDriver;
-use Charcoal\App\Kernel\Internal\Services\AppServiceConfigAwareInterface;
+use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\Base\Abstracts\BaseFactoryRegistry;
 use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
 use Charcoal\Base\Traits\NoDumpTrait;
@@ -24,17 +23,14 @@ use Charcoal\Cache\CacheClient;
  * @package Charcoal\App\Kernel
  * @template-extends BaseFactoryRegistry<CacheClient>
  */
-class CacheManager extends BaseFactoryRegistry implements AppServiceConfigAwareInterface
+class CacheManager extends BaseFactoryRegistry implements AppServiceInterface
 {
-    protected readonly ?CacheManagerConfig $config;
-
     use RegistryKeysLowercaseTrimmed;
     use NoDumpTrait;
     use NotCloneableTrait;
 
-    public function __construct(AbstractApp $app)
+    public function __construct(protected readonly ?CacheManagerConfig $config)
     {
-        $this->config = $app->config->cache;
     }
 
     /**
