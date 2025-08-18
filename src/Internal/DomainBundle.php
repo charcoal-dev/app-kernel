@@ -10,15 +10,19 @@ namespace Charcoal\App\Kernel\Internal;
 
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
+use Charcoal\App\Kernel\Contracts\Domain\AppBootstrappableInterface;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
 
 /**
  * Class DomainBundle
  * @package Charcoal\App\Kernel\Internal
  */
-final class DomainBundle
+final class DomainBundle implements AppBootstrappableInterface
 {
+    /** @var array<string, AppBindableInterface> */
     private array $modules = [];
+    /** @var array<string, class-string<AppBindableInterface>> */
+    private array $map = [];
 
     /**
      * @param array<array<\UnitEnum, callable(AbstractApp): AppBindableInterface>> $modules
@@ -55,7 +59,29 @@ final class DomainBundle
             }
 
             $this->modules[$name->name] = $bindable;
+            $this->map[$name->name] = get_class($bindable);
         }
+    }
+
+    /**
+     * @param AbstractApp $app
+     * @return void
+     */
+    public function bootstrap(AbstractApp $app): void
+    {
+        foreach ($this->modules as $module) {
+            if ($module instanceof AppBootstrappableInterface) {
+                $module->bootstrap($app);
+            }
+        }
+    }
+
+    /**
+     * @return array<string, class-string<AppBindableInterface>>
+     */
+    public function inspect(): array
+    {
+        return $this->map;
     }
 
     /**

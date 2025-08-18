@@ -56,7 +56,7 @@ abstract class AppSerializable
      */
     public static function CreateBuild(AbstractApp $app, DirectoryNode $root, array $dirs = []): void
     {
-        $filepath = static::appSerializedStatesFilepath($app->env, $root, $dirs);
+        $filepath = static::appSerializedStatesFilepath($app->context->env, $root, $dirs);
         error_clear_last();
         if (!@file_put_contents($filepath->absolute, serialize($app))) {
             throw new \LogicException("Failed to create charcoal application build");
@@ -82,22 +82,5 @@ abstract class AppSerializable
         } catch (FilesystemException $e) {
             throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
-    }
-
-    /**
-     * @internal
-     */
-    protected function registerModuleManifest(AppBuildContextInterface $context, AppBuildStage $app): array
-    {
-        $modules = $context->declareModules($app)->getIncluded();
-        $moduleClasses = [];
-        $moduleProperties = [];
-        foreach ($modules as $property => $instance) {
-            $this->$property = $instance;
-            $moduleClasses[$instance::class] = $property;
-            $moduleProperties[] = $property;
-        }
-
-        return [$moduleClasses, $moduleProperties];
     }
 }

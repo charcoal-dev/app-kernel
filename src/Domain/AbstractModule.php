@@ -10,15 +10,23 @@ namespace Charcoal\App\Kernel\Domain;
 
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
+use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
+use Charcoal\App\Kernel\Contracts\Domain\AppBootstrappableInterface;
+use Charcoal\App\Kernel\Contracts\Domain\ModuleBindableInterface;
+use Charcoal\Base\Traits\ControlledSerializableTrait;
 
 /**
  * Class AbstractModule
  * @package Charcoal\App\Kernel\Domain
  */
-abstract class AbstractModule extends AbstractAppAware
+abstract class AbstractModule implements AppBindableInterface, AppBootstrappableInterface
 {
+    use ControlledSerializableTrait;
+
+    public readonly AbstractApp $app;
+
     /** @var string[] property keys to be automatically serialized and bootstrapped */
-    private array $containerChildren = [];
+    private array $moduleChildren = [];
 
     /**
      * @throws \ReflectionException
@@ -29,12 +37,12 @@ abstract class AbstractModule extends AbstractAppAware
             $this->initializePrivateRuntimeCache();
         }
 
-        // Determine children for this AppAwareContainer instance to be automatically serialized
+        // Determine children for this AbstractModule instance to be automatically serialized
         $reflect = new \ReflectionClass($this);
         foreach ($reflect->getProperties() as $property) {
             if ($property->isInitialized($this)) {
                 if ($this->inspectIncludeChild($property->getValue($this))) {
-                    $this->containerChildren[] = $property->getName();
+                    $this->moduleChildren[] = $property->getName();
                 }
             }
         }
@@ -46,7 +54,7 @@ abstract class AbstractModule extends AbstractAppAware
      */
     protected function inspectIncludeChild(mixed $value): bool
     {
-        return $value instanceof AbstractAppAware;
+        return $value instanceof ModuleBindableInterface;
     }
 
     /**
@@ -56,8 +64,8 @@ abstract class AbstractModule extends AbstractAppAware
      */
     final public function bootstrap(AbstractApp $app): void
     {
-        parent::bootstrap($app);
-        foreach ($this->containerChildren as $childPropertyKey) {
+        $this->app = $app;
+        foreach ($this->moduleChildren as $childPropertyKey) {
             if (isset($this->$childPropertyKey)) {
                 $this->bootstrapChildren($childPropertyKey);
             }
@@ -70,7 +78,7 @@ abstract class AbstractModule extends AbstractAppAware
      */
     protected function bootstrapChildren(string $childPropertyKey): void
     {
-        if ($this->$childPropertyKey instanceof AbstractAppAware) {
+        if ($this->$childPropertyKey instanceof AppBootstrappableInterface) {
             $this->$childPropertyKey->bootstrap($this->app);
         }
     }
@@ -80,11 +88,12 @@ abstract class AbstractModule extends AbstractAppAware
      */
     protected function collectSerializableData(): array
     {
-        $data = ["containerChildren" => $this->containerChildren];
-        foreach ($this->containerChildren as $child) {
+        $data = ["containerChildren" => $this->moduleChildren];
+        foreach ($this->moduleChildren as $child) {
             $data[$child] = $this->$child;
         }
 
+        $data["app"] = null;
         return $data;
     }
 
@@ -100,15 +109,17 @@ abstract class AbstractModule extends AbstractAppAware
 
         $this->containerChildren = $data["containerChildren"];
         foreach ($this->containerChildren as $child) {
-            $this->$child = $data[$child];
+            if (!isset($this->$child) && isset($data[$child])) {
+                $this->$child = $data[$child];
+            }
         }
     }
 
     /**
-     * @return array|string[]
+     * @return array<string>
      */
-    public function getContainerChildren(): array
+    public function getModuleComponents(): array
     {
-        return $this->containerChildren;
+        return $this->moduleChildren;
     }
 }

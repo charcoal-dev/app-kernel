@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Internal\Events;
 
-use Charcoal\Base\Contracts\Storage\StorageProviderInterface;
 use Charcoal\Events\AbstractEvent;
 use Charcoal\Events\Exceptions\SubscriptionClosedException;
 use Charcoal\Events\Subscriptions\Subscription;
@@ -20,13 +19,6 @@ use Charcoal\Events\Subscriptions\Subscription;
  */
 readonly abstract class StorageProviderEvents
 {
-    /**
-     * @param StorageProviderInterface $store
-     */
-    public function __construct(protected StorageProviderInterface $store)
-    {
-    }
-
     /**
      * @param \Closure $closure
      * @return Subscription

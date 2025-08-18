@@ -11,10 +11,10 @@ namespace Charcoal\App\Kernel\Contracts\Domain;
 use Charcoal\App\Kernel\AbstractApp;
 
 /**
- * Interface DomainServiceInterface
+ * Interface AppBootstrappableInterface
  * @package Charcoal\App\Kernel\Contracts\Domain
  */
-interface DomainServiceInterface
+interface AppBootstrappableInterface
 {
     public function bootstrap(AbstractApp $app): void;
 }

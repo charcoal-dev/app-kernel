@@ -16,8 +16,8 @@ use Charcoal\App\Kernel\Events\EventsManager;
 use Charcoal\App\Kernel\Internal\AppContext;
 use Charcoal\App\Kernel\Internal\AppEnv;
 use Charcoal\App\Kernel\Internal\AppSerializable;
+use Charcoal\App\Kernel\Internal\DomainBundle;
 use Charcoal\App\Kernel\Internal\PathRegistry;
-use Charcoal\App\Kernel\Internal\Services\ServicesBundle;
 use Charcoal\App\Kernel\Time\Clock;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Filesystem\Node\DirectoryNode;
@@ -29,9 +29,10 @@ use Charcoal\Filesystem\Path\PathInfo;
  */
 abstract class AbstractApp extends AppSerializable
 {
+    use NotCloneableTrait;
+
     public readonly AppContext $context;
     public readonly CacheManager $cache;
-    // public readonly CipherKeychain $cipher;
     public readonly Clock $clock;
     public readonly AppConfig $config;
     public readonly DatabaseManager $database;
@@ -41,16 +42,23 @@ abstract class AbstractApp extends AppSerializable
     public readonly PathRegistry $paths;
     // public readonly Security $security;
 
-    use NotCloneableTrait;
+    public readonly DomainBundle $domain;
 
-    public function __construct(public readonly AppEnv $env, DirectoryNode $root)
+    private bool $bootstrapped = false;
+
+    final public function __construct(AppEnv $env, DirectoryNode $root)
     {
-        $this->config = $this->declareErrorHandler($root->path)
-            ->resolveConfig();
+        $this->errors = $this->declareErrorHandler($env, $root->path);
+        if ($this->errors->policy->enabled) {
+            $this->errors->setHandlers();
+        }
 
-        // Register child modules as declared by the downstream app,
-        // and provides them with AbstractPath to construct themselves:
-        foreach ($this->declareAppServices($root) as $service) {
+        // Resolve AppConfig object
+        $this->config = $this->resolveConfig();
+
+        // Resolve AppManifest object, and declare services
+        $manifest = $this->resolveAppManifest();
+        foreach ($manifest->appServices($this, $root) as $service) {
             match (true) {
                 $service instanceof Clock => $this->clock = $service,
                 $service instanceof CacheManager => $this->cache = $service,
@@ -61,42 +69,33 @@ abstract class AbstractApp extends AppSerializable
             };
         }
 
-        //list($moduleClasses, $moduleProperties) = $this->registerModuleManifest($context);
+        // Instantiate all domain defined modules and services
+        $this->domain = $manifest->getDomain($this);
 
-        $this->context = new AppContext($this->clock->now(), $moduleClasses, $moduleProperties);
+        // Set context and invoke isReady > onReady hooks
+        $this->context = new AppContext($env, $this->domain->inspect(), $this->clock->now());
         $this->isReady("New app instance instantiated");
     }
 
     /**
+     * @param AppEnv $env
      * @param PathInfo $root
-     * @return $this
+     * @return ErrorManager
      */
-    protected function declareErrorHandler(PathInfo $root): static
+    protected function declareErrorHandler(AppEnv $env, PathInfo $root): ErrorManager
     {
-        new ErrorManager($this->env, $root);
-        return $this;
-    }
-
-    /**
-     * @param DirectoryNode $root
-     * @return ServicesBundle
-     * @api
-     */
-    protected function declareAppServices(DirectoryNode $root): ServicesBundle
-    {
-        return new ServicesBundle(
-            new Clock($this),
-            new EventsManager($this),
-            new CacheManager($this),
-            new DatabaseManager($this),
-            new PathRegistry($root->path)
-        );
+        return new ErrorManager($env, $root);
     }
 
     /**
      * @return AppConfig
      */
     abstract protected function resolveConfig(): AppConfig;
+
+    /**
+     * @return AppManifest
+     */
+    abstract protected function resolveAppManifest(): AppManifest;
 
     /**
      * This method is called internally on __construct and __unserialize
@@ -106,11 +105,18 @@ abstract class AbstractApp extends AppSerializable
      */
     private function isReady(string $message): void
     {
-        // Initialize Lifecycle
+        // Todo: Initialize Lifecycle
         $this->lifecycle = new Lifecycle();
         $this->lifecycle->log($message);
 
-        // All set!
+        $this->onReadyCallback();
+    }
+
+    /**
+     * @return void
+     */
+    protected function onReadyCallback(): void
+    {
     }
 
     /**
@@ -119,12 +125,16 @@ abstract class AbstractApp extends AppSerializable
      */
     public function bootstrap(): void
     {
-        // All declared services and modules:
-        foreach ($this->context->moduleProperties as $property) {
-            $this->$property->bootstrap($this);
+        if ($this->bootstrapped) {
+            throw new \BadMethodCallException("App is already bootstrapped");
         }
 
-        // Lifecycle Entries:
+        $this->bootstrapped = true;
+
+        // All declared services and modules:
+        $this->domain->bootstrap($this);
+
+        // Todo: Lifecycle Entries:
         $this->lifecycle->bootstrappedOn = microtime(true);
         if (isset($this->lifecycle->startedOn)) {
             $this->lifecycle->loadTime = number_format($this->lifecycle->bootstrappedOn - $this->lifecycle->startedOn, 4);
@@ -137,8 +147,7 @@ abstract class AbstractApp extends AppSerializable
      */
     public function __serialize(): array
     {
-        $data = [
-            "env" => $this->env,
+        return [
             "context" => $this->context,
             "cache" => $this->cache,
             "config" => $this->config,
@@ -149,13 +158,8 @@ abstract class AbstractApp extends AppSerializable
             "events" => $this->events,
             "lifecycle" => null,
             "paths" => $this->paths,
+            "domain" => $this->domain,
         ];
-
-        foreach ($this->context->moduleProperties as $property) {
-            $data[$property] = $this->$property;
-        }
-
-        return $data;
     }
 
     /**
@@ -164,24 +168,21 @@ abstract class AbstractApp extends AppSerializable
      */
     public function __unserialize(array $data): void
     {
-        $this->env = $data["env"];
         $this->context = $data["context"];
+        $this->errors = $data["errors"];
+        if ($this->errors->policy->enabled) {
+            $this->errors->setHandlers();
+        }
+
         $this->config = $data["config"];
         $this->clock = $data["clock"];
         $this->cache = $data["cache"];
         //$this->cipher = $data["cipher"];
         $this->database = $data["database"];
-        //$this->directories = $data["directories"];
-        $this->errors = $data["errors"];
         $this->events = $data["events"];
         $this->paths = $data["paths"];
-        foreach ($this->context->moduleProperties as $property) {
-            $this->$property = $data[$property];
-        }
-
-        if ($this->errors->policy->enabled) {
-            $this->errors->setHandlers();
-        }
+        $this->domain = $data["domain"];
+        $this->bootstrapped = false;
 
         $this->isReady("Restore app states successful");
     }

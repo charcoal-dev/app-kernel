@@ -12,6 +12,7 @@ use Charcoal\App\Kernel\Cache\CacheManager;
 use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
 use Charcoal\App\Kernel\Database\DatabaseManager;
 use Charcoal\App\Kernel\Events\EventsManager;
+use Charcoal\App\Kernel\Internal\DomainBundle;
 use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Internal\Services\ServicesBundle;
 use Charcoal\App\Kernel\Time\Clock;
@@ -23,7 +24,7 @@ use Charcoal\Filesystem\Node\DirectoryNode;
  */
 class AppManifest
 {
-    /** @var array<string,AppBindableInterface> */
+    /** @var array<array<\UnitEnum, callable(AbstractApp): AppBindableInterface>> */
     private array $domain = [];
 
     /**
@@ -45,22 +46,22 @@ class AppManifest
 
     /**
      * @param \UnitEnum $key
-     * @param AppBindableInterface $module
+     * @param callable(AbstractApp): AppBindableInterface $factory
      * @return $this
      * @api
      */
-    public function bind(\UnitEnum $key, AppBindableInterface $module): self
+    final protected function bind(\UnitEnum $key, callable $factory): self
     {
-        $this->domain[$key->name] = $module;
+        $this->domain[] = [$key, $factory];
         return $this;
     }
 
     /**
-     * @return array<string,AppBindableInterface>
-     * @internal
+     * @param AbstractApp $app
+     * @return DomainBundle
      */
-    public function getDomain(): array
+    final public function getDomain(AbstractApp $app): DomainBundle
     {
-        return $this->domain;
+        return new DomainBundle($app, $this->domain);
     }
 }
