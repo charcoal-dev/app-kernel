@@ -11,6 +11,7 @@ namespace Charcoal\App\Kernel\Cache;
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Config\Snapshot\CacheManagerConfig;
 use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
+use Charcoal\App\Kernel\Enums\CacheDriver;
 use Charcoal\App\Kernel\Internal\Services\AppServiceConfigAwareInterface;
 use Charcoal\Base\Abstracts\BaseFactoryRegistry;
 use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;

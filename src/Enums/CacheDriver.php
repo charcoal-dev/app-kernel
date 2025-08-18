@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Cache;
+namespace Charcoal\App\Kernel\Enums;
 
 use Charcoal\App\Kernel\Config\Snapshot\CacheStoreConfig;
 use Charcoal\App\Kernel\Stubs\NullCache;
@@ -15,7 +15,7 @@ use Charcoal\Cache\Drivers\RedisClient;
 
 /**
  * Class CacheDriver
- * @package Charcoal\App\Kernel\Cache
+ * @package Charcoal\App\Kernel\Enums
  */
 enum CacheDriver: string
 {
