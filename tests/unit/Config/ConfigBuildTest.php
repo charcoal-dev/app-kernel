@@ -11,7 +11,7 @@ namespace Charcoal\Tests\App\Unit\Config;
 use Charcoal\App\Kernel\Config\Builder\AbstractConfigObjectsCollector;
 use Charcoal\App\Kernel\Config\Builder\CacheConfigObjectsBuilder;
 use Charcoal\App\Kernel\Config\Builder\DbConfigObjectsBuilder;
-use Charcoal\App\Kernel\Internal\Config\ConfigCollectorInterface;
+use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -32,7 +32,7 @@ class ConfigBuildTest extends TestCase
             'CacheConfigObject must extend AbstractConfigCollector.'
         );
         $this->assertTrue(
-            $rc->implementsInterface(ConfigCollectorInterface::class),
+            $rc->implementsInterface(ConfigBuilderInterface::class),
             'CacheConfigObject must implement ConfigCollectorInterface.'
         );
     }
@@ -49,8 +49,8 @@ class ConfigBuildTest extends TestCase
             'DbConfigBuilder must extend AbstractConfigCollector.'
         );
         $this->assertTrue(
-            $rc->implementsInterface(ConfigCollectorInterface::class),
-            'DbConfigBuilder must implement ConfigCollectorInterface.'
+            $rc->implementsInterface(ConfigBuilderInterface::class),
+            'DbConfigBuilder must implement ConfigBuilderInterface.'
         );
     }
 }

@@ -12,7 +12,7 @@ use Charcoal\App\Kernel\Cache\CacheDriver;
 use Charcoal\App\Kernel\Config\Builder\CacheConfigObjectsBuilder;
 use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
 use Charcoal\App\Kernel\Config\Snapshot\CacheStoreConfig;
-use Charcoal\Tests\App\Fixtures\Enums\CacheStores;
+use Charcoal\Tests\App\Fixtures\Enums\CacheStore;
 use Charcoal\Tests\App\Fixtures\Enums\TimezoneEnum;
 
 /**
@@ -28,7 +28,7 @@ final class ConfigProvider
     public static function getConfig_1cacheNull_1sqliteDb_UTC(): AppConfig
     {
         $cacheConfig = new CacheConfigObjectsBuilder();
-        $cacheConfig->set(CacheStores::Secondary,
+        $cacheConfig->set(CacheStore::Secondary,
             new CacheStoreConfig(CacheDriver::NULL, "0.0.0.0", 6379, 6));
 
         return new AppConfig(TimezoneEnum::UTC, $cacheConfig, null);
