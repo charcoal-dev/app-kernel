@@ -14,7 +14,7 @@ use Charcoal\App\Kernel\Support\ErrorHelper;
 use Charcoal\Filesystem\Enums\PathType;
 use Charcoal\Filesystem\Exceptions\FilesystemException;
 use Charcoal\Filesystem\Node\DirectoryNode;
-use Charcoal\Filesystem\Path\PathInfo;
+use Charcoal\Filesystem\Node\FileNode;
 
 /**
  * Class AppSerializable
@@ -32,7 +32,10 @@ abstract class AppSerializable
      */
     public static function Load(AppEnv $env, DirectoryNode $root, array $dirs = []): static
     {
-        $serialized = static::appSerializedStatesFilepath($env, $root, $dirs);
+        $filepath = implode(DIRECTORY_SEPARATOR, $dirs) . DIRECTORY_SEPARATOR .
+            "charcoalAppSerialized_" . $env->value . ".bin";
+
+        $serialized = $root->childPathInfo($filepath);
         if ($serialized->type !== PathType::File || !$serialized->readable) {
             throw new \RuntimeException(
                 sprintf('Charcoal app build file "%s" not found/readable',
@@ -40,7 +43,7 @@ abstract class AppSerializable
         }
 
         error_clear_last();
-        $app = unserialize($root->read($serialized->absolute, true));
+        $app = @unserialize($root->read($filepath, true));
         if (!$app instanceof static) {
             throw new \RuntimeException("Cannot restore charcoal app",
                 previous: ErrorHelper::lastErrorToRuntimeException());
@@ -57,31 +60,19 @@ abstract class AppSerializable
      */
     public static function CreateBuild(AbstractApp $app, DirectoryNode $root, array $dirs = []): void
     {
-        $filepath = static::appSerializedStatesFilepath($app->context->env, $root, $dirs);
-        error_clear_last();
-        if (!@file_put_contents($filepath->absolute, serialize($app))) {
-            throw new \LogicException("Failed to create charcoal application build");
-        }
-    }
-
-    /**
-     * @param AppEnv $env
-     * @param DirectoryNode $root
-     * @param array $dirs
-     * @return PathInfo
-     */
-    protected static function appSerializedStatesFilepath(
-        AppEnv        $env,
-        DirectoryNode $root,
-        array         $dirs = []
-    ): PathInfo
-    {
         try {
-            return $root->childPathInfo(
-                implode(DIRECTORY_SEPARATOR, $dirs) . DIRECTORY_SEPARATOR .
-                "charcoalAppSerialized_" . $env->value . ".bin", true);
+            $filepath = implode(DIRECTORY_SEPARATOR, $dirs) . DIRECTORY_SEPARATOR .
+                "charcoalAppSerialized_" . $app->context->env->value . ".bin";
+            $serialized = $root->childPathInfo($filepath);
+            if ($serialized->type === PathType::Missing) {
+                $root->touch($filepath, true);
+                $serialized = $root->childPathInfo($filepath);
+            }
+
+            $serialized = new FileNode($serialized);
+            $serialized->write(serialize($app), false, true);
         } catch (FilesystemException $e) {
-            throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
+            throw new \LogicException("Failed to create charcoal application build", previous: $e);
         }
     }
 }
