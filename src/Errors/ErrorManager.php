@@ -47,7 +47,7 @@ class ErrorManager implements AppServiceInterface, \IteratorAggregate
      */
     public function __construct(AppEnv $env, PathInfo $root)
     {
-        $this->policy = $env->errorManagerPolicy();
+        $this->policy = $env->getErrorManagerPolicy();
         $this->pathOffset = strlen($root->absolute);
         $this->debugging = $env->isDebug();
         $this->errorLoggable = [E_NOTICE, E_USER_NOTICE];
