@@ -6,18 +6,19 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Diagnostics;
+namespace Charcoal\App\Kernel\Enums;
 
 /**
  * Class LogLevel
- * @package Charcoal\App\Kernel\Diagnostics
+ * @package Charcoal\App\Kernel\Enums
  */
 enum LogLevel: int
 {
     case Verbose = 0;
     case Debug = 10;
     case Info = 20;
-    case Warning = 30;
-    case Error = 40;
+    case Notice = 30;
+    case Warning = 40;
+    case Error = 50;
     case Critical = 90;
 }

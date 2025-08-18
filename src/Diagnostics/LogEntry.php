@@ -10,6 +10,7 @@ namespace Charcoal\App\Kernel\Diagnostics;
 
 use Charcoal\App\Kernel\Clock\Clock;
 use Charcoal\App\Kernel\Diagnostics\Events\LogEntryBroadcast;
+use Charcoal\App\Kernel\Enums\LogLevel;
 
 /**
  * Class LogEntry
