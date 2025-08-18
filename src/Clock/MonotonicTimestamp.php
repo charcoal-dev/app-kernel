@@ -16,8 +16,30 @@ final readonly class MonotonicTimestamp
 {
     public int $timestamp;
 
-    public function __construct()
+    /**
+     * @return self
+     * @api
+     */
+    public static function now(): self
+    {
+        return new self();
+    }
+
+    /**
+     * @return void
+     * @internal
+     */
+    protected function __construct()
     {
         $this->timestamp = hrtime(true);
+    }
+
+    /**
+     * @param MonotonicTimestamp $other
+     * @return int
+     */
+    public function elapsed(self $other): int
+    {
+        return $other->timestamp - $this->timestamp;
     }
 }

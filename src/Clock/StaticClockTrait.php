@@ -28,6 +28,14 @@ trait StaticClockTrait
     }
 
     /**
+     * @return \DateTimeImmutable
+     */
+    public static function now(): \DateTimeImmutable
+    {
+        return static::resolveInstance()->immutable("now");
+    }
+
+    /**
      * @param AbstractApp $app
      * @return static
      * @internal

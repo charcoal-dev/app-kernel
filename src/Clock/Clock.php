@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Clock;
 
 use Charcoal\App\Kernel\AbstractApp;
-use Charcoal\App\Kernel\Contracts\Time\ClockEnumInterface;
+use Charcoal\App\Kernel\Contracts\Clock\ClockInterface;
 use Charcoal\App\Kernel\Internal\Services\AppServiceConfigAwareInterface;
 use Charcoal\App\Kernel\Support\ErrorHelper;
 
@@ -17,7 +17,7 @@ use Charcoal\App\Kernel\Support\ErrorHelper;
  * Class Clock
  * @package Charcoal\App\Kernel\Clock
  */
-final class Clock implements AppServiceConfigAwareInterface, ClockEnumInterface
+final class Clock implements AppServiceConfigAwareInterface, ClockInterface
 {
     use StaticClockTrait;
 
@@ -37,11 +37,12 @@ final class Clock implements AppServiceConfigAwareInterface, ClockEnumInterface
     }
 
     /**
+     * @param string $datetime
      * @return \DateTimeImmutable
      */
-    public function now(): \DateTimeImmutable
+    public function immutable(string $datetime = "now"): \DateTimeImmutable
     {
-        return new \DateTimeImmutable("now", $this->timezone);
+        return new \DateTimeImmutable($datetime, $this->timezone);
     }
 
     /**
@@ -49,7 +50,7 @@ final class Clock implements AppServiceConfigAwareInterface, ClockEnumInterface
      */
     public function timestamp(): int
     {
-        return $this->now()->getTimestamp();
+        return $this->immutable("now")->getTimestamp();
     }
 
     /**
