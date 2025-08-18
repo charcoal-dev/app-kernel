@@ -16,8 +16,11 @@ use Charcoal\App\Kernel\Diagnostics\Events\ExceptionCaughtBroadcast;
 use Charcoal\App\Kernel\Diagnostics\Events\LogEntryBroadcast;
 use Charcoal\App\Kernel\Enums\LogLevel;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
+use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Base\Traits\InstanceOnStaticScopeTrait;
+use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
+use Charcoal\Base\Traits\NotSerializableTrait;
 
 /**
  * Class Diagnostics
@@ -27,27 +30,34 @@ final class Diagnostics implements ErrorLoggerInterface
 {
     use InstanceOnStaticScopeTrait;
     use NotCloneableTrait;
+    use NotSerializableTrait;
+    use NoDumpTrait;
 
     private static ?self $instance = null;
 
     private DiagnosticsEvents $logEntryEvent;
-    public readonly int $startupTime;
-    public readonly int $bootstrapTime;
-
     private array $logs = [];
     private array $metrics = [];
+    public readonly int $startupTime;
 
     /**
      * @internal
      */
-    protected function __construct(MonotonicTimestamp $startTime)
+    protected function __construct()
     {
         $this->logEntryEvent = new DiagnosticsEvents("app.diagnostics.logEntry", [
             DiagnosticsEventsContext::class,
             LogEntryBroadcast::class,
             ExceptionCaughtBroadcast::class,
         ]);
+    }
 
+    /**
+     * @param MonotonicTimestamp $startTime
+     * @return void
+     */
+    public function setStartupTime(MonotonicTimestamp $startTime): void
+    {
         $this->startupTime = $startTime->elapsedTo(MonotonicTimestamp::now());
     }
 
@@ -192,7 +202,13 @@ final class Diagnostics implements ErrorLoggerInterface
         $this->logFromError($error);
     }
 
+    /**
+     * @param \Throwable $exception
+     * @return void
+     */
     public function handleException(\Throwable $exception): void
     {
+        $this->error(sprintf('Caught "%s" exception', ObjectHelper::baseClassName(get_class($exception))),
+            exception: $exception);
     }
 }
