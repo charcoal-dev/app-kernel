@@ -38,8 +38,17 @@ final readonly class MonotonicTimestamp
      * @param MonotonicTimestamp $other
      * @return int
      */
-    public function elapsed(self $other): int
+    public function elapsedTo(self $other): int
     {
         return $other->timestamp - $this->timestamp;
+    }
+
+    /**
+     * @param MonotonicTimestamp $other
+     * @return int
+     */
+    public function elapsedSince(self $other): int
+    {
+        return $this->timestamp - $other->timestamp;
     }
 }

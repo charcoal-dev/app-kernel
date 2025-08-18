@@ -40,7 +40,7 @@ trait StaticClockTrait
      * @return static
      * @internal
      */
-    public static function initialize(AbstractApp $app): static
+    public static function initializeStatic(AbstractApp $app): static
     {
         return static::$instance = $app->clock;
     }
