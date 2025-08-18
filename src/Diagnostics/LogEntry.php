@@ -19,6 +19,9 @@ final readonly class LogEntry implements LogEntryBroadcast
 {
     public \DateTimeImmutable $timestamp;
 
+    /**
+     * @internal
+     */
     public function __construct(
         public LogLevel    $level,
         public string      $message,
