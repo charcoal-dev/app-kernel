@@ -9,10 +9,15 @@ declare(strict_types=1);
 namespace Charcoal\Tests\App\Sandbox\TestApp;
 
 use Charcoal\App\Kernel\Config\Builder\CacheConfigObjectsBuilder;
+use Charcoal\App\Kernel\Config\Builder\DbConfigObjectsBuilder;
 use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
 use Charcoal\App\Kernel\Config\Snapshot\CacheStoreConfig;
+use Charcoal\App\Kernel\Config\Snapshot\DatabaseConfig;
 use Charcoal\App\Kernel\Enums\CacheDriver;
+use Charcoal\Database\Enums\DbDriver;
 use Charcoal\Tests\App\Fixtures\Enums\CacheStore;
+use Charcoal\Tests\App\Fixtures\Enums\DbConfig;
+use Charcoal\Tests\App\Fixtures\Enums\DbTables;
 use Charcoal\Tests\App\Fixtures\Enums\TimezoneEnum;
 
 final class ConfigProvider
@@ -27,6 +32,9 @@ final class ConfigProvider
         $cacheConfig = new CacheConfigObjectsBuilder();
         $cacheConfig->set(CacheStore::Secondary,
             new CacheStoreConfig(CacheDriver::NULL, "0.0.0.0", 6379, 6));
+
+        $dbConfig = new DbConfigObjectsBuilder();
+        $dbConfig->set(DbConfig::Primary, new DatabaseConfig(DbDriver::SQLITE, "sqlite", "tmp/test-app.db"));
 
         return new AppConfig(TimezoneEnum::UTC, $cacheConfig->build(), null);
     }
