@@ -15,6 +15,9 @@ namespace Charcoal\App\Kernel\Diagnostics;
 final readonly class ExecutionSnapshot
 {
     public float $startupTime;
+    /** @var array<ExecutionMetrics> */
+    public array $metrics;
+    /** @var array<LogEntryDto> */
     public array $logs;
 
     /**
@@ -26,7 +29,11 @@ final readonly class ExecutionSnapshot
     public function __construct(int $startupTime, array $metrics, array $logs)
     {
         $this->startupTime = $startupTime / 1e6;
+        $this->metrics = $metrics;
 
-
+        // Unload metrics
+        foreach ($logs as $log) {
+            $this->logs[] = new LogEntryDto($log);
+        }
     }
 }
