@@ -172,6 +172,7 @@ abstract class AbstractApp extends AppSerializable
             "events" => $this->events,
             "paths" => $this->paths,
             "domain" => $this->domain,
+            "diagnostics" => null,
         ];
     }
 
@@ -181,6 +182,7 @@ abstract class AbstractApp extends AppSerializable
      */
     public function __unserialize(array $data): void
     {
+        $this->bootstrapped = false;
         $this->context = $data["context"];
         $this->errors = $data["errors"];
         $this->initializeDiagnostics()
@@ -192,8 +194,9 @@ abstract class AbstractApp extends AppSerializable
         $this->database = $data["database"];
         $this->events = $data["events"];
         $this->paths = $data["paths"];
+
+        Clock::initializeStatic($this->clock);
         $this->domain = $data["domain"];
-        $this->bootstrapped = false;
 
         $this->isReady("Restore app states successful");
     }
