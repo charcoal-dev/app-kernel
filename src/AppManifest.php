@@ -36,10 +36,10 @@ class AppManifest
     final public function appServices(AbstractApp $app, DirectoryNode $root): ServicesBundle
     {
         return new ServicesBundle(
-            new Clock($app),
+            new Clock($app->config->timezone),
             new EventsManager($app),
-            new CacheManager($app),
-            new DatabaseManager($app),
+            new CacheManager($app->config->cache),
+            new DatabaseManager($app->config->database),
             new PathRegistry($root->path)
         );
     }
