@@ -17,14 +17,24 @@ use Charcoal\Cache\CacheClient;
 use Charcoal\Cipher\Cipher;
 use Charcoal\Semaphore\Filesystem\FilesystemSemaphore;
 use Charcoal\Tests\App\Fixtures\Enums\CacheStore;
+use Charcoal\Tests\App\Sandbox\TestApp\TestApp;
 
 /**
  * Class ExampleModule
  * @package Charcoal\Tests\App\Fixtures\Orm\Example
  */
-class ExampleModule extends OrmModuleBase implements CacheStoreAwareInterface
+final class ExampleModule extends OrmModuleBase implements CacheStoreAwareInterface
 {
     use CacheStoreAwareTrait;
+
+    public ExampleRepository $repository;
+
+    public function __construct(TestApp $app)
+    {
+        parent::__construct($app);
+
+        $this->repository = new ExampleRepository($this);
+    }
 
     public function normalizeStorageKey(string $key): string
     {
