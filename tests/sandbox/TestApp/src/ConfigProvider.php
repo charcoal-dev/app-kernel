@@ -14,10 +14,10 @@ use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
 use Charcoal\App\Kernel\Config\Snapshot\CacheStoreConfig;
 use Charcoal\App\Kernel\Config\Snapshot\DatabaseConfig;
 use Charcoal\App\Kernel\Enums\CacheDriver;
+use Charcoal\Database\Enums\DbConnectionStrategy;
 use Charcoal\Database\Enums\DbDriver;
 use Charcoal\Tests\App\Fixtures\Enums\CacheStore;
 use Charcoal\Tests\App\Fixtures\Enums\DbConfig;
-use Charcoal\Tests\App\Fixtures\Enums\DbTables;
 use Charcoal\Tests\App\Fixtures\Enums\TimezoneEnum;
 
 final class ConfigProvider
@@ -34,8 +34,15 @@ final class ConfigProvider
             new CacheStoreConfig(CacheDriver::NULL, "0.0.0.0", 6379, 6));
 
         $dbConfig = new DbConfigObjectsBuilder();
-        $dbConfig->set(DbConfig::Primary, new DatabaseConfig(DbDriver::SQLITE, "sqlite", "tmp/test-app.db"));
+        $dbConfig->set(
+            DbConfig::Primary,
+            new DatabaseConfig(
+                DbDriver::SQLITE,
+                "tmp/test-app.db",
+                strategy: DbConnectionStrategy::Lazy
+            )
+        );
 
-        return new AppConfig(TimezoneEnum::UTC, $cacheConfig->build(), null);
+        return new AppConfig(TimezoneEnum::UTC, $cacheConfig->build(), $dbConfig->build());
     }
 }
