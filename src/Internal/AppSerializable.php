@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Internal;
 
 use Charcoal\App\Kernel\AbstractApp;
+use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Support\ErrorHelper;
 use Charcoal\Filesystem\Enums\PathType;
 use Charcoal\Filesystem\Exceptions\FilesystemException;

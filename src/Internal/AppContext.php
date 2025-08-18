@@ -10,6 +10,7 @@ namespace Charcoal\App\Kernel\Internal;
 
 use Charcoal\App\Kernel\Clock\MonotonicTimestamp;
 use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
+use Charcoal\App\Kernel\Enums\AppEnv;
 
 /**
  * Class AppContext
