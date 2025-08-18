@@ -36,6 +36,13 @@ final class ExampleModule extends OrmModuleBase implements CacheStoreAwareInterf
         $this->repository = new ExampleRepository($this);
     }
 
+    protected function collectSerializableData(): array
+    {
+        $data = parent::collectSerializableData();
+        $data["repository"] = $this->repository;
+        return $data;
+    }
+
     public function normalizeStorageKey(string $key): string
     {
         return strtolower(trim($key));
