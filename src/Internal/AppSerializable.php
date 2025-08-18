@@ -6,10 +6,9 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Context;
+namespace Charcoal\App\Kernel\Internal;
 
 use Charcoal\App\Kernel\AbstractApp;
-use Charcoal\App\Kernel\Internal\AppEnv;
 use Charcoal\App\Kernel\Support\ErrorHelper;
 use Charcoal\Filesystem\Enums\PathType;
 use Charcoal\Filesystem\Exceptions\FilesystemException;
@@ -18,7 +17,7 @@ use Charcoal\Filesystem\Path\PathInfo;
 
 /**
  * Class AppSerializable
- * @package Charcoal\App\Kernel\Context
+ * @package Charcoal\App\Kernel\Internal
  * @internal
  */
 abstract class AppSerializable

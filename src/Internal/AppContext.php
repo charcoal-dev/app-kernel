@@ -6,11 +6,11 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Context;
+namespace Charcoal\App\Kernel\Internal;
 
 /**
  * Class AppContext
- * @package Charcoal\App\Kernel\Context
+ * @package Charcoal\App\Kernel\Internal
  */
 final readonly class AppContext
 {
