@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Stubs;
 
-use Charcoal\App\Kernel\Contracts\Error\ErrorLoggerInterface;
+use Charcoal\App\Kernel\Contracts\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
 
 /**
@@ -17,10 +17,11 @@ use Charcoal\App\Kernel\Errors\ErrorEntry;
  */
 final class NullErrorLog implements ErrorLoggerInterface
 {
-    /**
-     * Does nothing with given ErrorEntry or \Throwable object >> /dev/null
-     */
-    public function write(\Throwable|ErrorEntry $error): void
+    public function handleError(ErrorEntry $error): void
+    {
+    }
+
+    public function handleException(\Throwable $exception): void
     {
     }
 }
