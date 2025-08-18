@@ -11,6 +11,7 @@ namespace Charcoal\Tests\App\Unit\Config;
 use Charcoal\App\Kernel\Config\Builder\AbstractConfigObjectsCollector;
 use Charcoal\App\Kernel\Config\Builder\CacheConfigObjectsBuilder;
 use Charcoal\App\Kernel\Config\Builder\DbConfigObjectsBuilder;
+use Charcoal\App\Kernel\Config\Snapshot\CacheManagerConfig;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -26,6 +27,17 @@ class ConfigBuildTest extends TestCase
     public function testCacheConfigObjectClass(): void
     {
         $rc = new \ReflectionClass(CacheConfigObjectsBuilder::class);
+        $this->assertTrue($rc->isFinal(), 'CacheConfigObject must be final.');
+        $this->assertTrue(
+            $rc->isSubclassOf(AbstractConfigObjectsCollector::class),
+            'CacheConfigObject must extend AbstractConfigCollector.'
+        );
+        $this->assertTrue(
+            $rc->implementsInterface(ConfigBuilderInterface::class),
+            'CacheConfigObject must implement ConfigCollectorInterface.'
+        );
+
+        $rc2 = new \ReflectionClass(CacheManagerConfig::class);
         $this->assertTrue($rc->isFinal(), 'CacheConfigObject must be final.');
         $this->assertTrue(
             $rc->isSubclassOf(AbstractConfigObjectsCollector::class),

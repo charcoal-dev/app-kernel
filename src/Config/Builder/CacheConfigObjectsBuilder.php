@@ -11,14 +11,15 @@ namespace Charcoal\App\Kernel\Config\Builder;
 use Charcoal\App\Kernel\Config\Snapshot\CacheManagerConfig;
 use Charcoal\App\Kernel\Config\Snapshot\CacheStoreConfig;
 use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
-use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
+use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
 
 /**
  * Class CacheConfigBuilder
  * @package Charcoal\App\Kernel\Config\Builder
  * @extends AbstractConfigObjectsCollector<CacheStoreEnumInterface, CacheStoreConfig, CacheManagerConfig>
+ * @implements ConfigBuilderInterface<CacheManagerConfig>
  */
-final class CacheConfigObjectsBuilder extends AbstractConfigObjectsCollector implements ConfigSnapshotInterface
+final class CacheConfigObjectsBuilder extends AbstractConfigObjectsCollector implements ConfigBuilderInterface
 {
     /**
      * @param CacheStoreEnumInterface $key

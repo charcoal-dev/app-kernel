@@ -18,5 +18,5 @@ interface ConfigBuilderInterface
     /**
      * @return T
      */
-    public function build(): object;
+    public function build(): ConfigSnapshotInterface;
 }

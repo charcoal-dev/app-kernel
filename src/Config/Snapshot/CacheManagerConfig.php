@@ -9,13 +9,14 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Config\Snapshot;
 
 use Charcoal\App\Kernel\Enums\CacheDriver;
+use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
 use Charcoal\App\Kernel\Support\NetworkHelper;
 
 /**
  * Class CacheConfig
  * @package Charcoal\App\Kernel\Config
  */
-final readonly class CacheManagerConfig
+final readonly class CacheManagerConfig implements ConfigSnapshotInterface
 {
     /** @var array<string, CacheStoreConfig> */
     public array $providers;

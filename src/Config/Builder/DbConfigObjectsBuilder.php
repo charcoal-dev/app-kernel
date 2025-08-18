@@ -17,6 +17,7 @@ use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
  * Class DbConfigBuilder
  * @package Charcoal\App\Kernel\Config\Builder
  * @extends AbstractConfigObjectsCollector<DatabaseEnumInterface, DatabaseConfig, DatabaseManagerConfig>
+ * @implements ConfigBuilderInterface<DatabaseManagerConfig>
  */
 final class DbConfigObjectsBuilder extends AbstractConfigObjectsCollector implements ConfigBuilderInterface
 {

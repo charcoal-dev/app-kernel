@@ -8,13 +8,14 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config\Snapshot;
 
+use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
 use Charcoal\App\Kernel\Support\NetworkHelper;
 
 /**
  * Class DatabasesConfig
  * @package Charcoal\App\Kernel\Config
  */
-final readonly class DatabaseManagerConfig
+final readonly class DatabaseManagerConfig implements ConfigSnapshotInterface
 {
     /** @var array<string, DatabaseConfig> */
     public array $databases;
