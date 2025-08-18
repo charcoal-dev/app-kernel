@@ -24,7 +24,7 @@ use Charcoal\Database\DatabaseClient;
  * @package Charcoal\App\Kernel
  * @template-extends BaseFactoryRegistry<DatabaseClient>
  */
-class DatabaseManager extends BaseFactoryRegistry implements AppServiceInterface
+ class DatabaseManager extends BaseFactoryRegistry implements AppServiceInterface
 {
     public readonly TableRegistry $tables;
 

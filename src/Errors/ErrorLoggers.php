@@ -36,6 +36,9 @@ final class ErrorLoggers
         unset($this->loggers[$logger::class]);
     }
 
+    /**
+     * @throws \ErrorException
+     */
     public function handleError(ErrorEntry $error): void
     {
         foreach ($this->loggers as $logger) {

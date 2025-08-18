@@ -24,7 +24,7 @@ use Charcoal\Cache\CacheClient;
  * @package Charcoal\App\Kernel
  * @template-extends BaseFactoryRegistry<CacheClient>
  */
-final class CacheManager extends BaseFactoryRegistry implements AppServiceInterface
+class CacheManager extends BaseFactoryRegistry implements AppServiceInterface
 {
     use ControlledSerializableTrait;
     use RegistryKeysLowercaseTrimmed;
