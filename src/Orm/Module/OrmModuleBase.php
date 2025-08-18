@@ -69,7 +69,7 @@ abstract class OrmModuleBase extends AbstractModule implements
      * @param mixed $value
      * @return bool
      */
-    protected function inspectIncludeChild(mixed $value): bool
+    final protected function inspectIncludeChild(mixed $value): bool
     {
         if ($value instanceof OrmRepositoryBase) {
             return true;
@@ -83,7 +83,7 @@ abstract class OrmModuleBase extends AbstractModule implements
      * @param string $childPropertyKey
      * @return void
      */
-    protected function bootstrapChildren(string $childPropertyKey): void
+    final protected function bootstrapChildren(string $childPropertyKey): void
     {
         if ($this->$childPropertyKey instanceof OrmRepositoryBase) {
             $this->$childPropertyKey->resolveDatabaseTable();

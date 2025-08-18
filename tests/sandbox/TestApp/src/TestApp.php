@@ -25,6 +25,6 @@ class TestApp extends AbstractApp
 
     protected function resolveAppManifest(): AppManifest
     {
-        return new AppManifest();
+        return new TestAppFactory();
     }
 }

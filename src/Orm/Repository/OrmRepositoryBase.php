@@ -74,12 +74,6 @@ abstract class OrmRepositoryBase
         $this->entityChecksumIterations = $data["entityChecksumIterations"];
         $this->entityCacheTtl = $data["entityCacheTtl"];
         $this->onCacheException = $data["onCacheException"];
-
-        if (isset($this->table)) {
-            if (spl_object_id($this->table->module) !== spl_object_id($this->module)) {
-                throw new \LogicException(static::class . " cannot be unserialized with different module");
-            }
-        }
     }
 
     /**

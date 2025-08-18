@@ -20,9 +20,9 @@ abstract class OrmEntityBase extends AbstractEntity
     /**
      * @return array
      */
-    final public function __serialize(): array
+    protected function collectSerializableData(): array
     {
-        $data = parent::__serialize();
+        $data = [];
         if ($this instanceof CacheableEntityInterface) {
             $data["entityCachedOn"] = $this->getCachedOn();
         }
