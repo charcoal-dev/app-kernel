@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\EntryPoint\Cli;
 
 use Charcoal\App\Kernel\AbstractApp;
-use Charcoal\App\Kernel\Errors\ErrorEntry;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
