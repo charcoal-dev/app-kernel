@@ -13,10 +13,12 @@ use Charcoal\App\Kernel\Errors\ErrorEntry;
 use Charcoal\Base\Vectors\ExceptionVector;
 
 /**
- * Class RuntimeErrorLog
- * @package Charcoal\App\Kernel\Support\Errors
+ * This class implements the ErrorLoggerInterface and provides functionality
+ * for managing runtime errors and exceptions. It keeps a collection of
+ * error entries and exceptions, and provides methods to handle, retrieve,
+ * clear, and count these entries.
  */
-final class RuntimeErrorLog implements ErrorLoggerInterface
+class RuntimeErrorLog implements ErrorLoggerInterface
 {
     /** @var array<ErrorEntry> $errors */
     private array $errors;

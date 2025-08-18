@@ -14,8 +14,8 @@ use Charcoal\App\Kernel\Support\ErrorHelper;
 use Charcoal\Filesystem\Path\FilePath;
 
 /**
- * Class FileErrorLogger
- * @package Charcoal\App\Kernel\Support\Errors
+ * Logs errors and exceptions to a specified file while providing options for
+ * formatting using ANSI escape sequences and custom end-of-line characters.
  */
 class FileErrorLogger implements ErrorLoggerInterface
 {

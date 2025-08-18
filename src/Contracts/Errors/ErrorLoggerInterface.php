@@ -11,8 +11,10 @@ namespace Charcoal\App\Kernel\Contracts\Errors;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
 
 /**
- * Interface ErrorLoggerInterface
- * @package Charcoal\App\Kernel\Contracts\Errors
+
+ *  Since this implements ErrorLoggerInterface contract, therefore it can be expected
+ *  to be used with ErrorManager service, therefore, always extend this class so that
+ *  ErrorManager subscription doesn't override.
  */
 interface ErrorLoggerInterface
 {
