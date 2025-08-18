@@ -30,8 +30,9 @@ trait StaticClockTrait
     /**
      * @param AbstractApp $app
      * @return static
+     * @internal
      */
-    public static function staticScopeInit(AbstractApp $app): static
+    public static function initialize(AbstractApp $app): static
     {
         return static::$instance = $app->clock;
     }
