@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
 use Charcoal\App\Kernel\Contracts\Orm\Entity\CacheableEntityInterface;
+use Charcoal\App\Kernel\Diagnostics\Diagnostics;
 use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
 use Charcoal\App\Kernel\Orm\Exceptions\EntityNotFoundException;
 use Charcoal\App\Kernel\Orm\Exceptions\EntityRepositoryException;
@@ -141,10 +142,7 @@ trait EntityFetchTrait
         if ($this->onCacheException === ExceptionAction::Throw) {
             throw new EntityRepositoryException($this, $e);
         } elseif ($this->onCacheException === ExceptionAction::Log) {
-            trigger_error(static::class . ' caught CacheException', E_USER_NOTICE);
-            $this->module->app->lifecycle->exception(
-                new \RuntimeException(static::class . ' caught CacheException', previous: $e),
-            );
+            Diagnostics::app()->warning(static::class . ' caught CacheException', exception: $e);
         }
     }
 
