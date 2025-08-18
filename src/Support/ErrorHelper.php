@@ -12,37 +12,8 @@ namespace Charcoal\App\Kernel\Support;
  * Class ErrorHelper
  * @package Charcoal\App\Kernel\Support
  */
-class ErrorHelper extends \Charcoal\Base\Support\ErrorHelper
+class ErrorHelper extends \Charcoal\Base\Support\Helpers\ErrorHelper
 {
-    /**
-     * @param \Throwable $t
-     * @return array
-     * @deprecated
-     */
-    public static function exception2Array(\Throwable $t): array
-    {
-        $exception = [
-            "class" => get_class($t),
-            "message" => $t->getMessage(),
-            "code" => $t->getCode(),
-            "file" => $t->getFile(),
-            "line" => $t->getLine(),
-            "previous" => $t->getPrevious() ? static::exception2Array($t->getPrevious()) : null,
-        ];
-
-        $exception["trace"] = array_map(function (array $trace) {
-            unset($trace["args"]);
-            return $trace;
-        }, $t->getTrace());
-
-        // Charcoal libs-spec error
-        if (property_exists($t, "error") && $t->error instanceof \BackedEnum) {
-            $exception["errorCode"] = $t->error->name;
-        }
-
-        return $exception;
-    }
-
     /**
      * @param \Throwable $t
      * @param string $format
