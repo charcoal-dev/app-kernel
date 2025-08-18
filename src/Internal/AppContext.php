@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Internal;
 
+use Charcoal\App\Kernel\Clock\MonotonicTimestamp;
 use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
 
 /**
@@ -17,14 +18,14 @@ use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
 final readonly class AppContext
 {
     /**
-     * @param \DateTimeImmutable $timestamp
+     * @param MonotonicTimestamp $startTime
      * @param AppEnv $env
      * @param array<string, class-string<AppBindableInterface>> $domain
      */
     public function __construct(
         public AppEnv             $env,
+        public MonotonicTimestamp $startTime,
         public array              $domain,
-        public \DateTimeImmutable $timestamp,
     )
     {
     }

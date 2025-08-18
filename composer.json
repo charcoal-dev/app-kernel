@@ -16,20 +16,19 @@
     "php": "^8.3",
     "ext-pdo": "*",
     "ext-json": "*",
-    "ext-pcntl": "*",
-    "charcoal-dev/base": "^0.0.16",
+    "charcoal-dev/base": "^0.0.17",
     "charcoal-dev/buffers": "^0.2.1",
     "charcoal-dev/cache": "^0.2.3",
     "charcoal-dev/cache-redis-client": "^0.2.2",
-    "charcoal-dev/cli": "^0.2.2",
+    "charcoal-dev/cli": "^0.2.3",
     "charcoal-dev/database": "^0.2.5",
     "charcoal-dev/db-orm": "^0.2.4",
     "charcoal-dev/events": "^0.1.7",
-    "charcoal-dev/filesystem": "^0.2.3",
+    "charcoal-dev/filesystem": "^0.2.4",
     "charcoal-dev/http-commons": "^0.2.6",
     "charcoal-dev/http-router": "^0.2.2",
     "charcoal-dev/cipher": "^0.2.1",
-    "charcoal-dev/semaphore": "^0.2.4"
+    "charcoal-dev/semaphore": "^0.2.5"
   },
   "autoload": {
     "psr-4": {
