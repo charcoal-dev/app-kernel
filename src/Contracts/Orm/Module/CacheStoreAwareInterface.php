@@ -21,7 +21,7 @@ interface CacheStoreAwareInterface
 
     public function normalizeStorageKey(string $key): string;
 
-    public function declareCacheStoreEnum(): CacheStoreEnumInterface;
+    public function declareCacheStoreEnum(): ?CacheStoreEnumInterface;
 
     public function getCacheStore(): ?CacheClient;
 }
