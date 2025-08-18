@@ -16,7 +16,7 @@
     "php": "^8.3",
     "ext-pdo": "*",
     "ext-json": "*",
-    "charcoal-dev/base": "^0.0.17",
+    "charcoal-dev/base": "^0.0.18",
     "charcoal-dev/buffers": "^0.2.1",
     "charcoal-dev/cache": "^0.2.3",
     "charcoal-dev/cache-redis-client": "^0.2.2",

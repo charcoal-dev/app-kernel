@@ -9,16 +9,19 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel;
 
 use Charcoal\App\Kernel\Cache\CacheManager;
+use Charcoal\App\Kernel\Clock\Clock;
+use Charcoal\App\Kernel\Clock\MonotonicTimestamp;
 use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
 use Charcoal\App\Kernel\Database\DatabaseManager;
+use Charcoal\App\Kernel\Diagnostics\Diagnostics;
+use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Errors\ErrorManager;
 use Charcoal\App\Kernel\Events\EventsManager;
 use Charcoal\App\Kernel\Internal\AppContext;
-use Charcoal\App\Kernel\Internal\AppEnv;
 use Charcoal\App\Kernel\Internal\AppSerializable;
 use Charcoal\App\Kernel\Internal\DomainBundle;
 use Charcoal\App\Kernel\Internal\PathRegistry;
-use Charcoal\App\Kernel\Clock\Clock;
+use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Filesystem\Node\DirectoryNode;
 use Charcoal\Filesystem\Path\PathInfo;
@@ -30,6 +33,7 @@ use Charcoal\Filesystem\Path\PathInfo;
 abstract class AbstractApp extends AppSerializable
 {
     use NotCloneableTrait;
+    use ControlledSerializableTrait;
 
     public readonly AppContext $context;
     public readonly CacheManager $cache;
@@ -38,20 +42,18 @@ abstract class AbstractApp extends AppSerializable
     public readonly DatabaseManager $database;
     public readonly ErrorManager $errors;
     public readonly EventsManager $events;
-    public readonly Lifecycle $lifecycle;
     public readonly PathRegistry $paths;
     // public readonly Security $security;
-
     public readonly DomainBundle $domain;
+    public readonly Diagnostics $diagnostics;
 
     private bool $bootstrapped = false;
 
     final public function __construct(AppEnv $env, DirectoryNode $root)
     {
-        $this->errors = $this->declareErrorHandler($env, $root->path);
-        if ($this->errors->policy->enabled) {
-            $this->errors->setHandlers();
-        }
+        $this->initializeDiagnostics();
+        $this->errors = $this->resolveErrorService($env, $root->path);
+        $this->initializeErrorService();
 
         // Resolve AppConfig object
         $this->config = $this->resolveConfig();
@@ -73,8 +75,31 @@ abstract class AbstractApp extends AppSerializable
         $this->domain = $manifest->getDomain($this);
 
         // Set context and invoke isReady > onReady hooks
-        $this->context = new AppContext($env, $this->domain->inspect(), $this->clock->now());
-        $this->isReady("New app instance instantiated");
+        $this->context = new AppContext($env, $this->clock->getImmutable(), $this->domain->inspect());
+        $this->isReady("New app instance initialized");
+    }
+
+    /**
+     * @return $this
+     */
+    private function initializeDiagnostics(): static
+    {
+        $this->diagnostics = Diagnostics::initialize();
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    private function initializeErrorService(): static
+    {
+        $this->errors->subscribe($this->diagnostics);
+        if ($this->errors->policy) {
+            $this->errors->setHandlers();
+        }
+
+        ErrorManager::initializeStatic($this->errors);
+        return $this;
     }
 
     /**
@@ -82,7 +107,7 @@ abstract class AbstractApp extends AppSerializable
      * @param PathInfo $root
      * @return ErrorManager
      */
-    protected function declareErrorHandler(AppEnv $env, PathInfo $root): ErrorManager
+    protected function resolveErrorService(AppEnv $env, PathInfo $root): ErrorManager
     {
         return new ErrorManager($env, $root);
     }
@@ -99,20 +124,11 @@ abstract class AbstractApp extends AppSerializable
 
     /**
      * This method is called internally on __construct and __unserialize
-     * @param string $message
-     * @return void
      * @internal
      */
     private function isReady(string $message): void
     {
-        // Todo: Initialize Lifecycle
-        $this->lifecycle = new Lifecycle();
-        $this->lifecycle->log($message);
-
-        // Make clock available in static scope
-        Clock::staticScopeInit($this->clock);
-
-        // Invoke hooks
+        $this->diagnostics->verbose($message);
         $this->onReadyCallback();
     }
 
@@ -124,43 +140,35 @@ abstract class AbstractApp extends AppSerializable
     }
 
     /**
-     * Bootstraps dependant modules
+     * @param MonotonicTimestamp $startTime
      * @return void
      */
-    public function bootstrap(): void
+    public function bootstrap(MonotonicTimestamp $startTime): void
     {
         if ($this->bootstrapped) {
             throw new \BadMethodCallException("App is already bootstrapped");
         }
 
         $this->bootstrapped = true;
+        $this->diagnostics->setStartupTime($startTime);
 
         // All declared services and modules:
         $this->domain->bootstrap($this);
-
-        // Todo: Lifecycle Entries:
-        $this->lifecycle->bootstrappedOn = microtime(true);
-        if (isset($this->lifecycle->startedOn)) {
-            $this->lifecycle->loadTime = number_format($this->lifecycle->bootstrappedOn - $this->lifecycle->startedOn, 4);
-            $this->lifecycle->log("App bootstrapped", $this->lifecycle->loadTime . "s", true);
-        }
     }
 
     /**
      * @return array
      */
-    public function __serialize(): array
+    protected function collectSerializableData(): array
     {
         return [
             "context" => $this->context,
             "cache" => $this->cache,
             "config" => $this->config,
             "clock" => $this->clock,
-            //"cipher" => $this->cipher,
             "database" => $this->database,
             "errors" => $this->errors,
             "events" => $this->events,
-            "lifecycle" => null,
             "paths" => $this->paths,
             "domain" => $this->domain,
         ];
@@ -174,14 +182,12 @@ abstract class AbstractApp extends AppSerializable
     {
         $this->context = $data["context"];
         $this->errors = $data["errors"];
-        if ($this->errors->policy->enabled) {
-            $this->errors->setHandlers();
-        }
+        $this->initializeDiagnostics()
+            ->initializeErrorService();
 
         $this->config = $data["config"];
         $this->clock = $data["clock"];
         $this->cache = $data["cache"];
-        //$this->cipher = $data["cipher"];
         $this->database = $data["database"];
         $this->events = $data["events"];
         $this->paths = $data["paths"];
@@ -189,5 +195,17 @@ abstract class AbstractApp extends AppSerializable
         $this->bootstrapped = false;
 
         $this->isReady("Restore app states successful");
+    }
+
+    /**
+     * @return \class-string[]
+     */
+    public static function unserializeDependencies(): array
+    {
+        $classmap = [static::class, AppEnv::class, AppContext::class, PathInfo::class, \DateTimeImmutable::class];
+        $classmap = [...$classmap, ...CacheManager::unserializeDependencies()];
+        $classmap[] = Clock::class;
+
+        return $classmap;
     }
 }

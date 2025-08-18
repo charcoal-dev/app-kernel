@@ -14,6 +14,7 @@ use Charcoal\App\Kernel\Enums\CacheDriver;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\Base\Abstracts\BaseFactoryRegistry;
 use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
+use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Cache\CacheClient;
@@ -25,6 +26,7 @@ use Charcoal\Cache\CacheClient;
  */
 class CacheManager extends BaseFactoryRegistry implements AppServiceInterface
 {
+    use ControlledSerializableTrait;
     use RegistryKeysLowercaseTrimmed;
     use NoDumpTrait;
     use NotCloneableTrait;
@@ -62,16 +64,6 @@ class CacheManager extends BaseFactoryRegistry implements AppServiceInterface
     }
 
     /**
-     * Nothing is serialized
-     * @return array
-     */
-    public function __serialize(): array
-    {
-        // Todo: Enable serialization of CacheClient instances
-        return [];
-    }
-
-    /**
      * Removes all resolved instances to Cache
      * @param array $data
      * @return void
@@ -79,5 +71,21 @@ class CacheManager extends BaseFactoryRegistry implements AppServiceInterface
     public function __unserialize(array $data): void
     {
         $this->instances = [];
+    }
+
+    /**
+     * @return array
+     */
+    protected function collectSerializableData(): array
+    {
+        return [];
+    }
+
+    /**
+     * @return array<class-string>
+     */
+    public static function unserializeDependencies(): array
+    {
+        return [static::class, CacheManagerConfig::class];
     }
 }

@@ -20,7 +20,7 @@ interface ClockInterface extends TimezoneEnumInterface
 
     public static function getTimestamp(): int;
 
-    public function immutable(string $datetime = "now"): \DateTimeImmutable;
+    public function getImmutable(string $datetime = "now"): \DateTimeImmutable;
 
     public function timestamp(): int;
 }

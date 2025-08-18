@@ -124,6 +124,14 @@ final class Diagnostics implements ErrorLoggerInterface
     }
 
     /**
+     * Logs a verbose/internal/arbitrary message with the specified context.
+     */
+    public function verbose(string $message, array $context = [], ?\Throwable $exception = null): void
+    {
+        $this->logEntry(LogLevel::Verbose, $message, $context, $exception);
+    }
+
+    /**
      * Logs a debugging message with the specified context.
      */
     public function debug(string $message, array $context = [], ?\Throwable $exception = null): void
@@ -137,6 +145,14 @@ final class Diagnostics implements ErrorLoggerInterface
     public function info(string $message, array $context = []): void
     {
         $this->logEntry(LogLevel::Info, $message, $context);
+    }
+
+    /**
+     * Logs a notice message with the specified context.
+     */
+    public function notice(string $message, array $context = []): void
+    {
+        $this->logEntry(LogLevel::Notice, $message, $context);
     }
 
     /**

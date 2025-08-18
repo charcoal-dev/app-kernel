@@ -14,6 +14,7 @@ use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\App\Kernel\Orm\Db\TableRegistry;
 use Charcoal\Base\Abstracts\BaseFactoryRegistry;
 use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
+use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Database\DatabaseClient;
@@ -27,6 +28,7 @@ class DatabaseManager extends BaseFactoryRegistry implements AppServiceInterface
 {
     public readonly TableRegistry $tables;
 
+    use ControlledSerializableTrait;
     use RegistryKeysLowercaseTrimmed;
     use NoDumpTrait;
     use NotCloneableTrait;
@@ -67,7 +69,7 @@ class DatabaseManager extends BaseFactoryRegistry implements AppServiceInterface
      * Removes all current Database instances
      * @return array
      */
-    public function __serialize(): array
+    public function collectSerializableData(): array
     {
         $data["tables"] = $this->tables;
         $data["instances"] = null;
@@ -115,5 +117,10 @@ class DatabaseManager extends BaseFactoryRegistry implements AppServiceInterface
         }
 
         return $flushed;
+    }
+
+    public static function unserializeDependencies(): array
+    {
+        return [static::class, DatabaseManagerConfig::class];
     }
 }
