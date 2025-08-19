@@ -11,6 +11,7 @@ namespace Charcoal\App\Kernel\Errors;
 use Charcoal\App\Kernel\Contracts\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
+use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Traits\InstanceOnStaticScopeTrait;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
@@ -24,6 +25,7 @@ use Charcoal\Http\Router\Exceptions\ResponseDispatchedException;
 class ErrorManager implements AppServiceInterface
 {
     use InstanceOnStaticScopeTrait;
+    use ControlledSerializableTrait;
     use NoDumpTrait;
     use NotCloneableTrait;
 
@@ -133,7 +135,7 @@ class ErrorManager implements AppServiceInterface
     /**
      * @return array
      */
-    public function __serialize(): array
+    protected function collectSerializableData(): array
     {
         return [
             "policy" => $this->policy,
@@ -155,6 +157,14 @@ class ErrorManager implements AppServiceInterface
         $this->debugging = $data["debugging"];
         $this->loggable = $data["loggable"];
         $this->loggers = new ErrorLoggers();
+    }
+
+    /**
+     * @return array
+     */
+    public static function unserializeDependencies(): array
+    {
+        return [static::class, PathInfo::class, ErrorLoggers::class];
     }
 
     /**
