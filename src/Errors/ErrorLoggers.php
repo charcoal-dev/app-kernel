@@ -14,23 +14,31 @@ use Charcoal\App\Kernel\Support\ErrorHelper;
 /**
  * Class ErrorLoggers
  * @package Charcoal\App\Kernel\Errors
- * @internal
  */
 final class ErrorLoggers
 {
     /** @var array<class-string<ErrorLoggerInterface>,ErrorLoggerInterface> $loggers */
     private array $loggers;
 
+    /**
+     * @internal
+     */
     public function __construct(ErrorLoggerInterface ...$loggers)
     {
         $this->loggers = $loggers ?? [];
     }
 
+    /**
+     * @internal
+     */
     public function register(ErrorLoggerInterface $logger): void
     {
         $this->loggers[$logger::class] = $logger;
     }
 
+    /**
+     * @internal
+     */
     public function unregister(ErrorLoggerInterface $logger): void
     {
         unset($this->loggers[$logger::class]);
@@ -38,6 +46,7 @@ final class ErrorLoggers
 
     /**
      * @throws \ErrorException
+     * @internal
      */
     public function handleError(ErrorEntry $error): void
     {
@@ -50,6 +59,9 @@ final class ErrorLoggers
         }
     }
 
+    /**
+     * @internal
+     */
     public function handleException(\Throwable $exception): void
     {
         foreach ($this->loggers as $logger) {
