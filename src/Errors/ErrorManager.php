@@ -19,8 +19,8 @@ use Charcoal\Filesystem\Path\PathInfo;
 use Charcoal\Http\Router\Exceptions\ResponseDispatchedException;
 
 /**
- * Class ErrorManager
- * @package Charcoal\App\Kernel\Errors
+ * Manages application error handling, logging, and exception processing.
+ * Implements configuration for error policies, log levels, and error propagation.
  */
 class ErrorManager implements AppServiceInterface
 {
@@ -49,9 +49,8 @@ class ErrorManager implements AppServiceInterface
      * @param AppEnv $env
      * @param PathInfo $root
      * @param ErrorLoggers|null $loggers
-     * @internal
      */
-    final public function __construct(AppEnv $env, PathInfo $root, ?ErrorLoggers $loggers = null)
+    public function __construct(AppEnv $env, PathInfo $root, ?ErrorLoggers $loggers = null)
     {
         $this->policy = $env->deployErrorHandlers();
         $this->pathOffset = strlen($root->absolute);
