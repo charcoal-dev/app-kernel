@@ -9,23 +9,29 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\EntryPoint\Cli;
 
 use Charcoal\Base\Support\Helpers\ObjectHelper;
+use Charcoal\Cli\Enums\ExecutionState;
 
 /**
  * Class AbstractCliScript
  * @package Charcoal\App\Kernel\EntryPoint\Cli
  * @property AppCliHandler $cli
+ * @api
  */
-abstract class AbstractCliScript extends \Charcoal\Cli\Script\AbstractCliScript
+abstract class AppCliScript extends \Charcoal\Cli\Script\AbstractCliScript
 {
     public readonly CliScriptConfig $config;
     public readonly string $scriptClassname;
 
     /**
      * @param AppCliHandler $cli
+     * @param ExecutionState $initialState
      */
-    public function __construct(AppCliHandler $cli)
+    public function __construct(
+        AppCliHandler  $cli,
+        ExecutionState $initialState = ExecutionState::STARTED
+    )
     {
-        parent::__construct($cli);
+        parent::__construct($cli, $initialState);
         $this->config = new CliScriptConfig();
         $this->scriptClassname = ObjectHelper::baseClassName(static::class);
 

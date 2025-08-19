@@ -20,7 +20,7 @@
     "charcoal-dev/buffers": "^0.2.1",
     "charcoal-dev/cache": "^0.2.3",
     "charcoal-dev/cache-redis-client": "^0.2.2",
-    "charcoal-dev/cli": "^0.2.3",
+    "charcoal-dev/cli": "^0.2.2",
     "charcoal-dev/database": "^0.2.5",
     "charcoal-dev/db-orm": "^0.2.4",
     "charcoal-dev/events": "^0.1.7",
