@@ -13,7 +13,6 @@ use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
 use Charcoal\App\Kernel\Database\DatabaseManager;
 use Charcoal\App\Kernel\Events\EventsManager;
 use Charcoal\App\Kernel\Internal\DomainBundle;
-use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Internal\Services\ServicesBundle;
 use Charcoal\App\Kernel\Clock\Clock;
 use Charcoal\Filesystem\Node\DirectoryNode;
@@ -36,11 +35,10 @@ class AppManifest
     final public function appServices(AbstractApp $app, DirectoryNode $root): ServicesBundle
     {
         return new ServicesBundle(
-            new Clock($app->config->timezone),
-            new EventsManager($app),
-            new CacheManager($app->config->cache),
-            new DatabaseManager($app->config->database),
-            new PathRegistry($root->path)
+            $this->resolveClockService($app),
+            $this->resolveEventsManager($app),
+            $this->resolveDatabaseManager($app),
+            $this->resolveCacheManager($app),
         );
     }
 
@@ -63,5 +61,37 @@ class AppManifest
     final public function getDomain(AbstractApp $app): DomainBundle
     {
         return new DomainBundle($app, $this->domain);
+    }
+
+    /**
+     * Provides an instance of the Clock service configured with the application's timezone.
+     */
+    protected function resolveClockService(AbstractApp $app): Clock
+    {
+        return new Clock($app->config->timezone);
+    }
+
+    /**
+     * Instantiates and returns an EventsManager object configured with the provided application instance.
+     */
+    protected function resolveEventsManager(AbstractApp $app): EventsManager
+    {
+        return new EventsManager($app);
+    }
+
+    /**
+     * Provides an instance of the DatabaseManager configured with the application's database settings.
+     */
+    protected function resolveDatabaseManager(AbstractApp $app): DatabaseManager
+    {
+        return new DatabaseManager($app->config->database);
+    }
+
+    /**
+     * Resolves and provides an instance of the CacheManager configured with the application's cache settings.
+     */
+    protected function resolveCacheManager(AbstractApp $app): CacheManager
+    {
+        return new CacheManager($app->config->cache);
     }
 }
