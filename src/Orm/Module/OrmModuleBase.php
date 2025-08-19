@@ -65,7 +65,7 @@ abstract class OrmModuleBase extends AbstractModule implements
     }
 
     /**
-     * Modify parents method to provide support for AbstractOrmRepository
+     * Modify parents method to provide support for OrmRepositoryBase
      * @param mixed $value
      * @return bool
      */
@@ -79,7 +79,7 @@ abstract class OrmModuleBase extends AbstractModule implements
     }
 
     /**
-     * Modify parents method to provide support for AbstractOrmRepository
+     * Modify parents method to provide support for OrmRepositoryBase
      * @param string $childPropertyKey
      * @return void
      */
