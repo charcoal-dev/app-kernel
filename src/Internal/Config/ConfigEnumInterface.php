@@ -6,12 +6,13 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Contracts\Enums;
+namespace Charcoal\App\Kernel\Internal\Config;
 
 /**
- * Interface ModuleEnumInterface
+ * Interface ConfigEnumInterface
  * @package Charcoal\App\Kernel\Contracts\Enums
  */
-interface ModuleEnumInterface extends ConfigEnumInterface
+interface ConfigEnumInterface extends \UnitEnum
 {
+    public function getConfigKey(): string;
 }

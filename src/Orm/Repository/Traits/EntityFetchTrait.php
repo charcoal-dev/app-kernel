@@ -47,7 +47,7 @@ trait EntityFetchTrait
         try {
             $entity = $this->table->queryFind($whereStmt, $queryData, limit: 1, lock: $lock)->getNext();
             return is_object($entity) && $invokeStorageHooks ?
-                $this->invokeStorageHooks($entity, FetchOrigin::DATABASE) : $entity;
+                $this->invokeStorageHooks($entity, FetchOrigin::Database) : $entity;
         } catch (OrmModelNotFoundException) {
             throw new EntityNotFoundException();
         } catch (OrmException $e) {
@@ -169,7 +169,7 @@ trait EntityFetchTrait
         $entityId = $this->getStorageKey($primaryId);
         $entity = $this->module->runtimeMemory->get($entityId);
         if ($entity instanceof OrmEntityBase) {
-            return $this->invokeStorageHooks($entity, FetchOrigin::RUNTIME);
+            return $this->invokeStorageHooks($entity, FetchOrigin::Runtime);
         }
 
         if ($useCacheStore) {
@@ -177,7 +177,7 @@ trait EntityFetchTrait
                 $entity = $this->module->getFromCache($entityId);
                 if ($entity instanceof OrmEntityBase) {
                     $this->module->runtimeMemory->store($entityId, $entity);
-                    return $this->invokeStorageHooks($entity, FetchOrigin::CACHE);
+                    return $this->invokeStorageHooks($entity, FetchOrigin::Cache);
                 }
             } catch (CacheException $e) {
                 $this->handleCacheException($e);
@@ -201,6 +201,6 @@ trait EntityFetchTrait
             }
         }
 
-        return $this->invokeStorageHooks($entity, FetchOrigin::DATABASE, $storedInCache ?? false);
+        return $this->invokeStorageHooks($entity, FetchOrigin::Database, $storedInCache ?? false);
     }
 }

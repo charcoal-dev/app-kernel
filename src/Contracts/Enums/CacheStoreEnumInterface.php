@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Contracts\Enums;
 
+use Charcoal\App\Kernel\Internal\Config\ConfigEnumInterface;
+
 /**
  * Interface CacheStoreEnumInterface
  * @package Charcoal\App\Kernel\Contracts\Enums
