@@ -52,21 +52,24 @@ abstract class AbstractApp extends AppSerializable
     final public function __construct(AppEnv $env, DirectoryNode $root)
     {
         $this->initializeDiagnostics();
-        $this->errors = $this->resolveErrorService($env, $root->path);
+        $manifest = $this->resolveAppManifest();
+
+        // Error service and configurator may require paths to be defined first
+        $this->paths = $manifest->resolvePathsRegistry($root);
+        $this->errors = $manifest->resolveErrorService($env, $root);
         $this->initializeErrorService();
+        $this->paths->declarePaths();
 
         // Resolve AppConfig object
-        $this->config = $this->resolveConfig();
+        $this->config = $this->resolveAppConfig();
 
         // Resolve AppManifest object, and declare services
-        $manifest = $this->resolveAppManifest();
-        foreach ($manifest->appServices($this, $root) as $service) {
+        foreach ($manifest->appServices($this) as $service) {
             match (true) {
                 $service instanceof Clock => $this->clock = $service,
                 $service instanceof CacheManager => $this->cache = $service,
                 $service instanceof DatabaseManager => $this->database = $service,
                 $service instanceof EventsManager => $this->events = $service,
-                $service instanceof PathRegistry => $this->paths = $service,
                 default => throw new \RuntimeException("Unknown service: " . get_class($service)),
             };
         }
@@ -104,19 +107,9 @@ abstract class AbstractApp extends AppSerializable
     }
 
     /**
-     * @param AppEnv $env
-     * @param PathInfo $root
-     * @return ErrorManager
-     */
-    protected function resolveErrorService(AppEnv $env, PathInfo $root): ErrorManager
-    {
-        return new ErrorManager($env, $root);
-    }
-
-    /**
      * @return AppConfig
      */
-    abstract protected function resolveConfig(): AppConfig;
+    abstract protected function resolveAppConfig(): AppConfig;
 
     /**
      * @return AppManifest
@@ -184,6 +177,7 @@ abstract class AbstractApp extends AppSerializable
     {
         $this->bootstrapped = false;
         $this->context = $data["context"];
+        $this->paths = $data["paths"];
         $this->errors = $data["errors"];
         $this->initializeDiagnostics()
             ->initializeErrorService();
@@ -193,7 +187,6 @@ abstract class AbstractApp extends AppSerializable
         $this->cache = $data["cache"];
         $this->database = $data["database"];
         $this->events = $data["events"];
-        $this->paths = $data["paths"];
 
         Clock::initializeStatic($this->clock);
         $this->domain = $data["domain"];

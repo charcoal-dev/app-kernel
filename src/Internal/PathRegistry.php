@@ -15,22 +15,29 @@ use Charcoal\Filesystem\Path\FilePath;
 use Charcoal\Filesystem\Path\PathInfo;
 
 /**
- * Class PathRegistry
- * @package Charcoal\App\Kernel\Internal
+ * Represents a registry for managing and validating file or directory paths based on a specified root path.
+ * Provides functionality for declaring paths and retrieving validated path instances with specific
+ * access permissions.
  */
 readonly class PathRegistry implements AppServiceInterface
 {
-    public function __construct(public DirectoryPath|PathInfo $root)
+    /**
+     * Use "declarePaths" method as constructor.
+     */
+    final public function __construct(public DirectoryPath|PathInfo $root)
     {
     }
 
     /**
-     * @param string $relative
-     * @param bool $isDirectory
-     * @param bool $read
-     * @param bool $write
-     * @param bool $execute
-     * @return DirectoryPath|FilePath
+     * Declare paths here, invoked internally by application when error handlers are registered.
+     * This method is intended to be overridden by application classes and acts like a constructor.
+     * @api
+     */
+    public function declarePaths(): void
+    {
+    }
+
+    /**
      * @api
      */
     protected function getValidatedPathSnapshot(
@@ -67,12 +74,9 @@ readonly class PathRegistry implements AppServiceInterface
     }
 
     /**
-     * @param string $relative
-     * @param bool $isDirectory
-     * @return string
      * @internal
      */
-    protected function getExceptionPrefix(
+    private function getExceptionPrefix(
         string $relative,
         bool   $isDirectory
     ): string

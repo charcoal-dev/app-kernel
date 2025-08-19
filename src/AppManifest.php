@@ -11,8 +11,11 @@ namespace Charcoal\App\Kernel;
 use Charcoal\App\Kernel\Cache\CacheManager;
 use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
 use Charcoal\App\Kernel\Database\DatabaseManager;
+use Charcoal\App\Kernel\Enums\AppEnv;
+use Charcoal\App\Kernel\Errors\ErrorManager;
 use Charcoal\App\Kernel\Events\EventsManager;
 use Charcoal\App\Kernel\Internal\DomainBundle;
+use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Internal\Services\ServicesBundle;
 use Charcoal\App\Kernel\Clock\Clock;
 use Charcoal\Filesystem\Node\DirectoryNode;
@@ -28,11 +31,10 @@ class AppManifest
 
     /**
      * @param AbstractApp $app
-     * @param DirectoryNode $root
      * @return ServicesBundle
      * @internal
      */
-    final public function appServices(AbstractApp $app, DirectoryNode $root): ServicesBundle
+    final public function appServices(AbstractApp $app): ServicesBundle
     {
         return new ServicesBundle(
             $this->resolveClockService($app),
@@ -61,6 +63,22 @@ class AppManifest
     final public function getDomain(AbstractApp $app): DomainBundle
     {
         return new DomainBundle($app, $this->domain);
+    }
+
+    /**
+     * Provides an instance of the ErrorManager service configured with the application's environment and root path.
+     */
+    public function resolveErrorService(AppEnv $env, DirectoryNode $root): ErrorManager
+    {
+        return new ErrorManager($env, $root->path);
+    }
+
+    /**
+     * Provides an instance of the PathRegistry service which may be required to resolve configuration files.
+     */
+    public function resolvePathsRegistry(DirectoryNode $root): PathRegistry
+    {
+        return new PathRegistry($root->path);
     }
 
     /**

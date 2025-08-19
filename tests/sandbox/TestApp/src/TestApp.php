@@ -18,7 +18,7 @@ use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
  */
 class TestApp extends AbstractApp
 {
-    protected function resolveConfig(): AppConfig
+    protected function resolveAppConfig(): AppConfig
     {
         return ConfigProvider::getConfig();
     }
