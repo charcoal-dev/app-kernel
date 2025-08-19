@@ -17,7 +17,6 @@ use Charcoal\App\Kernel\Orm\Repository\Traits\EntityUpdatableTrait;
 use Charcoal\App\Kernel\Orm\Repository\Traits\EntityUpsertTrait;
 use Charcoal\App\Kernel\Orm\Repository\Traits\StorageHooksInvokerTrait;
 use Charcoal\Buffers\Frames\Bytes20;
-use Charcoal\Tests\App\Fixtures\Enums\DbConfig;
 use Charcoal\Tests\App\Fixtures\Enums\DbTables;
 
 /**
