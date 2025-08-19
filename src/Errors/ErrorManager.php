@@ -10,6 +10,7 @@ namespace Charcoal\App\Kernel\Errors;
 
 use Charcoal\App\Kernel\Contracts\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Enums\AppEnv;
+use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Traits\InstanceOnStaticScopeTrait;
@@ -47,13 +48,13 @@ class ErrorManager implements AppServiceInterface
 
     /**
      * @param AppEnv $env
-     * @param PathInfo $root
+     * @param PathRegistry $paths
      * @param ErrorLoggers|null $loggers
      */
-    public function __construct(AppEnv $env, PathInfo $root, ?ErrorLoggers $loggers = null)
+    public function __construct(AppEnv $env, PathRegistry $paths, ?ErrorLoggers $loggers = null)
     {
         $this->policy = $env->deployErrorHandlers();
-        $this->pathOffset = strlen($root->absolute);
+        $this->pathOffset = strlen($paths->root->absolute);
         $this->debugging = $env->isDebug();
         $this->loggable = [E_NOTICE, E_USER_NOTICE, E_DEPRECATED, E_USER_DEPRECATED];
         $this->loggers = $loggers ?? new ErrorLoggers();

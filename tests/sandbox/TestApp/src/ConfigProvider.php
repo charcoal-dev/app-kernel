@@ -13,6 +13,7 @@ use Charcoal\App\Kernel\Config\Builder\DbConfigObjectsBuilder;
 use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
 use Charcoal\App\Kernel\Config\Snapshot\CacheStoreConfig;
 use Charcoal\App\Kernel\Config\Snapshot\DatabaseConfig;
+use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Enums\CacheDriver;
 use Charcoal\Database\Enums\DbConnectionStrategy;
 use Charcoal\Database\Enums\DbDriver;
@@ -22,12 +23,12 @@ use Charcoal\Tests\App\Fixtures\Enums\TimezoneEnum;
 
 final class ConfigProvider
 {
-    public static function getConfig(): AppConfig
+    public static function getConfig(AppEnv $env): AppConfig
     {
-        return self::getConfig_1cacheNull_1sqliteDb_UTC();
+        return self::getConfig_1cacheNull_1sqliteDb_UTC($env);
     }
 
-    public static function getConfig_1cacheNull_1sqliteDb_UTC(): AppConfig
+    public static function getConfig_1cacheNull_1sqliteDb_UTC(AppEnv $env): AppConfig
     {
         $cacheConfig = new CacheConfigObjectsBuilder();
         $cacheConfig->set(CacheStore::Secondary,
@@ -43,6 +44,6 @@ final class ConfigProvider
             )
         );
 
-        return new AppConfig(TimezoneEnum::UTC, $cacheConfig->build(), $dbConfig->build());
+        return new AppConfig($env, TimezoneEnum::UTC, $cacheConfig->build(), $dbConfig->build());
     }
 }

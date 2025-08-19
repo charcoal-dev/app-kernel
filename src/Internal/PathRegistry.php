@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Internal;
 
+use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\Filesystem\Exceptions\InvalidPathException;
 use Charcoal\Filesystem\Path\DirectoryPath;
@@ -24,7 +25,10 @@ readonly class PathRegistry implements AppServiceInterface
     /**
      * Use "declarePaths" method as constructor.
      */
-    final public function __construct(public DirectoryPath|PathInfo $root)
+    final public function __construct(
+        protected AppEnv              $env,
+        public DirectoryPath|PathInfo $root,
+    )
     {
     }
 

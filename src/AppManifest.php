@@ -68,17 +68,17 @@ class AppManifest
     /**
      * Provides an instance of the ErrorManager service configured with the application's environment and root path.
      */
-    public function resolveErrorService(AppEnv $env, DirectoryNode $root): ErrorManager
+    public function resolveErrorService(AppEnv $env, PathRegistry $paths): ErrorManager
     {
-        return new ErrorManager($env, $root->path);
+        return new ErrorManager($env, $paths);
     }
 
     /**
      * Provides an instance of the PathRegistry service which may be required to resolve configuration files.
      */
-    public function resolvePathsRegistry(DirectoryNode $root): PathRegistry
+    public function resolvePathsRegistry(AppEnv $env, DirectoryNode $root): PathRegistry
     {
-        return new PathRegistry($root->path);
+        return new PathRegistry($env, $root->path);
     }
 
     /**
