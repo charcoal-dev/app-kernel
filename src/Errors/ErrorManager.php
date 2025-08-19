@@ -131,7 +131,7 @@ class ErrorManager implements AppServiceInterface
     }
 
     /**
-     * @internal
+     * @return array
      */
     public function __serialize(): array
     {
@@ -145,7 +145,8 @@ class ErrorManager implements AppServiceInterface
     }
 
     /**
-     * @internal
+     * @param array $data
+     * @return void
      */
     public function __unserialize(array $data): void
     {
