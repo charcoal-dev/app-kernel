@@ -11,6 +11,7 @@ namespace Charcoal\Tests\App\Sandbox\TestApp;
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\AppManifest;
 use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
+use Charcoal\App\Kernel\Enums\AppEnv;
 
 /**
  * Class TestApp
@@ -18,9 +19,9 @@ use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
  */
 class TestApp extends AbstractApp
 {
-    protected function resolveAppConfig(): AppConfig
+    protected function resolveAppConfig(AppEnv $env): AppConfig
     {
-        return ConfigProvider::getConfig();
+        return ConfigProvider::getConfig($env);
     }
 
     protected function resolveAppManifest(): AppManifest

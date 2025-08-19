@@ -61,7 +61,7 @@ abstract class AbstractApp extends AppSerializable
         $this->paths->declarePaths();
 
         // Resolve AppConfig object
-        $this->config = $this->resolveAppConfig();
+        $this->config = $this->resolveAppConfig($env);
 
         // Resolve AppManifest object, and declare services
         foreach ($manifest->appServices($this) as $service) {
@@ -107,9 +107,10 @@ abstract class AbstractApp extends AppSerializable
     }
 
     /**
+     * @param AppEnv $env
      * @return AppConfig
      */
-    abstract protected function resolveAppConfig(): AppConfig;
+    abstract protected function resolveAppConfig(AppEnv $env): AppConfig;
 
     /**
      * @return AppManifest
