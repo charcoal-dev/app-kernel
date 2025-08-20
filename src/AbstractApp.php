@@ -14,7 +14,9 @@ use Charcoal\App\Kernel\Clock\MonotonicTimestamp;
 use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
 use Charcoal\App\Kernel\Database\DatabaseManager;
 use Charcoal\App\Kernel\Diagnostics\Diagnostics;
+use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
 use Charcoal\App\Kernel\Enums\AppEnv;
+use Charcoal\App\Kernel\Enums\DiagnosticsEvent;
 use Charcoal\App\Kernel\Errors\ErrorManager;
 use Charcoal\App\Kernel\Events\EventsManager;
 use Charcoal\App\Kernel\Internal\AppContext;
@@ -24,6 +26,7 @@ use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Security\SecurityService;
 use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
+use Charcoal\Events\Exceptions\SubscriptionClosedException;
 use Charcoal\Filesystem\Node\DirectoryNode;
 use Charcoal\Filesystem\Path\PathInfo;
 
@@ -50,16 +53,16 @@ abstract class AbstractApp extends AppSerializable
 
     private bool $bootstrapped = false;
 
-    final public function __construct(AppEnv $env, DirectoryNode $root)
+    final public function __construct(AppEnv $env, DirectoryNode $root, ?callable $monitor = null)
     {
-        $this->initializeDiagnostics();
+        $this->initializeDiagnostics($monitor);
         $manifest = $this->resolveAppManifest();
 
         // Error service and configurator may require paths to be defined first
         $this->paths = $manifest->resolvePathsRegistry($env, $root);
         $this->errors = $manifest->resolveErrorService($env, $this->paths);
         $this->initializeErrorService();
-        $this->paths->declarePaths();
+        $this->paths->acceptPathsDeclaration($this);
 
         // Resolve AppConfig object
         $this->config = $this->resolveAppConfig($env, $this->paths);
@@ -86,11 +89,24 @@ abstract class AbstractApp extends AppSerializable
     }
 
     /**
+     * @param callable|null $monitor
      * @return $this
      */
-    private function initializeDiagnostics(): static
+    private function initializeDiagnostics(?callable $monitor = null): static
     {
         $this->diagnostics = Diagnostics::initialize();
+        if ($monitor) {
+            try {
+                $this->diagnostics->subscribe(DiagnosticsEvent::BuildStage,
+                    function (BuildStageEvents $event) use ($monitor) {
+                        $monitor($event);
+                    });
+            } catch (SubscriptionClosedException $e) {
+                throw new \RuntimeException($e->getMessage(), previous: $e);
+            }
+        }
+
+        $this->diagnostics->buildStageStream(BuildStageEvents::DiagnosticsReady);
         return $this;
     }
 
@@ -99,9 +115,11 @@ abstract class AbstractApp extends AppSerializable
      */
     private function initializeErrorService(): static
     {
+        $this->diagnostics->buildStageStream(BuildStageEvents::ErrorServiceStarted);
         $this->errors->subscribe($this->diagnostics);
         if ($this->errors->policy) {
             $this->errors->setHandlers();
+            $this->diagnostics->buildStageStream(BuildStageEvents::ErrorHandlersOn);
         }
 
         ErrorManager::initializeStatic($this->errors);
@@ -126,6 +144,7 @@ abstract class AbstractApp extends AppSerializable
      */
     private function isReady(string $message): void
     {
+        $this->diagnostics->buildStageStream(BuildStageEvents::Ready);
         $this->diagnostics->verbose($message);
         $this->onReadyCallback();
     }
@@ -148,6 +167,7 @@ abstract class AbstractApp extends AppSerializable
         }
 
         $this->bootstrapped = true;
+        $this->diagnostics->buildStageStream(BuildStageEvents::Bootstrapped);
         $this->diagnostics->setStartupTime($startTime);
 
         // All declared services and modules:
@@ -184,7 +204,7 @@ abstract class AbstractApp extends AppSerializable
         $this->context = $data["context"];
         $this->paths = $data["paths"];
         $this->errors = $data["errors"];
-        $this->initializeDiagnostics()
+        $this->initializeDiagnostics(null)
             ->initializeErrorService();
 
         $this->config = $data["config"];

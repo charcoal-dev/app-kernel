@@ -11,6 +11,7 @@ namespace Charcoal\App\Kernel\Events;
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
 use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
+use Charcoal\App\Kernel\Enums\DiagnosticsEvent;
 use Charcoal\App\Kernel\Internal\Services\AppServiceConfigAwareInterface;
 
 /**
@@ -24,6 +25,17 @@ readonly class EventsManager implements AppServiceConfigAwareInterface
      */
     public function __construct(protected AbstractApp $app)
     {
+    }
+
+    /**
+     * @param DiagnosticsEvent $event
+     * @param \Closure $closure
+     * @return void
+     * @throws \Charcoal\Events\Exceptions\SubscriptionClosedException
+     */
+    public function diagnostics(DiagnosticsEvent $event, \Closure $closure): void
+    {
+        $this->app->diagnostics->subscribe($event, $closure);
     }
 
     /**

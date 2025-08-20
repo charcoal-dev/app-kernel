@@ -10,9 +10,11 @@ namespace Charcoal\App\Kernel\Diagnostics;
 
 use Charcoal\App\Kernel\Clock\MonotonicTimestamp;
 use Charcoal\App\Kernel\Contracts\Errors\ErrorLoggerInterface;
+use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
 use Charcoal\App\Kernel\Diagnostics\Events\DiagnosticsEvents;
 use Charcoal\App\Kernel\Diagnostics\Events\DiagnosticsEventsContext;
 use Charcoal\App\Kernel\Diagnostics\Events\ExceptionCaughtBroadcast;
+use Charcoal\App\Kernel\Enums\DiagnosticsEvent;
 use Charcoal\App\Kernel\Enums\LogLevel;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
@@ -34,7 +36,8 @@ final class Diagnostics implements ErrorLoggerInterface
 
     private static ?self $instance = null;
 
-    private DiagnosticsEvents $logEntryEvent;
+    private DiagnosticsEvents $events;
+    private array $eventListeners = [];
     private array $logs = [];
     private array $metrics = [];
     public readonly int $startupTime;
@@ -44,11 +47,29 @@ final class Diagnostics implements ErrorLoggerInterface
      */
     protected function __construct()
     {
-        $this->logEntryEvent = new DiagnosticsEvents("app.diagnostics.logEntry", [
+        $this->events = new DiagnosticsEvents("app.Events.Diagnostics", [
             DiagnosticsEventsContext::class,
             LogEntry::class,
             ExceptionCaughtBroadcast::class,
+            BuildStageEvents::class
         ]);
+    }
+
+    /**
+     * @param DiagnosticsEvent $event
+     * @param \Closure $callback
+     * @return void
+     * @throws \Charcoal\Events\Exceptions\SubscriptionClosedException
+     */
+    public function subscribe(DiagnosticsEvent $event, \Closure $callback): void
+    {
+        if (isset($this->startupTime) && $event === DiagnosticsEvent::BuildStage) {
+            throw new \DomainException("Cannot subscribe to BuildState before startup");
+        }
+
+        $subscription = $this->events->subscribe();
+        $this->eventListeners[$event->name][] = $subscription;
+        $subscription->listen($event->getEventContext(), $callback);
     }
 
     /**
@@ -59,6 +80,16 @@ final class Diagnostics implements ErrorLoggerInterface
     public function setStartupTime(MonotonicTimestamp $startTime): void
     {
         $this->startupTime = $startTime->elapsedTo(MonotonicTimestamp::now());
+
+        // Clean up BuildStage listeners
+        $subscribers = $this->eventListeners[DiagnosticsEvent::BuildStage->name] ?? null;
+        if ($subscribers) {
+            foreach ($subscribers as $subscriber) {
+                $subscriber->unsubscribe();
+            }
+
+            unset($this->eventListeners[DiagnosticsEvent::BuildStage->name]);
+        }
     }
 
     /**
@@ -125,7 +156,7 @@ final class Diagnostics implements ErrorLoggerInterface
     {
         $log = new LogEntry($level, $message, $context, $exception);
         $this->logs[] = $log;
-        $this->logEntryEvent->dispatch($log);
+        $this->events->dispatch($log);
     }
 
     /**
@@ -233,5 +264,19 @@ final class Diagnostics implements ErrorLoggerInterface
     {
         $this->error(sprintf('Caught "%s" exception', ObjectHelper::baseClassName(get_class($exception))),
             exception: $exception);
+    }
+
+    /**
+     * @param BuildStageEvents $state
+     * @return void
+     * @internal
+     */
+    public function buildStageStream(BuildStageEvents $state): void
+    {
+        if (isset($this->startupTime)) {
+            throw new \DomainException("BuildStageEvents stream is now closed");
+        }
+
+        $this->events->dispatch($state);
     }
 }

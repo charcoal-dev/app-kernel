@@ -8,6 +8,9 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Internal;
 
+use Charcoal\App\Kernel\AbstractApp;
+use Charcoal\App\Kernel\Diagnostics\Diagnostics;
+use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
 use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\Filesystem\Exceptions\FilesystemException;
@@ -30,6 +33,12 @@ readonly class PathRegistry implements AppServiceInterface
         public DirectoryPath|PathInfo $root,
     )
     {
+    }
+
+    final public function acceptPathsDeclaration(AbstractApp $app): void
+    {
+        $this->declarePaths();
+        $app->diagnostics->buildStageStream(BuildStageEvents::PathRegistryOn);
     }
 
     /**

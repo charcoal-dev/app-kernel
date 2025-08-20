@@ -11,6 +11,7 @@ namespace Charcoal\App\Kernel;
 use Charcoal\App\Kernel\Cache\CacheManager;
 use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
 use Charcoal\App\Kernel\Database\DatabaseManager;
+use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
 use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Errors\ErrorManager;
 use Charcoal\App\Kernel\Events\EventsManager;
@@ -37,6 +38,7 @@ class AppManifest
      */
     final public function appServices(AbstractApp $app): ServicesBundle
     {
+        $app->diagnostics->buildStageStream(BuildStageEvents::ConfigLoaded);
         return new ServicesBundle(
             new Clock($app->config->timezone),
             $this->resolveEventsManager($app),
@@ -64,7 +66,10 @@ class AppManifest
      */
     final public function getDomain(AbstractApp $app): DomainBundle
     {
-        return new DomainBundle($app, $this->domain);
+        $app->diagnostics->buildStageStream(BuildStageEvents::ServicesReady);
+        $bundle = new DomainBundle($app, $this->domain);
+        $app->diagnostics->buildStageStream(BuildStageEvents::DomainModulesLoaded);
+        return $bundle;
     }
 
     /**
