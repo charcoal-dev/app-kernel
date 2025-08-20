@@ -73,12 +73,13 @@ final class Diagnostics implements ErrorLoggerInterface
     }
 
     /**
+     * @param bool $basename
      * @return EventStats
      * @api
      */
-    public function eventInspection(): EventStats
+    public function eventInspection(bool $basename = false): EventStats
     {
-        return $this->events->inspect(true);
+        return $this->events->inspect($basename);
     }
 
     /**
