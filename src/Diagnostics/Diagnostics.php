@@ -73,26 +73,6 @@ final class Diagnostics implements ErrorLoggerInterface
     }
 
     /**
-     * @param DiagnosticsEvent $event
-     * @return int[]
-     * @api
-     */
-    public function eventListeners(DiagnosticsEvent $event): array
-    {
-        $count = [0, 0];
-        foreach ($this->events->subscribers() as $subscriber) {
-            $count[0]++;
-            if ($subscriber->status() && $subscriber->listening()) {
-                if (in_array($event::class, $subscriber->listening(), true)) {
-                    $count[1]++;
-                }
-            }
-        }
-
-        return $count;
-    }
-
-    /**
      * @param MonotonicTimestamp $startTime
      * @return void
      * @internal
