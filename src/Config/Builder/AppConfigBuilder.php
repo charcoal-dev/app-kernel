@@ -21,9 +21,9 @@ use Charcoal\App\Kernel\Internal\PathRegistry;
  */
 class AppConfigBuilder implements ConfigBuilderInterface
 {
-    public CacheConfigObjectsBuilder $cache;
-    public DbConfigObjectsBuilder $database;
-    public SecurityConfigBuilder $security;
+    public readonly CacheConfigObjectsBuilder $cache;
+    public readonly DbConfigObjectsBuilder $database;
+    public readonly SecurityConfigBuilder $security;
 
     public function __construct(
         public AppEnv                $env,
