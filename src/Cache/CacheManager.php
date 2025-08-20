@@ -12,7 +12,7 @@ use Charcoal\App\Kernel\Config\Snapshot\CacheManagerConfig;
 use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
 use Charcoal\App\Kernel\Enums\CacheDriver;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
-use Charcoal\Base\Abstracts\BaseFactoryRegistry;
+use Charcoal\Base\Abstracts\AbstractFactoryRegistry;
 use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
 use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Traits\NoDumpTrait;
@@ -22,9 +22,9 @@ use Charcoal\Cache\CacheClient;
 /**
  * Class CachePool
  * @package Charcoal\App\Kernel
- * @template-extends BaseFactoryRegistry<CacheClient>
+ * @template-extends AbstractFactoryRegistry<CacheClient>
  */
-class CacheManager extends BaseFactoryRegistry implements AppServiceInterface
+class CacheManager extends AbstractFactoryRegistry implements AppServiceInterface
 {
     use ControlledSerializableTrait;
     use RegistryKeysLowercaseTrimmed;

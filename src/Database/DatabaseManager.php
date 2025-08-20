@@ -12,7 +12,7 @@ use Charcoal\App\Kernel\Config\Snapshot\DatabaseManagerConfig;
 use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\App\Kernel\Orm\Db\TableRegistry;
-use Charcoal\Base\Abstracts\BaseFactoryRegistry;
+use Charcoal\Base\Abstracts\AbstractFactoryRegistry;
 use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
 use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Traits\NoDumpTrait;
@@ -22,9 +22,9 @@ use Charcoal\Database\DatabaseClient;
 /**
  * Class Databases
  * @package Charcoal\App\Kernel
- * @template-extends BaseFactoryRegistry<DatabaseClient>
+ * @template-extends AbstractFactoryRegistry<DatabaseClient>
  */
- class DatabaseManager extends BaseFactoryRegistry implements AppServiceInterface
+ class DatabaseManager extends AbstractFactoryRegistry implements AppServiceInterface
 {
     public readonly TableRegistry $tables;
 
@@ -91,6 +91,7 @@ use Charcoal\Database\DatabaseClient;
 
     /**
      * @return array
+     * @api
      */
     public function queriesAggregate(): array
     {
@@ -109,6 +110,7 @@ use Charcoal\Database\DatabaseClient;
 
     /**
      * @return int
+     * @api
      */
     public function queriesFlush(): int
     {
