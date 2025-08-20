@@ -75,7 +75,7 @@ readonly class PathRegistry implements AppServiceInterface
         $exception = match (true) {
             $read && !$path->readable => "is not readable",
             $write && !$path->writable => "is not writable",
-            $execute && !$winOs && !$path->executable || $winOs => "is not executable",
+            $execute && (!$winOs && !$path->executable) => "is not executable",
             default => null,
         };
 
