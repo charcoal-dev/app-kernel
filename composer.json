@@ -24,7 +24,7 @@
     "charcoal-dev/database": "^0.2.5",
     "charcoal-dev/db-orm": "^0.2.4",
     "charcoal-dev/events": "^0.1.8",
-    "charcoal-dev/filesystem": "^0.2.6",
+    "charcoal-dev/filesystem": "^0.2.8",
     "charcoal-dev/http-commons": "^0.2.7",
     "charcoal-dev/http-router": "^0.2.4",
     "charcoal-dev/cipher": "^0.2.2",

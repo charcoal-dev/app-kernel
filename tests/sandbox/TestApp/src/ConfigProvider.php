@@ -43,8 +43,7 @@ final class ConfigProvider
             )
         );
 
-
-        $appConfig->security->setSemaphoreDirectory("./tmp/semaphore");
+        $appConfig->security->setSemaphoreDirectory("/tmp/semaphore");
 
         return $appConfig->build();
     }
