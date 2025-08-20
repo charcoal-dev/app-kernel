@@ -8,8 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\Tests\App\Sandbox\TestApp;
 
-use Charcoal\App\Kernel\Config\Builder\CacheConfigObjectsBuilder;
-use Charcoal\App\Kernel\Config\Builder\DbConfigObjectsBuilder;
+use Charcoal\App\Kernel\Config\Builder\AppConfigBuilder;
 use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
 use Charcoal\App\Kernel\Config\Snapshot\CacheStoreConfig;
 use Charcoal\App\Kernel\Config\Snapshot\DatabaseConfig;
@@ -17,25 +16,25 @@ use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Enums\CacheDriver;
 use Charcoal\Database\Enums\DbConnectionStrategy;
 use Charcoal\Database\Enums\DbDriver;
+use Charcoal\Filesystem\Path\DirectoryPath;
 use Charcoal\Tests\App\Fixtures\Enums\CacheStore;
 use Charcoal\Tests\App\Fixtures\Enums\DbConfig;
 use Charcoal\Tests\App\Fixtures\Enums\TimezoneEnum;
 
 final class ConfigProvider
 {
-    public static function getConfig(AppEnv $env): AppConfig
+    public static function getConfig(AppEnv $env, DirectoryPath $root): AppConfig
     {
-        return self::getConfig_1cacheNull_1sqliteDb_UTC($env);
+        return self::getConfig_1cacheNull_1sqliteDb_UTC($env, $root);
     }
 
-    public static function getConfig_1cacheNull_1sqliteDb_UTC(AppEnv $env): AppConfig
+    public static function getConfig_1cacheNull_1sqliteDb_UTC(AppEnv $env, DirectoryPath $root): AppConfig
     {
-        $cacheConfig = new CacheConfigObjectsBuilder();
-        $cacheConfig->set(CacheStore::Secondary,
+        $appConfig = new AppConfigBuilder($env, $root, TimezoneEnum::UTC);
+        $appConfig->cache->set(CacheStore::Secondary,
             new CacheStoreConfig(CacheDriver::NULL, "0.0.0.0", 6379, 6));
 
-        $dbConfig = new DbConfigObjectsBuilder();
-        $dbConfig->set(
+        $appConfig->database->set(
             DbConfig::Primary,
             new DatabaseConfig(
                 DbDriver::SQLITE,
@@ -44,6 +43,9 @@ final class ConfigProvider
             )
         );
 
-        return new AppConfig($env, TimezoneEnum::UTC, $cacheConfig->build(), $dbConfig->build());
+
+        $appConfig->security->setSemaphoreDirectory("./tmp/semaphore");
+
+        return $appConfig->build();
     }
 }

@@ -18,6 +18,7 @@ use Charcoal\App\Kernel\Internal\DomainBundle;
 use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Internal\Services\ServicesBundle;
 use Charcoal\App\Kernel\Clock\Clock;
+use Charcoal\App\Kernel\Security\SecurityService;
 use Charcoal\Filesystem\Node\DirectoryNode;
 
 /**
@@ -37,10 +38,11 @@ class AppManifest
     final public function appServices(AbstractApp $app): ServicesBundle
     {
         return new ServicesBundle(
-            $this->resolveClockService($app),
+            new Clock($app->config->timezone),
             $this->resolveEventsManager($app),
             $this->resolveDatabaseManager($app),
             $this->resolveCacheManager($app),
+            new SecurityService($app)
         );
     }
 
@@ -79,14 +81,6 @@ class AppManifest
     public function resolvePathsRegistry(AppEnv $env, DirectoryNode $root): PathRegistry
     {
         return new PathRegistry($env, $root->path);
-    }
-
-    /**
-     * Provides an instance of the Clock service configured with the application's timezone.
-     */
-    protected function resolveClockService(AbstractApp $app): Clock
-    {
-        return new Clock($app->config->timezone);
     }
 
     /**

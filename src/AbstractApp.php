@@ -21,9 +21,11 @@ use Charcoal\App\Kernel\Internal\AppContext;
 use Charcoal\App\Kernel\Internal\AppSerializable;
 use Charcoal\App\Kernel\Internal\DomainBundle;
 use Charcoal\App\Kernel\Internal\PathRegistry;
+use Charcoal\App\Kernel\Security\SecurityService;
 use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Filesystem\Node\DirectoryNode;
+use Charcoal\Filesystem\Path\DirectoryPath;
 use Charcoal\Filesystem\Path\PathInfo;
 
 /**
@@ -43,7 +45,7 @@ abstract class AbstractApp extends AppSerializable
     public readonly ErrorManager $errors;
     public readonly EventsManager $events;
     public readonly PathRegistry $paths;
-    // public readonly Security $security;
+    public readonly SecurityService $security;
     public readonly DomainBundle $domain;
     public readonly Diagnostics $diagnostics;
 
@@ -61,7 +63,7 @@ abstract class AbstractApp extends AppSerializable
         $this->paths->declarePaths();
 
         // Resolve AppConfig object
-        $this->config = $this->resolveAppConfig($env, $root);
+        $this->config = $this->resolveAppConfig($env, $root->path);
 
         // Resolve AppManifest object, and declare services
         foreach ($manifest->appServices($this) as $service) {
@@ -70,6 +72,7 @@ abstract class AbstractApp extends AppSerializable
                 $service instanceof CacheManager => $this->cache = $service,
                 $service instanceof DatabaseManager => $this->database = $service,
                 $service instanceof EventsManager => $this->events = $service,
+                $service instanceof SecurityService => $this->security = $service,
                 default => throw new \RuntimeException("Unknown service: " . get_class($service)),
             };
         }
@@ -108,10 +111,10 @@ abstract class AbstractApp extends AppSerializable
 
     /**
      * @param AppEnv $env
-     * @param DirectoryNode $root
+     * @param DirectoryPath $root
      * @return AppConfig
      */
-    abstract protected function resolveAppConfig(AppEnv $env, DirectoryNode $root): AppConfig;
+    abstract protected function resolveAppConfig(AppEnv $env, DirectoryPath $root): AppConfig;
 
     /**
      * @return AppManifest
@@ -167,6 +170,7 @@ abstract class AbstractApp extends AppSerializable
             "events" => $this->events,
             "paths" => $this->paths,
             "domain" => $this->domain,
+            "security" => $this->security,
             "diagnostics" => null,
         ];
     }
@@ -191,6 +195,7 @@ abstract class AbstractApp extends AppSerializable
         $this->events = $data["events"];
 
         Clock::initializeStatic($this->clock);
+        $this->security = $data["security"];
         $this->domain = $data["domain"];
 
         $this->isReady("Restore app states successful");

@@ -12,6 +12,7 @@ use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
 use Charcoal\App\Kernel\Contracts\Enums\TimezoneEnumInterface;
 use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
+use Charcoal\Filesystem\Path\DirectoryPath;
 
 /**
  * Constructs an application configuration using the provided environment, timezone,
@@ -20,14 +21,19 @@ use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
  */
 class AppConfigBuilder implements ConfigBuilderInterface
 {
+    public CacheConfigObjectsBuilder $cache;
+    public DbConfigObjectsBuilder $database;
+    public SecurityConfigBuilder $security;
+
     public function __construct(
-        public AppEnv                     $env,
-        public TimezoneEnumInterface      $timezone,
-        public ?CacheConfigObjectsBuilder $cache,
-        public ?DbConfigObjectsBuilder    $database,
-        public SecurityConfigBuilder      $security,
+        public AppEnv                $env,
+        public DirectoryPath         $root,
+        public TimezoneEnumInterface $timezone,
     )
     {
+        $this->cache = new CacheConfigObjectsBuilder();
+        $this->database = new DbConfigObjectsBuilder();
+        $this->security = new SecurityConfigBuilder($this->root);
     }
 
     public function build(): AppConfig
@@ -35,8 +41,8 @@ class AppConfigBuilder implements ConfigBuilderInterface
         return new AppConfig(
             $this->env,
             $this->timezone,
-            $this->cache?->build(),
-            $this->database?->build(),
+            $this->cache->build(),
+            $this->database->build(),
             $this->security->build(),
         );
     }
