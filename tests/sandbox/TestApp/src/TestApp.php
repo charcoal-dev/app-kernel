@@ -12,6 +12,7 @@ use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\AppManifest;
 use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
 use Charcoal\App\Kernel\Enums\AppEnv;
+use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\Filesystem\Path\DirectoryPath;
 
 /**
@@ -20,9 +21,9 @@ use Charcoal\Filesystem\Path\DirectoryPath;
  */
 class TestApp extends AbstractApp
 {
-    protected function resolveAppConfig(AppEnv $env, DirectoryPath $root): AppConfig
+    protected function resolveAppConfig(AppEnv $env, PathRegistry $paths): AppConfig
     {
-        return ConfigProvider::getConfig($env, $root);
+        return ConfigProvider::getConfig($env, $paths);
     }
 
     protected function resolveAppManifest(): AppManifest

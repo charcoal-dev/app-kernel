@@ -14,23 +14,23 @@ use Charcoal\App\Kernel\Config\Snapshot\CacheStoreConfig;
 use Charcoal\App\Kernel\Config\Snapshot\DatabaseConfig;
 use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Enums\CacheDriver;
+use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\Database\Enums\DbConnectionStrategy;
 use Charcoal\Database\Enums\DbDriver;
-use Charcoal\Filesystem\Path\DirectoryPath;
 use Charcoal\Tests\App\Fixtures\Enums\CacheStore;
 use Charcoal\Tests\App\Fixtures\Enums\DbConfig;
 use Charcoal\Tests\App\Fixtures\Enums\TimezoneEnum;
 
 final class ConfigProvider
 {
-    public static function getConfig(AppEnv $env, DirectoryPath $root): AppConfig
+    public static function getConfig(AppEnv $env, PathRegistry $paths): AppConfig
     {
-        return self::getConfig_1cacheNull_1sqliteDb_UTC($env, $root);
+        return self::getConfig_1cacheNull_1sqliteDb_UTC($env, $paths);
     }
 
-    public static function getConfig_1cacheNull_1sqliteDb_UTC(AppEnv $env, DirectoryPath $root): AppConfig
+    public static function getConfig_1cacheNull_1sqliteDb_UTC(AppEnv $env, PathRegistry $paths): AppConfig
     {
-        $appConfig = new AppConfigBuilder($env, $root, TimezoneEnum::UTC);
+        $appConfig = new AppConfigBuilder($env, $paths, TimezoneEnum::UTC);
         $appConfig->cache->set(CacheStore::Secondary,
             new CacheStoreConfig(CacheDriver::NULL, "0.0.0.0", 6379, 6));
 
