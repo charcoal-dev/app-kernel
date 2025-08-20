@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Internal;
 
 use Charcoal\App\Kernel\AbstractApp;
-use Charcoal\App\Kernel\Diagnostics\Diagnostics;
 use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
 use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
@@ -69,7 +68,7 @@ readonly class PathRegistry implements AppServiceInterface
             $path = $isDirectory ? $this->root->join($relative)->isDirectory() :
                 $this->root->join($relative)->isFile();
         } catch (FilesystemException $e) {
-            throw new \RuntimeException($e->getMessage(), previous: $e);
+            throw new \RuntimeException("[" . $relative . "]: " . $e->getMessage(), previous: $e);
         }
 
         $exception = match (true) {
