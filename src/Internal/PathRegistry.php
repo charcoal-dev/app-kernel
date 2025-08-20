@@ -71,10 +71,11 @@ readonly class PathRegistry implements AppServiceInterface
             throw new \RuntimeException("[" . $relative . "]: " . $e->getMessage(), previous: $e);
         }
 
+        $winOs = DIRECTORY_SEPARATOR === "\\";
         $exception = match (true) {
             $read && !$path->readable => "is not readable",
             $write && !$path->writable => "is not writable",
-            $execute && !$path->executable => "is not executable",
+            $execute && !$winOs && !$path->executable || $winOs => "is not executable",
             default => null,
         };
 
