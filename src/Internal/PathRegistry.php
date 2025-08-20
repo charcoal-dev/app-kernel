@@ -10,7 +10,7 @@ namespace Charcoal\App\Kernel\Internal;
 
 use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
-use Charcoal\Filesystem\Exceptions\InvalidPathException;
+use Charcoal\Filesystem\Exceptions\FilesystemException;
 use Charcoal\Filesystem\Path\DirectoryPath;
 use Charcoal\Filesystem\Path\FilePath;
 use Charcoal\Filesystem\Path\PathInfo;
@@ -57,9 +57,9 @@ readonly class PathRegistry implements AppServiceInterface
         }
 
         try {
-            $path = $isDirectory ? new DirectoryPath($this->root->absolute . DIRECTORY_SEPARATOR . $relative) :
-                new FilePath($this->root->absolute . DIRECTORY_SEPARATOR . $relative);
-        } catch (InvalidPathException $e) {
+            $path = $isDirectory ? $this->root->join($relative)->isDirectory() :
+                $this->root->join($relative)->isFile();
+        } catch (FilesystemException $e) {
             throw new \RuntimeException($e->getMessage(), previous: $e);
         }
 

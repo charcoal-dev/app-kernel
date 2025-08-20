@@ -69,7 +69,7 @@ final class SemaphoreService extends AbstractFactoryRegistry
     protected function create(string $key): FilesystemSemaphore
     {
         try {
-            return new FilesystemSemaphore(new DirectoryPath($this->path->absolute . "/" . $key));
+            return new FilesystemSemaphore(new DirectoryPath($this->path->join($key)));
         } catch (\Exception $e) {
             throw new WrappedException($e, "Failed to resolve directory for semaphore scope: " . $key);
         }

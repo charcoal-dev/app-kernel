@@ -10,6 +10,7 @@ namespace Charcoal\App\Kernel\Config\Builder;
 
 use Charcoal\App\Kernel\Config\Snapshot\SecurityConfig;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
+use Charcoal\Filesystem\Exceptions\FilesystemException;
 use Charcoal\Filesystem\Path\DirectoryPath;
 
 /**
@@ -30,8 +31,8 @@ final class SecurityConfigBuilder implements ConfigBuilderInterface
     public function setSemaphoreDirectory(string $dir): self
     {
         try {
-            $this->semaphoreDirectory = new DirectoryPath($this->root->absolute . "/" . ltrim($dir, "."));
-        } catch (\Throwable $e) {
+            $this->semaphoreDirectory = $this->root->join($dir)->isDirectory();
+        } catch (FilesystemException $e) {
             throw new \DomainException("Failed to load semaphore directory", previous: $e);
         }
 
