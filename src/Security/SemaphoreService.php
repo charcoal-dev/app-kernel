@@ -19,6 +19,7 @@ use Charcoal\Filesystem\Enums\PathContext;
 use Charcoal\Filesystem\Enums\PathType;
 use Charcoal\Filesystem\Path\DirectoryPath;
 use Charcoal\Filesystem\Path\PathInfo;
+use Charcoal\Semaphore\Filesystem\FileLock;
 use Charcoal\Semaphore\Filesystem\FilesystemSemaphore;
 
 /**
@@ -45,6 +46,19 @@ final class SemaphoreService extends AbstractFactoryRegistry
     public function get(SemaphoreScopeEnumInterface $scope): FilesystemSemaphore
     {
         return $this->getExistingOrCreate($scope->getConfigKey());
+    }
+
+    /**
+     * @throws \Charcoal\Semaphore\Exceptions\SemaphoreLockException
+     */
+    public function lock(
+        SemaphoreScopeEnumInterface $scope,
+        string                      $lockId,
+        ?float                      $checkInterval = null,
+        int                         $maximumWait = 0
+    ): FileLock
+    {
+        return $this->get($scope)->obtainLock($lockId, $checkInterval, max($maximumWait, 0));
     }
 
     /**
