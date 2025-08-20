@@ -74,8 +74,9 @@ final class Diagnostics implements ErrorLoggerInterface
 
     /**
      * @return EventStats
+     * @api
      */
-    public function inspectEvent(): EventStats
+    public function eventInspection(): EventStats
     {
         return $this->events->inspect(true);
     }
