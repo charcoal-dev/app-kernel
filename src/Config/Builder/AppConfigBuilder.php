@@ -25,6 +25,7 @@ class AppConfigBuilder implements ConfigBuilderInterface
         public TimezoneEnumInterface      $timezone,
         public ?CacheConfigObjectsBuilder $cache,
         public ?DbConfigObjectsBuilder    $database,
+        public SecurityConfigBuilder      $security,
     )
     {
     }
@@ -36,6 +37,7 @@ class AppConfigBuilder implements ConfigBuilderInterface
             $this->timezone,
             $this->cache?->build(),
             $this->database?->build(),
+            $this->security->build(),
         );
     }
 }

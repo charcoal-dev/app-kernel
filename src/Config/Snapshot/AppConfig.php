@@ -23,6 +23,7 @@ readonly class AppConfig implements ConfigSnapshotInterface
         public TimezoneEnumInterface  $timezone,
         public ?CacheManagerConfig    $cache,
         public ?DatabaseManagerConfig $database,
+        public SecurityConfig         $security,
     )
     {
     }
