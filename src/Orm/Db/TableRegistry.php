@@ -17,6 +17,7 @@ use Charcoal\App\Kernel\Contracts\Enums\TableRegistryEnumInterface;
  */
 class TableRegistry
 {
+    /** @var array<string,array<string, OrmTableBase> */
     protected array $map = [];
 
     /**
@@ -54,7 +55,8 @@ class TableRegistry
     /**
      * Returns all declared tables under a DB
      * @param DatabaseEnumInterface $db
-     * @return array
+     * @return array<string,array<string, OrmTableBase>
+     * @api
      */
     public function getDatabaseTables(DatabaseEnumInterface $db): array
     {
@@ -63,7 +65,8 @@ class TableRegistry
 
     /**
      * Returns entire collection of databases and their tables
-     * @return array
+     * @return array<string,array<string, OrmTableBase>
+     * @api
      */
     public function getCollection(): array
     {
