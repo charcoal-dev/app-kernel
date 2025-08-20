@@ -72,6 +72,7 @@ class ErrorManager implements AppServiceInterface
     /**
      * @param ErrorLoggerInterface $logger
      * @return void
+     * @api
      */
     final public function unsubscribe(ErrorLoggerInterface $logger): void
     {
@@ -290,7 +291,6 @@ class ErrorManager implements AppServiceInterface
     /**
      * @param int $level
      * @return bool
-     * @internal
      */
     public static function isFatalError(int $level): bool
     {
