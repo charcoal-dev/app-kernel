@@ -15,6 +15,7 @@ use Charcoal\Http\Router\Controller\AbstractController;
 /**
  * Class AbstractRouteController
  * @package Charcoal\App\Kernel\EntryPoint\Http
+ * @api
  */
 abstract class AbstractRouteController extends AbstractController
 {
