@@ -22,6 +22,7 @@ use Charcoal\Base\Traits\InstanceOnStaticScopeTrait;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Base\Traits\NotSerializableTrait;
+use Charcoal\Events\Stats\EventStats;
 
 /**
  * Class Diagnostics
@@ -59,7 +60,6 @@ final class Diagnostics implements ErrorLoggerInterface
      * @param DiagnosticsEvent $event
      * @param \Closure $callback
      * @return void
-     * @throws \Charcoal\Events\Exceptions\SubscriptionClosedException
      */
     public function subscribe(DiagnosticsEvent $event, \Closure $callback): void
     {
@@ -70,6 +70,14 @@ final class Diagnostics implements ErrorLoggerInterface
         $subscription = $this->events->subscribe();
         $this->eventListeners[$event->name][] = $subscription;
         $subscription->listen($event->getEventContext(), $callback);
+    }
+
+    /**
+     * @return EventStats
+     */
+    public function inspectEvent(): EventStats
+    {
+        return $this->events->inspect(true);
     }
 
     /**
