@@ -24,6 +24,7 @@ use Charcoal\App\Kernel\Internal\AppSerializable;
 use Charcoal\App\Kernel\Internal\DomainBundle;
 use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Security\SecurityService;
+use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Events\Exceptions\SubscriptionClosedException;
@@ -172,6 +173,7 @@ abstract class AbstractApp extends AppSerializable
 
         // All declared services and modules:
         $this->domain->bootstrap($this);
+        $this->diagnostics->verbose(ObjectHelper::baseClassName(static::class) . " bootstrapped");
     }
 
     /**
