@@ -15,6 +15,8 @@ use Charcoal\App\Kernel\Diagnostics\ExecutionMetrics;
 use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
 use Charcoal\App\Kernel\Errors\ErrorManager;
+use Charcoal\App\Kernel\Internal\PathRegistry;
+use Charcoal\Filesystem\Path\DirectoryPath;
 use Charcoal\Filesystem\Path\PathInfo;
 use Charcoal\Tests\App\Fixtures\Enums\TimezoneEnum;
 use PHPUnit\Framework\TestCase;
@@ -133,7 +135,7 @@ class DiagnosticsTest extends TestCase
         $diag = Diagnostics::app();
 
         // Use a real ErrorManager; in AppEnv::Test no handlers are deployed
-        $errMgr = new ErrorManager(AppEnv::Test, new PathInfo(__DIR__));
+        $errMgr = new ErrorManager(AppEnv::Test, new PathRegistry(AppEnv::Test, new DirectoryPath(__DIR__)));
         // Keep the entry minimal (no backtrace inflation)
         $errMgr->debugging = false;
 

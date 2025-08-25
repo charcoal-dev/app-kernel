@@ -9,10 +9,10 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Support;
 
 /**
- * Class ErrorHelper
- * @package Charcoal\App\Kernel\Support
+ * This class provides helper methods for handling and formatting error information.
+ * It extends the base ErrorHelper class to include additional functionality.
  */
-class ErrorHelper extends \Charcoal\Base\Support\Helpers\ErrorHelper
+abstract readonly class ErrorHelper extends \Charcoal\Base\Support\Helpers\ErrorHelper
 {
     /**
      * @param \Throwable $t

@@ -9,10 +9,14 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Support;
 
 /**
- * Class DtoHelper
- * @package Charcoal\App\Kernel\Support
+ * Provides utility methods for handling Data Transfer Objects (DTOs).
+ *
+ * This class offers methods to convert various objects, such as exceptions,
+ * into data structures suitable for further serialization, logging, or debugging.
+ * It ensures sensitive information is sanitized and provides additional tools
+ * for customization and optimization of data output.
  */
-class DtoHelper extends \Charcoal\Base\Support\Helpers\DtoHelper
+abstract readonly class DtoHelper extends \Charcoal\Base\Support\Helpers\DtoHelper
 {
     /**
      * Converts and sanitizes \Throwable object to a DTO
@@ -57,20 +61,5 @@ class DtoHelper extends \Charcoal\Base\Support\Helpers\DtoHelper
         }
 
         return $dto;
-    }
-
-
-    /**
-     * Converts an input array or object into a type-safe array representation.
-     */
-    public static function typeSafeArray(
-        array|object         $object,
-        int                  $maxDepth = 10,
-        bool                 $normalizeCommonShapes = true,
-        bool                 $checkRecursion = true,
-        null|string|callable $onRecursion = null
-    ): array
-    {
-        return self::createFrom($object, $maxDepth, $normalizeCommonShapes, $checkRecursion, $onRecursion);
     }
 }
