@@ -18,6 +18,7 @@ use Charcoal\Cli\Display\Banners;
 use Charcoal\Cli\Events\State\RuntimeStatus;
 use Charcoal\Cli\Events\State\RuntimeStatusChange;
 use Charcoal\Cli\Output\StdoutPrinter;
+use Composer\InstalledVersions;
 
 /**
  * Handles CLI interactions for the application. Manages the creation and execution
