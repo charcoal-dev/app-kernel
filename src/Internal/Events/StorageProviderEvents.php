@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Internal\Events;
 
-use Charcoal\Events\AbstractEvent;
 use Charcoal\Events\Exceptions\SubscriptionClosedException;
 use Charcoal\Events\Subscriptions\Subscription;
 
@@ -46,13 +45,7 @@ readonly abstract class StorageProviderEvents
     final protected function setListener(AbstractEvent $event, string $context, \Closure $closure): Subscription
     {
         $subscription = $this->getSubscription($event);
-
-        try {
-            $subscription->listen($context, $closure);
-        } catch (SubscriptionClosedException $e) {
-            throw new \RuntimeException("An unexpected error occurred", previous: $e);
-        }
-
+        $subscription->listen($context, $closure);
         return $subscription;
     }
 }

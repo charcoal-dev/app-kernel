@@ -15,10 +15,9 @@ use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Base\Traits\NotSerializableTrait;
 use Charcoal\Cli\Console;
 use Charcoal\Cli\Display\Banners;
-use Charcoal\Cli\Events\State\ExecutionState;
-use Charcoal\Cli\Events\State\ExecutionStateChange;
+use Charcoal\Cli\Events\State\RuntimeStatus;
+use Charcoal\Cli\Events\State\RuntimeStatusChange;
 use Charcoal\Cli\Output\StdoutPrinter;
-use Composer\InstalledVersions;
 
 /**
  * Handles CLI interactions for the application. Manages the creation and execution
@@ -38,7 +37,6 @@ class AppCliHandler extends Console
      * @param string $scriptsNamespace
      * @param array $args
      * @param string|null $defaultScriptName
-     * @throws \Charcoal\Events\Exceptions\SubscriptionClosedException
      */
     public function __construct(
         public readonly AbstractApp $app,
@@ -54,12 +52,12 @@ class AppCliHandler extends Console
         $this->stdout = new StdoutPrinter();
         $this->addOutputHandler($this->stdout);
 
-        $this->events->subscribe()->listen(ExecutionStateChange::class, function (ExecutionStateChange $event) {
+        $this->events->subscribe()->listen(RuntimeStatusChange::class, function (RuntimeStatusChange $event) {
             match ($event->state) {
-                ExecutionState::Prepare => $this->eventCallbackPrepare(),
-                ExecutionState::ScriptNotFound => $this->eventCallbackScriptNotFound($event->scriptClassname),
-                ExecutionState::Ready => $this->eventCallbackReady(),
-                ExecutionState::Completed => $this->eventCallbackCompleted($event->isSuccess),
+                RuntimeStatus::Prepare => $this->eventCallbackPrepare(),
+                RuntimeStatus::ScriptNotFound => $this->eventCallbackScriptNotFound($event->scriptClassname),
+                RuntimeStatus::Ready => $this->eventCallbackReady(),
+                RuntimeStatus::Completed => $this->eventCallbackCompleted($event->isSuccess),
             };
         });
     }

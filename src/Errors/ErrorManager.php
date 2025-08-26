@@ -17,7 +17,6 @@ use Charcoal\Base\Traits\InstanceOnStaticScopeTrait;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Filesystem\Path\PathInfo;
-use Charcoal\Http\Router\Exceptions\ResponseDispatchedException;
 
 /**
  * Manages application error handling, logging, and exception processing.
@@ -240,9 +239,10 @@ class ErrorManager implements AppServiceInterface
      */
     final public function handleThrowable(\Throwable $t): never
     {
-        if ($t instanceof ResponseDispatchedException) {
-            exit(0);
-        }
+        // Todo: discard previous stubs
+//        if ($t instanceof ResponseDispatchedException) {
+//            exit(0);
+//        }
 
         if (static::$handlingThrowable) {
             exit(1);

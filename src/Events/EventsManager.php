@@ -31,7 +31,6 @@ readonly class EventsManager implements AppServiceConfigAwareInterface
      * @param DiagnosticsEvent $event
      * @param \Closure $closure
      * @return void
-     * @throws \Charcoal\Events\Exceptions\SubscriptionClosedException
      */
     public function diagnostics(DiagnosticsEvent $event, \Closure $closure): void
     {
