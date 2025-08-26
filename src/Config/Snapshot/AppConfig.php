@@ -13,8 +13,10 @@ use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
 
 /**
- * Class AppConfig
- * @package Charcoal\App\Kernel
+ * Represents the application configuration.
+ * This class provides a snapshot of the application's configuration at a given point in time.
+ * It includes environment settings, timezone configuration, optional cache and database manager configurations,
+ * security settings, and server API interface configurations.
  */
 readonly class AppConfig implements ConfigSnapshotInterface
 {
@@ -24,6 +26,7 @@ readonly class AppConfig implements ConfigSnapshotInterface
         public ?CacheManagerConfig    $cache,
         public ?DatabaseManagerConfig $database,
         public SecurityConfig         $security,
+        public SapiInterfacesConfig   $sapi
     )
     {
     }

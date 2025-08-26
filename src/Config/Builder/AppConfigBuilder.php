@@ -17,13 +17,13 @@ use Charcoal\App\Kernel\Internal\PathRegistry;
 /**
  * Constructs an application configuration using the provided environment, timezone,
  * cache configuration, and database configuration builders.
- * @api
  */
 class AppConfigBuilder implements ConfigBuilderInterface
 {
     public readonly CacheConfigObjectsBuilder $cache;
     public readonly DbConfigObjectsBuilder $database;
     public readonly SecurityConfigBuilder $security;
+    public readonly SapiConfigBuilder $sapi;
 
     public function __construct(
         public AppEnv                $env,
@@ -34,8 +34,13 @@ class AppConfigBuilder implements ConfigBuilderInterface
         $this->cache = new CacheConfigObjectsBuilder();
         $this->database = new DbConfigObjectsBuilder();
         $this->security = new SecurityConfigBuilder($this->paths->root);
+        $this->sapi = new SapiConfigBuilder();
     }
 
+    /**
+     * Constructs and returns an AppConfig instance using the provided configurations.
+     * @return AppConfig The constructed AppConfig instance.
+     */
     public function build(): AppConfig
     {
         return new AppConfig(
@@ -44,6 +49,7 @@ class AppConfigBuilder implements ConfigBuilderInterface
             $this->cache->build(),
             $this->database->build(),
             $this->security->build(),
+            $this->sapi->build()
         );
     }
 }
