@@ -11,10 +11,13 @@ namespace Charcoal\App\Kernel\Config\Builder;
 use Charcoal\App\Kernel\Config\Snapshot\SapiHttpInterfaceConfig;
 use Charcoal\App\Kernel\Contracts\EntryPoint\EntryPointEnumInterface;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
+use Charcoal\Http\Commons\Enums\HeaderKeyValidation;
+use Charcoal\Http\Commons\Enums\ParamKeyValidation;
 use Charcoal\Http\Commons\Support\CorsPolicy;
-use Charcoal\Http\Router\Config\HttpServer;
-use Charcoal\Http\Router\Config\RouterConfig;
-use Charcoal\Http\Router\Config\TrustedProxy;
+use Charcoal\Http\Server\Config\RequestConstraints;
+use Charcoal\Http\Server\Config\ServerConfig;
+use Charcoal\Http\Server\Config\VirtualHost;
+use Charcoal\Http\TrustProxy\Config\TrustedProxy;
 
 /**
  * Class SapiHttpConfigBuilder
@@ -23,16 +26,14 @@ use Charcoal\Http\Router\Config\TrustedProxy;
  */
 class SapiHttpConfigBuilder implements ConfigBuilderInterface
 {
-    /** @var array<HttpServer> */
+    /** @var array<VirtualHost> */
     protected array $hostnames = [];
     /** @var array<TrustedProxy> */
     protected array $trustedProxies = [];
-    /** @var array<string,mixed> */
-    protected array $routerConfig = [
-        "enforceTls" => true,
-        "wwwIsAlias" => true,
-    ];
 
+    protected bool $serverTlsEnforce = true;
+    protected bool $serverWwwSupport = true;
+    protected ?RequestConstraints $requestConstraints = null;
     protected bool $corsEnforce = true;
     protected array $corsOrigins = [];
     protected int $corsMaxAge = 0;
@@ -48,7 +49,7 @@ class SapiHttpConfigBuilder implements ConfigBuilderInterface
     public function addServer(string $hostname, int ...$ports): self
     {
         try {
-            $this->hostnames[] = new HttpServer($hostname, ...$ports);
+            $this->hostnames[] = new VirtualHost($hostname, ...$ports);
         } catch (\Exception $e) {
             throw new \InvalidArgumentException(sprintf("Http [%s]: %s",
                 $this->interface->name, $e->getMessage()),
@@ -72,10 +73,10 @@ class SapiHttpConfigBuilder implements ConfigBuilderInterface
      * Configures the router settings.
      * @api
      */
-    public function routerConfig(bool $enforceTls = true, bool $wwwIsAlias = true): self
+    public function routerConfig(bool $enforceTls = true, bool $wwwSupport = true): self
     {
-        $this->routerConfig["enforceTls"] = $enforceTls;
-        $this->routerConfig["wwwIsAlias"] = $wwwIsAlias;
+        $this->serverTlsEnforce = $enforceTls;
+        $this->serverWwwSupport = $wwwSupport;
         return $this;
     }
 
@@ -105,32 +106,70 @@ class SapiHttpConfigBuilder implements ConfigBuilderInterface
     }
 
     /**
+     * @return $this
+     * @api
+     */
+    public function perRequestConstraints(
+        int                 $maxUriBytes = 256,
+        int                 $maxHeaders = 40,
+        int                 $maxHeaderLength = 256,
+        HeaderKeyValidation $headerKeyValidation = HeaderKeyValidation::RFC7230,
+        ParamKeyValidation  $paramKeyValidation = ParamKeyValidation::STRICT,
+        int                 $maxBodyBytes = 10240,
+        int                 $maxParams = 32,
+        int                 $maxParamLength = 256,
+        int                 $dtoMaxDepth = 3
+    ): self
+    {
+        $this->requestConstraints = new RequestConstraints(
+            $maxUriBytes,
+            $maxHeaders,
+            $maxHeaderLength,
+            $headerKeyValidation,
+            $paramKeyValidation,
+            $maxBodyBytes,
+            $maxParams,
+            $maxParamLength,
+            $dtoMaxDepth
+        );
+
+        return $this;
+    }
+
+    /**
      * @return SapiHttpInterfaceConfig
      */
     final public function build(): SapiHttpInterfaceConfig
     {
         if (!$this->hostnames) {
-            throw new \InvalidArgumentException("No hostnames provided for HTTP SAPI interface: " .
+            throw new \BadMethodCallException("No hostnames provided for HTTP SAPI interface: " .
                 $this->interface->name);
         }
 
         if (!$this->corsOrigins) {
-            throw new \InvalidArgumentException("No CORS origins provided for HTTP SAPI interface: " .
+            throw new \BadMethodCallException("No CORS origins provided for HTTP SAPI interface: " .
+                $this->interface->name);
+        }
+
+        if (!$this->requestConstraints) {
+            throw new \BadMethodCallException("No perRequestConstraints provided for HTTP SAPI interface: " .
                 $this->interface->name);
         }
 
         return new SapiHttpInterfaceConfig(
             $this->interface,
-            new RouterConfig($this->hostnames,
+            new ServerConfig(
+                $this->hostnames,
                 $this->trustedProxies,
-                enforceTls: $this->routerConfig["enforceTls"],
-                wwwAlias: $this->routerConfig["wwwIsAlias"],
-            ),
-            new CorsPolicy(
-                $this->corsEnforce,
-                $this->corsOrigins,
-                maxAge: $this->corsMaxAge,
-                withCredentials: false
+                new CorsPolicy(
+                    $this->corsEnforce,
+                    $this->corsOrigins,
+                    maxAge: $this->corsMaxAge,
+                    withCredentials: false
+                ),
+                $this->requestConstraints,
+                enforceTls: $this->serverTlsEnforce,
+                wwwSupport: $this->serverWwwSupport,
             )
         );
     }

@@ -12,8 +12,7 @@ use Charcoal\App\Kernel\Contracts\EntryPoint\EntryPointEnumInterface;
 use Charcoal\App\Kernel\Contracts\EntryPoint\SapiHttpConfigInterface;
 use Charcoal\App\Kernel\Enums\SapiEnum;
 use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
-use Charcoal\Http\Commons\Support\CorsPolicy;
-use Charcoal\Http\Router\Config\RouterConfig;
+use Charcoal\Http\Server\Config\ServerConfig;
 
 /**
  * Class SapiHttpInterfaceConfig
@@ -23,8 +22,7 @@ final readonly class SapiHttpInterfaceConfig implements ConfigSnapshotInterface,
 {
     public function __construct(
         public EntryPointEnumInterface $interface,
-        public RouterConfig            $routerConfig,
-        public CorsPolicy              $corsPolicy
+        public ServerConfig            $routerConfig
     )
     {
         // Interface/EntryPoint Enum
