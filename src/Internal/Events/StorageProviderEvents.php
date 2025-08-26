@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Internal\Events;
 
-use Charcoal\Events\Exceptions\SubscriptionClosedException;
+use Charcoal\Events\AbstractEvent;
 use Charcoal\Events\Subscriptions\Subscription;
 
 /**
