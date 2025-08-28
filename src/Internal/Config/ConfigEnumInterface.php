@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Internal\Config;
 
 /**
- * Interface ConfigEnumInterface
- * @package Charcoal\App\Kernel\Contracts\Enums
+ * An interface that extends the base UnitEnum and provides functionality
+ * for retrieving a configuration key associated with the implementing enum.
  */
 interface ConfigEnumInterface extends \UnitEnum
 {
