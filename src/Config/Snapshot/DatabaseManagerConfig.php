@@ -26,7 +26,7 @@ final readonly class DatabaseManagerConfig implements ConfigSnapshotInterface
     public function __construct(array $configs)
     {
         foreach ($configs as $key => $config) {
-            if (!NetworkHelper::isValidHostname($config->host)) {
+            if (!NetworkHelper::isValidHostname($config->host, true, true)) {
                 throw new \DomainException("Invalid host IP address for database: " . $key);
             }
 

@@ -33,7 +33,7 @@ final readonly class CacheManagerConfig implements ConfigSnapshotInterface
                 continue;
             }
 
-            if (!NetworkHelper::isValidHostname($config->hostname)) {
+            if (!NetworkHelper::isValidHostname($config->hostname, true, true)) {
                 throw new \InvalidArgumentException("Invalid hostname for cache provider: " . $provider);
             }
 
