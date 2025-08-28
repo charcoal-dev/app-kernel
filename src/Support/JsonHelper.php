@@ -138,9 +138,12 @@ abstract readonly class JsonHelper
                             continue;
                         }
 
-                        if (property_exists($importer, (string)$k) && is_array($importer->{$k}) && is_array($v)) {
+                        if (property_exists($importer, (string)$k)
+                            && is_array($importer->{$k})
+                            && is_array($v)) {
                             if (array_is_list($importer->{$k}) && array_is_list($v)) {
-                                $importer->{$k} = array_values([...$importer->{$k}, ...$v]);
+                                $importer->{$k} = array_values(array_unique([...$importer->{$k}, ...$v],
+                                    SORT_REGULAR));
                             }
                         } else {
                             $importer->{$k} = $v;
@@ -169,7 +172,9 @@ abstract readonly class JsonHelper
                         && is_array($importer->{$item})
                         && is_array($imported->{$item})) {
                         if (array_is_list($importer->{$item}) && array_is_list($imported->{$item})) {
-                            $importer->{$item} = array_values([...$importer->{$item}, ...$imported->{$item}]);
+                            $importer->{$item} = array_values(array_unique(
+                                [...$importer->{$item}, ...$imported->{$item}],
+                                SORT_REGULAR));
                         }
                     } else {
                         $importer->{$item} = $imported->{$item};
