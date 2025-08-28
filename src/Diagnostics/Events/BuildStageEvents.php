@@ -11,7 +11,6 @@ namespace Charcoal\App\Kernel\Diagnostics\Events;
 /**
  * Enumeration representing the various stages of the build process
  * while implementing the context for diagnostic events.
- * @internal
  */
 enum BuildStageEvents implements DiagnosticsEventsContext
 {
