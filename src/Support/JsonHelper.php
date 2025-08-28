@@ -137,17 +137,20 @@ abstract readonly class JsonHelper
                         if (is_string($k) && str_starts_with($k, "$")) {
                             continue;
                         }
+
                         if (property_exists($importer, (string)$k) && is_array($importer->{$k}) && is_array($v)) {
-                            // keep local array as-is (no merge, no override)
-                            continue;
+                            if (array_is_list($importer->{$k}) && array_is_list($v)) {
+                                $importer->{$k} = array_values([...$importer->{$k}, ...$v]);
+                            }
+                        } else {
+                            $importer->{$k} = $v;
                         }
-                        $importer->{$k} = $v;
                     }
-                    continue;
                 }
 
                 continue;
             }
+
 
             if (is_object($imported)) {
                 if (property_exists($imported, "\$imports") && is_array($imported->{"\$imports"})) {
@@ -165,10 +168,12 @@ abstract readonly class JsonHelper
                     if (property_exists($importer, (string)$item)
                         && is_array($importer->{$item})
                         && is_array($imported->{$item})) {
-                        // keep local array as-is (no merge, no override)
-                        continue;
+                        if (array_is_list($importer->{$item}) && array_is_list($imported->{$item})) {
+                            $importer->{$item} = array_values([...$importer->{$item}, ...$imported->{$item}]);
+                        }
+                    } else {
+                        $importer->{$item} = $imported->{$item};
                     }
-                    $importer->{$item} = $imported->{$item};
                 }
             }
         }
