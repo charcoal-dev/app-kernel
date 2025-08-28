@@ -20,7 +20,6 @@ use Charcoal\Filesystem\Path\FilePath;
 /**
  * A helper class for processing and decoding JSON data with support for importing nested structures
  * from directories and various safety checks.
- * Todo: unit testing remains
  * @api
  */
 abstract readonly class JsonHelper
@@ -80,7 +79,6 @@ abstract readonly class JsonHelper
 
             if (is_object($vo)) {
                 $buffer = null;
-                //if (in_array("\$imports", array_keys($dto[$key]), true)) {
                 if (array_key_exists("\$imports", $dto[$key])) {
                     $importer = $vo;
                     $baggage = self::jsonImporter($directory, $importer);
@@ -113,7 +111,7 @@ abstract readonly class JsonHelper
      */
     private static function jsonImporter(DirectoryPath $directory, object $importer): array|object
     {
-        $imports = $importer->{"\$imports"};
+        $imports = $importer->{"\$imports"} ?? null;
         if (!is_array($imports) || !$imports) {
             return [];
         }
@@ -135,19 +133,36 @@ abstract readonly class JsonHelper
                 if (array_is_list($imported)) {
                     $baggage = [...$baggage, ...$imported];
                 } else {
-                    foreach (array_keys(DtoHelper::createFrom((object)$imported, 1)) as $item) {
-                        $importer->{$item} = $imported[$item];
+                    foreach ($imported as $k => $v) {
+                        if (is_string($k) && str_starts_with($k, "$")) {
+                            continue;
+                        }
+                        $importer->{$k} = $v;
                     }
                 }
                 continue;
             }
 
             if (is_object($imported)) {
-                // unset($imported->{"\$schema"});
+                if (property_exists($imported, "\$imports") && is_array($imported->{"\$imports"})) {
+                    self::jsonImporter($directory, $imported);
+                }
+
+                if (property_exists($imported, "\$imports")) {
+                    unset($imported->{"\$imports"});
+                }
+
                 foreach (array_keys(DtoHelper::createFrom($imported, 1)) as $item) {
+                    if (is_string($item) && str_starts_with($item, "$")) {
+                        continue;
+                    }
                     $importer->{$item} = $imported->{$item};
                 }
             }
+        }
+
+        if (property_exists($importer, "\$imports")) {
+            unset($importer->{"\$imports"});
         }
 
         return $baggage;
@@ -172,9 +187,11 @@ abstract readonly class JsonHelper
      */
     public static function decodeJsonFromFile(FileNode|FilePath $path): mixed
     {
-        return json_decode(trim(match (true) {
+        $path = match (true) {
             $path instanceof FileNode => $path->read(),
             default => $path->node()->read()
-        }), false, flags: JSON_THROW_ON_ERROR);
+        };
+
+        return json_decode(trim($path), false, flags: JSON_THROW_ON_ERROR);
     }
 }

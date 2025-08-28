@@ -1,0 +1,13 @@
+{
+  "a": 1,
+  "cfg": {
+    "$imports": ["object", "nested/parent"],
+    "z": true
+  },
+  "scalars": {
+    "$imports": ["scalar", "scalar2"]
+  },
+  "listMerge": {
+    "$imports": ["list"]
+  }
+}

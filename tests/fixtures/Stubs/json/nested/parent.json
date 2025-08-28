@@ -1,0 +1,4 @@
+{
+  "$imports": ["nested/child"],
+  "p": 2
+}
