@@ -9,10 +9,12 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Enums;
 
 /**
- * Represents the different types of semaphore mechanisms that can be used.
- * @api
+ * Enumeration representing semaphore types.
+ * This enum defines the different types of semaphores available for use,
+ * distinguishing between private and shared filesystem semaphores.
  */
 enum SemaphoreType
 {
-    case Filesystem;
+    case Filesystem_Private;
+    case Filesystem_Shared;
 }
