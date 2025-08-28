@@ -20,6 +20,7 @@ use Charcoal\Filesystem\Path\FilePath;
 /**
  * A helper class for processing and decoding JSON data with support for importing nested structures
  * from directories and various safety checks.
+ * Todo: unit testing remains
  * @api
  */
 abstract readonly class JsonHelper
