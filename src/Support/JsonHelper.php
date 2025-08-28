@@ -133,20 +133,17 @@ abstract readonly class JsonHelper
                 if (array_is_list($imported)) {
                     $baggage = [...$baggage, ...$imported];
                 } else {
-                    foreach (array_keys(DtoHelper::createFrom($imported, 1)) as $item) {
-                        if (is_string($item) && str_starts_with($item, "$")) {
+                    foreach ($imported as $k => $v) {
+                        if (is_string($k) && str_starts_with($k, "$")) {
                             continue;
                         }
-                        if (property_exists($importer, (string)$item)
-                            && is_array($importer->{$item})
-                            && is_array($imported->{$item})) {
-                            $importer->{$item} = array_is_list($importer->{$item}) && array_is_list($imported->{$item})
-                                ? array_values([...$importer->{$item}, ...$imported->{$item}])
-                                : array_replace_recursive($importer->{$item}, $imported->{$item});
-                        } else {
-                            $importer->{$item} = $imported->{$item};
+                        if (property_exists($importer, (string)$k) && is_array($importer->{$k}) && is_array($v)) {
+                            // keep local array as-is (no merge, no override)
+                            continue;
                         }
+                        $importer->{$k} = $v;
                     }
+                    continue;
                 }
 
                 continue;
@@ -163,6 +160,12 @@ abstract readonly class JsonHelper
 
                 foreach (array_keys(DtoHelper::createFrom($imported, 1)) as $item) {
                     if (is_string($item) && str_starts_with($item, "$")) {
+                        continue;
+                    }
+                    if (property_exists($importer, (string)$item)
+                        && is_array($importer->{$item})
+                        && is_array($imported->{$item})) {
+                        // keep local array as-is (no merge, no override)
                         continue;
                     }
                     $importer->{$item} = $imported->{$item};
