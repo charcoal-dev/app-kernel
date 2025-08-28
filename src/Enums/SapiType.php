@@ -13,7 +13,7 @@ namespace Charcoal\App\Kernel\Enums;
  * - Http: Represents the HTTP Server API.
  * - Cli: Represents the Command Line Interface (CLI) Server API.
  */
-enum SapiEnum
+enum SapiType
 {
     case Http;
     case Cli;

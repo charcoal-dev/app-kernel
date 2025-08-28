@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Config\Builder;
 
 use Charcoal\App\Kernel\Config\Snapshot\SapiHttpInterfaceConfig;
-use Charcoal\App\Kernel\Contracts\EntryPoint\EntryPointEnumInterface;
+use Charcoal\App\Kernel\Contracts\Enums\SapiEnumInterface;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
 use Charcoal\Http\Commons\Enums\HeaderKeyValidation;
 use Charcoal\Http\Commons\Enums\ParamKeyValidation;
@@ -38,7 +38,7 @@ class SapiHttpConfigBuilder implements ConfigBuilderInterface
     protected array $corsOrigins = [];
     protected int $corsMaxAge = 0;
 
-    public function __construct(public readonly EntryPointEnumInterface $interface)
+    public function __construct(public readonly SapiEnumInterface $interface)
     {
     }
 

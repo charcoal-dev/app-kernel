@@ -6,9 +6,9 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Contracts\EntryPoint;
+namespace Charcoal\App\Kernel\Contracts\Enums;
 
-use Charcoal\App\Kernel\Enums\SapiEnum;
+use Charcoal\App\Kernel\Enums\SapiType;
 
 /**
  * Represents an enumeration type for entry points.
@@ -16,7 +16,7 @@ use Charcoal\App\Kernel\Enums\SapiEnum;
  * for the implementation of enumerations adhering to specific
  * entry-point-related use cases within the application.
  */
-interface EntryPointEnumInterface extends \UnitEnum
+interface SapiEnumInterface extends \UnitEnum
 {
-    public function getType(): SapiEnum;
+    public function getType(): SapiType;
 }

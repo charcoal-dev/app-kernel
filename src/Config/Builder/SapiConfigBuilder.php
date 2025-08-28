@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Config\Builder;
 
 use Charcoal\App\Kernel\Config\Snapshot\SapiInterfacesConfig;
-use Charcoal\App\Kernel\Contracts\EntryPoint\EntryPointEnumInterface;
+use Charcoal\App\Kernel\Contracts\Enums\SapiEnumInterface;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
 
 /**
@@ -27,10 +27,10 @@ final class SapiConfigBuilder implements ConfigBuilderInterface
     }
 
     /**
-     * @param EntryPointEnumInterface $interface
+     * @param SapiEnumInterface $interface
      * @return SapiHttpConfigBuilder
      */
-    public function http(EntryPointEnumInterface $interface): SapiHttpConfigBuilder
+    public function http(SapiEnumInterface $interface): SapiHttpConfigBuilder
     {
         $config = new SapiHttpConfigBuilder($interface);
         $this->include($config);
