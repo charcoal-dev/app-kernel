@@ -10,6 +10,7 @@ namespace Charcoal\App\Kernel\Enums;
 
 /**
  * Represents the different types of semaphore mechanisms that can be used.
+ * @api
  */
 enum SemaphoreType
 {
