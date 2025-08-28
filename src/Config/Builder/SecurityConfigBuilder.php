@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Config\Builder;
 
 use Charcoal\App\Kernel\Config\Snapshot\SecurityConfig;
+use Charcoal\App\Kernel\Enums\SemaphoreType;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
 use Charcoal\Filesystem\Exceptions\FilesystemException;
 use Charcoal\Filesystem\Path\DirectoryPath;
@@ -19,7 +20,8 @@ use Charcoal\Filesystem\Path\DirectoryPath;
  */
 final class SecurityConfigBuilder implements ConfigBuilderInterface
 {
-    protected ?DirectoryPath $semaphoreDirectory = null;
+    protected ?DirectoryPath $semaphorePrivate = null;
+    protected ?DirectoryPath $semaphoreShared = null;
 
     public function __construct(protected DirectoryPath $root)
     {
@@ -28,10 +30,15 @@ final class SecurityConfigBuilder implements ConfigBuilderInterface
     /**
      * @api
      */
-    public function setSemaphoreDirectory(string $dir): self
+    public function setSemaphoreDirectory(SemaphoreType $type, string $dir): self
     {
+        $prop = match ($type) {
+            SemaphoreType::Filesystem_Private => "semaphorePrivate",
+            SemaphoreType::Filesystem_Shared => "semaphoreShared",
+        };
+
         try {
-            $this->semaphoreDirectory = $this->root->join($dir)->isDirectory();
+            $this->$prop = $this->root->join($dir)->isDirectory();
         } catch (FilesystemException $e) {
             throw new \DomainException("Failed to load semaphore directory", previous: $e);
         }
@@ -44,6 +51,6 @@ final class SecurityConfigBuilder implements ConfigBuilderInterface
      */
     public function build(): SecurityConfig
     {
-        return new SecurityConfig($this->semaphoreDirectory);
+        return new SecurityConfig($this->semaphorePrivate, $this->semaphoreShared);
     }
 }

@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Security;
 
 use Charcoal\App\Kernel\Contracts\Enums\SemaphoreScopeEnumInterface;
+use Charcoal\App\Kernel\Enums\SemaphoreType;
 use Charcoal\Base\Abstracts\AbstractFactoryRegistry;
 use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
 use Charcoal\Base\Exceptions\WrappedException;
@@ -35,7 +36,10 @@ final class SemaphoreService extends AbstractFactoryRegistry
     use NoDumpTrait;
     use NotCloneableTrait;
 
-    public function __construct(protected DirectoryPath $path)
+    public function __construct(
+        public readonly SemaphoreType $type,
+        private DirectoryPath         $path
+    )
     {
     }
 
@@ -80,7 +84,10 @@ final class SemaphoreService extends AbstractFactoryRegistry
      */
     protected function collectSerializableData(): array
     {
-        return ["path" => $this->path];
+        return [
+            "type" => $this->type,
+            "path" => $this->path
+        ];
     }
 
     /**
@@ -89,6 +96,7 @@ final class SemaphoreService extends AbstractFactoryRegistry
      */
     public function __unserialize(array $data): void
     {
+        $this->type = $data["type"];
         $this->path = $data["path"];
     }
 
@@ -99,6 +107,7 @@ final class SemaphoreService extends AbstractFactoryRegistry
     {
         return [
             self::class,
+            SemaphoreType::class,
             DirectoryPath::class,
             PathInfo::class,
             PathContext::class,

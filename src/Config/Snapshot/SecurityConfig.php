@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config\Snapshot;
 
+use Charcoal\App\Kernel\Enums\SemaphoreType;
 use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Filesystem\Enums\PathType;
@@ -22,18 +23,28 @@ final readonly class SecurityConfig implements ConfigSnapshotInterface
     use NoDumpTrait;
 
     public function __construct(
-        public ?DirectoryPath $semaphoreDirectory
+        public ?DirectoryPath $semaphorePrivate,
+        public ?DirectoryPath $semaphoreShared,
     )
     {
-        if ($this->semaphoreDirectory) {
-            if ($this->semaphoreDirectory->type === PathType::Missing) {
-                throw new \DomainException("Semaphore directory does not exist");
-            }
+        foreach (SemaphoreType::cases() as $semaphoreProvider) {
+            $prop = match ($semaphoreProvider) {
+                SemaphoreType::Filesystem_Private => "semaphorePrivate",
+                SemaphoreType::Filesystem_Shared => "semaphoreShared",
+            };
 
-            try {
-                new FilesystemSemaphore($this->semaphoreDirectory);
-            } catch (\Exception) {
-                throw new \DomainException("Semaphore directory returned permission error");
+            if ($this->$prop) {
+                if ($this->$prop->type === PathType::Missing) {
+                    throw new \DomainException(sprintf("Semaphore[%s] directory does not exist",
+                        $semaphoreProvider->name));
+                }
+
+                try {
+                    new FilesystemSemaphore($this->$prop);
+                } catch (\Exception $e) {
+                    throw new \DomainException(sprintf("Semaphore[%s] directory has permission error",
+                        $semaphoreProvider->name), previous: $e);
+                }
             }
         }
     }
