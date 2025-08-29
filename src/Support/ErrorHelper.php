@@ -15,6 +15,20 @@ namespace Charcoal\App\Kernel\Support;
 abstract readonly class ErrorHelper extends \Charcoal\Base\Support\Helpers\ErrorHelper
 {
     /**
+     * Converts and sanitizes \Throwable object to a DTO
+     * @api
+     */
+    public static function getExceptionDto(
+        \Throwable $t,
+        bool       $previous = true,
+        bool       $trace = true,
+        int        $pathOffset = 0
+    ): array
+    {
+        return DtoHelper::getExceptionObject($t, $previous, $trace, $pathOffset);
+    }
+
+    /**
      * @param \Throwable $t
      * @param string $format
      * @return string

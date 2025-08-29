@@ -11,7 +11,12 @@ namespace Charcoal\App\Kernel\Internal\Exceptions;
 /**
  * Represents an exception thrown when an application crashes or encounters a critical failure.
  * Extends the base Exception class to provide specific handling for application-level crashes.
+ * @internal Do NOT catch!
  */
-class AppCrashException extends \RuntimeException
+final class AppCrashException extends \RuntimeException
 {
+    public function __construct(\Throwable $previous)
+    {
+        parent::__construct('Application crashed', 0, $previous);
+    }
 }
