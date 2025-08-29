@@ -18,22 +18,19 @@ use Charcoal\Filesystem\Path\FilePath;
  * formatting using ANSI escape sequences and custom end-of-line characters.
  * @api
  */
-class FileErrorLogger implements ErrorLoggerInterface
+final class FileErrorLogger extends AnsiErrorLogger implements ErrorLoggerInterface
 {
     public readonly string $logFile;
     public bool $isWriting = true;
 
-    /**
-     * @param FilePath|string $logFile
-     * @param bool $useAnsiEscapeSeq
-     * @param string $eolChar
-     */
     public function __construct(
         FilePath|string $logFile,
         public bool     $useAnsiEscapeSeq = true,
         public string   $eolChar = PHP_EOL
     )
     {
+        parent::__construct($useAnsiEscapeSeq, $eolChar);
+
         if ($logFile instanceof FilePath) {
             if (!$logFile->writable) {
                 throw new \RuntimeException("Error log file is not writable");
@@ -52,63 +49,24 @@ class FileErrorLogger implements ErrorLoggerInterface
     }
 
     /**
-     * @param \Throwable|ErrorEntry $error
-     * @return void
      * @internal
      */
-    protected function write(\Throwable|ErrorEntry $error): void
+    private function getLines(\Throwable|ErrorEntry $error): array
     {
         if (!$this->isWriting) {
-            return;
+            return [];
         }
 
-        $error instanceof ErrorEntry ?
-            $this->writeError($error) : $this->writeException($error);
+        return match(true) {
+            $error instanceof ErrorEntry => $this->parseError($error),
+            default => $this->parseException($error),
+        };
     }
 
     /**
-     * Prepares & formats a \Throwable object and writes into the log file
+     * @internal
      */
-    protected function writeException(\Throwable $t): void
-    {
-        $buffer[] = "";
-        $buffer[] = str_repeat(".", 10);
-        $buffer[] = "";
-        $buffer[] = sprintf("\e[36m[%s]\e[0m", date("d-m-Y H:i"));
-        $buffer[] = sprintf("\e[33mCaught:\e[0m \e[31m%s\e[0m", get_class($t));
-        $buffer[] = sprintf("\e[33mMessage:\e[0m %s", $t->getMessage());
-        $buffer[] = sprintf("\e[33mFile:\e[0m \e[34m%s\e[0m", $t->getFile());
-        $buffer[] = sprintf("\e[33mLine:\e[0m \e[36m%d\e[0m", $t->getLine());
-        $this->bufferTrace($buffer, $t->getTrace());
-        $buffer[] = "";
-        $buffer[] = str_repeat(".", 10);
-        $buffer[] = "";
-        $this->writeToFile($buffer);
-    }
-
-    /**
-     * Prepares & formats an ErrorEntry object and writes into the log file
-     */
-    protected function writeError(ErrorEntry $error): void
-    {
-        $buffer[] = "";
-        $buffer[] = sprintf("\e[36m[%s]\e[0m", date("d-m-Y H:i"));
-        $buffer[] = sprintf("\e[33mError:\e[0m \e[31m%s\e[0m", $error->level);
-        $buffer[] = sprintf("\e[33mMessage:\e[0m %s", $error->message);
-        $buffer[] = sprintf("\e[33mFile:\e[0m \e[34m%s\e[0m", $error->filepath);
-        $buffer[] = sprintf("\e[33mLine:\e[0m \e[36m%d\e[0m", $error->line);
-        if ($error->backtrace) {
-            $this->bufferTrace($buffer, $error->backtrace);
-        }
-
-        $buffer[] = "";
-        $this->writeToFile($buffer);
-    }
-
-    /**
-     * Writes buffer data to log file
-     */
-    protected function writeToFile(array $buffer): void
+    private function writeToFile(array $buffer): void
     {
         $buffer = implode($this->eolChar, $buffer);
         if (!$this->useAnsiEscapeSeq) {
@@ -123,56 +81,18 @@ class FileErrorLogger implements ErrorLoggerInterface
     }
 
     /**
-     * Prepares & formats debug backtrace and appends to buffer
-     */
-    protected function bufferTrace(array &$buffer, array $trace): void
-    {
-        if (!$trace) {
-            return;
-        }
-
-        $buffer[] = "\e[33mBacktrace:\e[0m";
-        $buffer[] = "┬";
-        foreach ($trace as $sf) {
-            $function = $sf["function"] ?? null;
-            $class = $sf["class"] ?? null;
-            $type = $sf["type"] ?? null;
-            $file = $sf["file"] ?? null;
-            $line = $sf["line"] ?? null;
-
-            if ($file && is_string($file) && $line) {
-                $method = $function;
-                if ($class && $type) {
-                    $method = $class . $type . $function;
-                }
-
-                $traceString = sprintf("\e[4m\e[36m%s\e[0m on line # \e[4m\e[33m%d\e[0m", $file, $line);
-                if ($method) {
-                    $traceString = sprintf("Method \e[4m\e[35m%s\e[0m in file ", $method) . $traceString;
-                }
-
-                $buffer[] = "├─ " . $traceString;
-            }
-        }
-    }
-
-    /**
-     * @param ErrorEntry $error
-     * @return void
      * @internal
      */
     public function handleError(ErrorEntry $error): void
     {
-        $this->write($error);
+        $this->writeToFile($this->getLines($error));
     }
 
     /**
-     * @param \Throwable $exception
-     * @return void
      * @internal
      */
     public function handleException(\Throwable $exception): void
     {
-        $this->write($exception);
+        $this->writeToFile($this->getLines($exception));
     }
 }
