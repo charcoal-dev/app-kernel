@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Diagnostics;
 
+use Charcoal\App\Kernel\Clock\Clock;
 use Charcoal\App\Kernel\Clock\MonotonicTimestamp;
 use Charcoal\App\Kernel\Contracts\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
@@ -41,6 +42,7 @@ final class Diagnostics implements ErrorLoggerInterface
     private array $eventListeners = [];
     private array $logs = [];
     private array $metrics = [];
+    private ?Clock $clock = null;
     public readonly int $startupTime;
 
     /**
@@ -83,12 +85,14 @@ final class Diagnostics implements ErrorLoggerInterface
     }
 
     /**
+     * @param Clock $clock
      * @param MonotonicTimestamp $startTime
      * @return void
      * @internal
      */
-    public function setStartupTime(MonotonicTimestamp $startTime): void
+    public function setStartupTime(Clock $clock, MonotonicTimestamp $startTime): void
     {
+        $this->clock = $clock;
         $this->startupTime = $startTime->elapsedTo(MonotonicTimestamp::now());
 
         // Clean up BuildStage listeners
@@ -164,7 +168,8 @@ final class Diagnostics implements ErrorLoggerInterface
         ?\Throwable $exception = null
     ): void
     {
-        $log = new LogEntry($level, $message, $context, $exception);
+        $log = new LogEntry($level, $message, $context, $exception,
+            $this->clock?->getImmutable() ?? new \DateTimeImmutable());
         $this->logs[] = $log;
         $this->events->dispatch($log);
     }

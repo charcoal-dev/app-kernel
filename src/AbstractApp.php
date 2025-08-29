@@ -178,7 +178,7 @@ abstract class AbstractApp extends AppSerializable
 
         $this->bootstrapped = true;
         $this->diagnostics->buildStageStream(BuildStageEvents::Bootstrapped);
-        $this->diagnostics->setStartupTime($startTime);
+        $this->diagnostics->setStartupTime($this->clock, $startTime);
 
         // All declared services and modules:
         $this->domain->bootstrap($this);
