@@ -22,11 +22,11 @@ final readonly class LogEntry implements LogEntryBroadcast
      * @internal
      */
     public function __construct(
-        public LogLevel    $level,
-        public string      $message,
-        public array       $context = [],
-        public ?\Throwable $exception = null,
-        public \DateTimeImmutable $timestamp
+        public \DateTimeImmutable $timestamp,
+        public LogLevel           $level,
+        public string             $message,
+        public array              $context = [],
+        public ?\Throwable        $exception = null
     )
     {
     }

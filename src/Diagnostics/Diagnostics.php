@@ -26,8 +26,8 @@ use Charcoal\Base\Traits\NotSerializableTrait;
 use Charcoal\Events\Stats\EventStats;
 
 /**
- * Class Diagnostics
- * @package Charcoal\App\Kernel\Diagnostics
+ * The Diagnostics class provides APIs for tracking diagnostics events, logging messages,
+ * capturing runtime metrics, and taking runtime execution snapshots for debugging and inspection.
  */
 final class Diagnostics implements ErrorLoggerInterface
 {
@@ -168,8 +168,8 @@ final class Diagnostics implements ErrorLoggerInterface
         ?\Throwable $exception = null
     ): void
     {
-        $log = new LogEntry($level, $message, $context, $exception,
-            $this->clock?->getImmutable() ?? new \DateTimeImmutable());
+        $log = new LogEntry($this->clock?->getImmutable() ?? new \DateTimeImmutable("now"),
+            $level, $message, $context, $exception);
         $this->logs[] = $log;
         $this->events->dispatch($log);
     }
