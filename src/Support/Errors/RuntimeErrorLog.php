@@ -18,7 +18,7 @@ use Charcoal\Base\Vectors\ExceptionVector;
  * error entries and exceptions, and provides methods to handle, retrieve,
  * clear, and count these entries.
  */
-class RuntimeErrorLog implements ErrorLoggerInterface
+final class RuntimeErrorLog implements ErrorLoggerInterface
 {
     /** @var array<ErrorEntry> $errors */
     private array $errors;
@@ -60,6 +60,7 @@ class RuntimeErrorLog implements ErrorLoggerInterface
 
     /**
      * @return ExceptionVector
+     * @api
      */
     public function getExceptions(): ExceptionVector
     {
@@ -76,6 +77,7 @@ class RuntimeErrorLog implements ErrorLoggerInterface
 
     /**
      * @return int
+     * @api
      */
     public function countErrors(): int
     {
@@ -84,6 +86,7 @@ class RuntimeErrorLog implements ErrorLoggerInterface
 
     /**
      * @return int
+     * @api
      */
     public function countExceptions(): int
     {
@@ -92,6 +95,7 @@ class RuntimeErrorLog implements ErrorLoggerInterface
 
     /**
      * @return void
+     * @api
      */
     public function clear(): void
     {

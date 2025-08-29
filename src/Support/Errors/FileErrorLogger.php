@@ -12,6 +12,7 @@ use Charcoal\App\Kernel\Contracts\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
 use Charcoal\App\Kernel\Support\ErrorHelper;
 use Charcoal\Filesystem\Path\FilePath;
+use Charcoal\Filesystem\Path\SafePath;
 
 /**
  * Logs errors and exceptions to a specified file while providing options for
@@ -24,10 +25,10 @@ final class FileErrorLogger implements ErrorLoggerInterface
     public bool $isWriting = true;
 
     public function __construct(
-        FilePath|string $logFile,
-        public bool     $useAnsiEscapeSeq = true,
-        public string   $eolChar = PHP_EOL,
-        public int      $pathOffset = 0
+        FilePath|SafePath|string $logFile,
+        public bool              $useAnsiEscapeSeq = true,
+        public string            $eolChar = PHP_EOL,
+        public int               $pathOffset = 0
     )
     {
         if ($logFile instanceof FilePath) {
@@ -37,6 +38,10 @@ final class FileErrorLogger implements ErrorLoggerInterface
 
             $this->logFile = $logFile->absolute;
             return;
+        }
+
+        if ($logFile instanceof SafePath) {
+            $logFile = $logFile->absolute;
         }
 
         $logFile = realpath($logFile);
