@@ -23,7 +23,7 @@ use Charcoal\Filesystem\Path\PathInfo;
  * Manages application error handling, logging, and exception processing.
  * Implements configuration for error policies, log levels, and error propagation.
  */
-class ErrorManager implements AppServiceInterface
+final class ErrorManager implements AppServiceInterface
 {
     use InstanceOnStaticScopeTrait;
     use ControlledSerializableTrait;
@@ -89,7 +89,7 @@ class ErrorManager implements AppServiceInterface
         $this->loggable = [];
         $levels = array_unique($levels);
         foreach ($levels as $level) {
-            if (!in_array($level, static::LOGGABLE_LEVELS)) {
+            if (!in_array($level, self::LOGGABLE_LEVELS)) {
                 throw new \LogicException('Invalid error level to log: ' . $level);
             }
 
@@ -103,8 +103,8 @@ class ErrorManager implements AppServiceInterface
      */
     public function debugBacktraceOffset(?int $trims): int
     {
-        return is_int($trims) && $trims >= 0 ? static::$debugBacktraceOffset = $trims :
-            static::$debugBacktraceOffset;
+        return is_int($trims) && $trims >= 0 ? self::$debugBacktraceOffset = $trims :
+            self::$debugBacktraceOffset;
     }
 
     /**
@@ -113,7 +113,7 @@ class ErrorManager implements AppServiceInterface
      */
     final public function hasHandlersSet(): bool
     {
-        return static::$handlersSet;
+        return self::$handlersSet;
     }
 
     /**
@@ -123,11 +123,11 @@ class ErrorManager implements AppServiceInterface
      */
     final public function setHandlers(): void
     {
-        if (static::$handlersSet) {
+        if (self::$handlersSet) {
             return;
         }
 
-        static::$handlersSet = true;
+        self::$handlersSet = true;
         set_error_handler([$this, "handleError"]);
         set_exception_handler([$this, "handleThrowable"]);
         register_shutdown_function([$this, "handleShutdown"]);
@@ -165,7 +165,7 @@ class ErrorManager implements AppServiceInterface
      */
     public static function unserializeDependencies(): array
     {
-        return [static::class, PathInfo::class, ErrorLoggers::class];
+        return [self::class, PathInfo::class, ErrorLoggers::class];
     }
 
     /**
@@ -237,11 +237,11 @@ class ErrorManager implements AppServiceInterface
      */
     final public function handleThrowable(\Throwable $t): never
     {
-        if (static::$handlingThrowable) {
+        if (self::$handlingThrowable) {
             exit(1);
         }
 
-        static::$handlingThrowable = true;
+        self::$handlingThrowable = true;
         $this->loggers->handleException($t);
         throw new AppCrashException($t);
     }
@@ -263,6 +263,6 @@ class ErrorManager implements AppServiceInterface
      */
     public static function isFatalError(int $level): bool
     {
-        return in_array($level, static::FATAL_ERRORS, true);
+        return in_array($level, self::FATAL_ERRORS, true);
     }
 }
