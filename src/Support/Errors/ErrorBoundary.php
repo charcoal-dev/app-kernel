@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Support\Errors;
 
-use Charcoal\App\Kernel\Enums\SapiType;
 use Charcoal\App\Kernel\Internal\Exceptions\AppCrashException;
 use Charcoal\App\Kernel\Support\ErrorHelper;
 
@@ -32,36 +31,56 @@ abstract readonly class ErrorBoundary
 
     /**
      * Terminates the application by outputting error details based on the SAPIs type.
+     * @noinspection PhpUnhandledExceptionInspection
      * @api
      */
     public static function terminate(
-        SapiType                     $sapi,
         AppCrashException|\Throwable $exception,
         bool                         $errorLog = true,
         bool                         $stdError = false,
         int                          $pathOffset = 0
     ): never
     {
+        static::toErrorStream($exception, $errorLog, $stdError, $pathOffset);
+        exit(1);
+    }
+
+    /**
+     * Converts an exception into an error stream output, optionally logging or writing the output to STDERR.
+     * @throws \JsonException
+     */
+    public static function toErrorStream(
+        AppCrashException|\Throwable $exception,
+        bool                         $errorLog = true,
+        bool                         $stdError = false,
+        int                          $pathOffset = 0,
+    ): array|string
+    {
         if ($exception instanceof AppCrashException) {
             $exception = $exception->getPrevious();
         }
 
-        $exceptionDto = json_encode(ErrorHelper::getExceptionDto($exception, pathOffset: $pathOffset));
+        $exceptionDto = json_encode(
+            ErrorHelper::getExceptionDto($exception, pathOffset: $pathOffset),
+            flags: JSON_THROW_ON_ERROR
+            | JSON_UNESCAPED_SLASHES
+            | JSON_UNESCAPED_UNICODE
+            | JSON_INVALID_UTF8_SUBSTITUTE
+            | JSON_PRESERVE_ZERO_FRACTION
+        );
 
-        if ($sapi === SapiType::Cli) {
-            if ($stdError) {
-                error_log($exceptionDto);
-            }
-
-            if ($errorLog) {
-                fwrite(STDERR, $exceptionDto);
-            }
-
-            exit(1);
+        if (!$exceptionDto) {
+            $exceptionStr = ErrorHelper::exception2String($exception);
         }
 
-        header("Content-Type: application/json");
-        print(json_encode($exceptionDto));
-        exit(1);
+        if ($stdError) {
+            error_log($exceptionDto ?: $exceptionStr);
+        }
+
+        if ($errorLog) {
+            fwrite(STDERR, $exceptionDto ?: $exceptionStr);
+        }
+
+        return $exceptionDto;
     }
 }
