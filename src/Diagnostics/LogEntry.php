@@ -8,18 +8,16 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Diagnostics;
 
-use Charcoal\App\Kernel\Clock\Clock;
 use Charcoal\App\Kernel\Diagnostics\Events\LogEntryBroadcast;
 use Charcoal\App\Kernel\Enums\LogLevel;
 
 /**
- * Class LogEntry
- * @package Charcoal\App\Kernel\Diagnostics
+ * This class is immutable and is designed to store information such as the log level,
+ * message, additional context, associated exception (if any), and the timestamp for
+ * when the log event occurred.
  */
 final readonly class LogEntry implements LogEntryBroadcast
 {
-    public \DateTimeImmutable $timestamp;
-
     /**
      * @internal
      */
@@ -28,8 +26,8 @@ final readonly class LogEntry implements LogEntryBroadcast
         public string      $message,
         public array       $context = [],
         public ?\Throwable $exception = null,
+        public \DateTimeImmutable $timestamp
     )
     {
-        $this->timestamp = Clock::now();
     }
 }
