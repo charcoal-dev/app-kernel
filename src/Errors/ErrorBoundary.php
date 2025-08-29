@@ -24,21 +24,34 @@ final class ErrorBoundary
      * Terminates the application by outputting error details based on the SAPIs type.
      * @api
      */
-    public static function terminate(SapiType $sapi, AppCrashException|\Throwable $exception): never
+    public static function terminate(
+        SapiType                     $sapi,
+        AppCrashException|\Throwable $exception,
+        bool                         $stdError = true,
+        bool                         $errorLog = false,
+        int                          $pathOffset = 0
+    ): never
     {
         if ($exception instanceof AppCrashException) {
             $exception = $exception->getPrevious();
         }
 
+        $exceptionDto = json_encode(ErrorHelper::getExceptionDto($exception, pathOffset: $pathOffset));
+
         if ($sapi === SapiType::Cli) {
-            $exceptionDto = json_encode(ErrorHelper::getExceptionDto($exception));
-            error_log($exceptionDto);
-            fwrite(STDERR, $exceptionDto);
+            if ($stdError) {
+                error_log($exceptionDto);
+            }
+
+            if ($errorLog) {
+                fwrite(STDERR, $exceptionDto);
+            }
+
             exit(1);
         }
 
         header("Content-Type: application/json");
-        print(json_encode(ErrorHelper::getExceptionDto($exception)));
+        print(json_encode($exceptionDto));
         exit(1);
     }
 }
