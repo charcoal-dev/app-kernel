@@ -23,21 +23,31 @@ class FileErrorLogger implements ErrorLoggerInterface
     public bool $isWriting = true;
 
     /**
-     * @param FilePath $logFile
+     * @param FilePath|string $logFile
      * @param bool $useAnsiEscapeSeq
      * @param string $eolChar
      */
     public function __construct(
-        FilePath      $logFile,
-        public bool   $useAnsiEscapeSeq = true,
-        public string $eolChar = PHP_EOL
+        FilePath|string $logFile,
+        public bool     $useAnsiEscapeSeq = true,
+        public string   $eolChar = PHP_EOL
     )
     {
-        if (!$logFile->writable) {
-            throw new \RuntimeException("Error log file is not writable");
+        if ($logFile instanceof FilePath) {
+            if (!$logFile->writable) {
+                throw new \RuntimeException("Error log file is not writable");
+            }
+
+            $this->logFile = $logFile->absolute;
+            return;
         }
 
-        $this->logFile = $logFile->absolute;
+        $logFile = realpath($logFile);
+        if (!file_exists($logFile) || !is_file($logFile) || !is_writable($logFile)) {
+            throw new \RuntimeException("Error log file does not exist");
+        }
+
+        $this->logFile = $logFile;
     }
 
     /**
