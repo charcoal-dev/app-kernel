@@ -41,7 +41,7 @@ final class FileErrorLogger implements ErrorLoggerInterface
         }
 
         if ($logFile instanceof SafePath) {
-            $logFile = $logFile->absolute;
+            $logFile = $logFile->path;
         }
 
         $logFile = realpath($logFile);
