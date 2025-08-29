@@ -18,7 +18,7 @@ use Charcoal\Filesystem\Path\FilePath;
  * formatting using ANSI escape sequences and custom end-of-line characters.
  * @api
  */
-final class FileErrorParser implements ErrorLoggerInterface
+final class FileErrorLogger implements ErrorLoggerInterface
 {
     public readonly string $logFile;
     public bool $isWriting = true;
