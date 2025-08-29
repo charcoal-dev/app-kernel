@@ -42,6 +42,9 @@ final class FileErrorLogger implements ErrorLoggerInterface
 
         if ($logFile instanceof SafePath) {
             $logFile = $logFile->path;
+            if (!$logFile) {
+                throw new \RuntimeException("Error log file path is invalid");
+            }
         }
 
         $logFile = realpath($logFile);
