@@ -243,7 +243,7 @@ class ErrorManager implements AppServiceInterface
 
         static::$handlingThrowable = true;
         $this->loggers->handleException($t);
-        throw new AppCrashException("Application crashed", previous: $t);
+        throw new AppCrashException("Application caught a Fatal error; Execution terminated", previous: $t);
     }
 
     /**
