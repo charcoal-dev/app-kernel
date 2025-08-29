@@ -10,6 +10,7 @@ namespace Charcoal\App\Kernel\Errors;
 
 use Charcoal\App\Kernel\Contracts\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Enums\AppEnv;
+use Charcoal\App\Kernel\Internal\Exceptions\AppCrashException;
 use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\Base\Traits\ControlledSerializableTrait;
@@ -168,8 +169,9 @@ class ErrorManager implements AppServiceInterface
     }
 
     /**
-     * @throws \ErrorException
      * @api
+     * @noinspection PhpUnhandledExceptionInspection
+     * @deprecated
      */
     final public function trigger(
         string|\Throwable $error,
@@ -193,6 +195,7 @@ class ErrorManager implements AppServiceInterface
 
     /**
      * @return void
+     * @throws AppCrashException
      * @internal
      */
     final public function handleShutdown(): void
@@ -206,13 +209,7 @@ class ErrorManager implements AppServiceInterface
     }
 
     /**
-     * @param int $level
-     * @param string $message
-     * @param string $file
-     * @param int $line
-     * @return bool
-     * @throws \ErrorException
-     * @internal
+     * @throws \Exception
      */
     final public function handleError(int $level, string $message, string $file, int $line): bool
     {
@@ -235,6 +232,7 @@ class ErrorManager implements AppServiceInterface
      * Default exception handler function
      * @param \Throwable $t
      * @return never
+     * @throws AppCrashException
      * @internal
      */
     final public function handleThrowable(\Throwable $t): never
@@ -244,36 +242,8 @@ class ErrorManager implements AppServiceInterface
         }
 
         static::$handlingThrowable = true;
-        $exception = [
-            "class" => get_class($t),
-            "message" => $t->getMessage(),
-            "code" => $t->getCode(),
-            "file" => static::getRelativeFilepath($t->getFile()),
-            "line" => $t->getLine(),
-        ];
-
-        if ($this->debugging) {
-            $exception["trace"] = $t->getTrace();
-        }
-
         $this->loggers->handleException($t);
-        $this->onTerminate($exception);
-    }
-
-    /**
-     * @param array $exceptionDto
-     * @return never
-     */
-    protected function onTerminate(array $exceptionDto): never
-    {
-        if (php_sapi_name() !== "cli") {
-            header("Content-Type: application/json", response_code: 500);
-        }
-
-        $errorLine = json_encode($exceptionDto, JSON_PRETTY_PRINT);
-        error_log($errorLine);
-        fwrite(STDERR, $errorLine . "\n");
-        exit(1);
+        throw new AppCrashException("Application crashed", previous: $t);
     }
 
     /**
