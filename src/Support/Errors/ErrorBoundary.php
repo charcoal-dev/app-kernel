@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Errors;
+namespace Charcoal\App\Kernel\Support\Errors;
 
 use Charcoal\App\Kernel\Enums\SapiType;
 use Charcoal\App\Kernel\Internal\Exceptions\AppCrashException;
