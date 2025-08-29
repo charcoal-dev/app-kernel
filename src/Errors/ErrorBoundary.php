@@ -37,8 +37,8 @@ abstract readonly class ErrorBoundary
     public static function terminate(
         SapiType                     $sapi,
         AppCrashException|\Throwable $exception,
-        bool                         $stdError = false,
         bool                         $errorLog = true,
+        bool                         $stdError = false,
         int                          $pathOffset = 0
     ): never
     {
