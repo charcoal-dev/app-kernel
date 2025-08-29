@@ -239,11 +239,6 @@ class ErrorManager implements AppServiceInterface
      */
     final public function handleThrowable(\Throwable $t): never
     {
-        // Todo: discard previous stubs
-//        if ($t instanceof ResponseDispatchedException) {
-//            exit(0);
-//        }
-
         if (static::$handlingThrowable) {
             exit(1);
         }
