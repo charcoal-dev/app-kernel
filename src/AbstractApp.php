@@ -64,6 +64,9 @@ abstract class AbstractApp extends AppSerializable
         $this->errors = new ErrorManager($env, $this->paths);
         $this->initializeErrorService();
         $this->paths->acceptPathsDeclaration($this);
+        if ($this->errors->policy) {
+            $this->errorServiceDeployedHook();
+        }
 
         // Resolve AppConfig object
         $this->config = $this->resolveAppConfig($env, $this->paths);
@@ -125,6 +128,13 @@ abstract class AbstractApp extends AppSerializable
 
         ErrorManager::initializeStatic($this->errors);
         return $this;
+    }
+
+    /**
+     * @return void
+     */
+    protected function errorServiceDeployedHook(): void
+    {
     }
 
     /**
