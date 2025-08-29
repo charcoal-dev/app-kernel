@@ -15,6 +15,7 @@ use Charcoal\Filesystem\Enums\PathType;
 use Charcoal\Filesystem\Exceptions\FilesystemException;
 use Charcoal\Filesystem\Node\DirectoryNode;
 use Charcoal\Filesystem\Node\FileNode;
+use Charcoal\Filesystem\Path\PathInfo;
 
 /**
  * Class AppSerializable
@@ -56,9 +57,9 @@ abstract class AppSerializable
      * @param AbstractApp $app
      * @param DirectoryNode $root
      * @param array $dirs
-     * @return void
+     * @return PathInfo
      */
-    public static function CreateBuild(AbstractApp $app, DirectoryNode $root, array $dirs = []): void
+    public static function CreateBuild(AbstractApp $app, DirectoryNode $root, array $dirs = []): PathInfo
     {
         try {
             $filepath = implode(DIRECTORY_SEPARATOR, $dirs) . DIRECTORY_SEPARATOR .
@@ -71,6 +72,7 @@ abstract class AppSerializable
 
             $serialized = new FileNode($serialized);
             $serialized->write(serialize($app), false, true);
+            return $serialized->path;
         } catch (FilesystemException $e) {
             throw new \LogicException("Failed to create charcoal application build", previous: $e);
         }
