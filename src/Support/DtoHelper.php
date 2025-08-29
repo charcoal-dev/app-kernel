@@ -51,7 +51,7 @@ abstract readonly class DtoHelper extends \Charcoal\Base\Support\Helpers\DtoHelp
                 if ($pathOffset > 0 && isset($trace["file"])) {
                     $offset = min(max(0, $pathOffset), strlen($trace["file"]));
                     if ($offset > 0) {
-                        $trace["file"] = substr($trace["trace"], $offset);
+                        $trace["file"] = substr($trace["file"], $offset);
                     }
                 }
 
