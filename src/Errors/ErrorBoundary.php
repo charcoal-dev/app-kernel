@@ -13,12 +13,12 @@ use Charcoal\App\Kernel\Internal\Exceptions\AppCrashException;
 use Charcoal\App\Kernel\Support\ErrorHelper;
 
 /**
- * ErrorBoundary is a final class designed to serve as a mechanism for capturing and handling errors
+ * ErrorBoundary is an abstract class designed to serve as a mechanism for capturing and handling errors
  * within specific areas of the application. It helps isolate error-prone operations and ensures
  * that any unforeseen issues do not propagate beyond the defined boundary.
  * @api
  */
-final class ErrorBoundary
+abstract readonly class ErrorBoundary
 {
     /**
      * Terminates the application by outputting error details based on the SAPIs type.
