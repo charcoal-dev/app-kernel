@@ -31,7 +31,7 @@ abstract readonly class AnsiErrorParser
         $buffer[] = sprintf("\e[33mCaught:\e[0m \e[31m%s\e[0m", $dto["class"]);
         $buffer[] = sprintf("\e[33mMessage:\e[0m %s", $dto["message"]);
         $buffer[] = sprintf("\e[33mCode:\e[0m %d", $dto["code"]);
-        $buffer[] = sprintf("\e[33mFile:\e[0m \e[34m%s\e[0m", substr($dto["file"], $pathOffset));
+        $buffer[] = sprintf("\e[33mFile:\e[0m \e[34m%s\e[0m", trim(substr($dto["file"], $pathOffset), "\\"));
         $buffer[] = sprintf("\e[33mLine:\e[0m \e[36m%d\e[0m", $dto["line"]);
         self::parseTrace($buffer, $exception->getTrace());
         $buffer[] = "";
