@@ -15,25 +15,12 @@ use Charcoal\App\Kernel\Support\ErrorHelper;
  * Defines an abstract error logger capable of formatting and logging errors with ANSI escape sequences.
  * Provides functionality to process exceptions, errors, and backtraces in a standardized format.
  */
-abstract class AnsiErrorLogger
+abstract readonly class AnsiErrorParser
 {
-    /**
-     * @param bool $useAnsiEscapeSeq
-     * @param string $eolChar
-     * @param int $pathOffset
-     */
-    public function __construct(
-        public bool   $useAnsiEscapeSeq = true,
-        public string $eolChar = PHP_EOL,
-        public int    $pathOffset = 0
-    )
-    {
-    }
-
     /**
      * Parses the provided exception and formats its details into an array of strings.
      */
-    final protected function parseException(\Throwable $exception): array
+    final public static function parseException(\Throwable $exception, int $pathOffset = 0): array
     {
         $dto = ErrorHelper::getExceptionDto($exception);
 
@@ -44,9 +31,9 @@ abstract class AnsiErrorLogger
         $buffer[] = sprintf("\e[33mCaught:\e[0m \e[31m%s\e[0m", $dto["class"]);
         $buffer[] = sprintf("\e[33mMessage:\e[0m %s", $dto["message"]);
         $buffer[] = sprintf("\e[33mCode:\e[0m %d", $dto["code"]);
-        $buffer[] = sprintf("\e[33mFile:\e[0m \e[34m%s\e[0m", substr($dto["file"], $this->pathOffset));
+        $buffer[] = sprintf("\e[33mFile:\e[0m \e[34m%s\e[0m", substr($dto["file"], $pathOffset));
         $buffer[] = sprintf("\e[33mLine:\e[0m \e[36m%d\e[0m", $dto["line"]);
-        $this->parseTrace($buffer, $exception->getTrace());
+        self::parseTrace($buffer, $exception->getTrace());
         $buffer[] = "";
         $buffer[] = str_repeat(".", 10);
         $buffer[] = "";
@@ -56,7 +43,7 @@ abstract class AnsiErrorLogger
     /**
      * @param ErrorEntry $error
      */
-    final protected function parseError(ErrorEntry $error): array
+    final public static function parseError(ErrorEntry $error): array
     {
         $buffer[] = "";
         $buffer[] = sprintf("\e[36m[%s]\e[0m", date("d-m-Y H:i"));
@@ -65,7 +52,7 @@ abstract class AnsiErrorLogger
         $buffer[] = sprintf("\e[33mFile:\e[0m \e[34m%s\e[0m", $error->filepath);
         $buffer[] = sprintf("\e[33mLine:\e[0m \e[36m%d\e[0m", $error->line);
         if ($error->backtrace) {
-            $this->parseTrace($buffer, $error->backtrace);
+            self::parseTrace($buffer, $error->backtrace);
         }
 
         $buffer[] = "";
@@ -75,7 +62,7 @@ abstract class AnsiErrorLogger
     /**
      * Parses and appends trace information to the provided buffer.
      */
-    private function parseTrace(array &$buffer, array $trace): void
+    private static function parseTrace(array &$buffer, array $trace): void
     {
         if (!$trace) {
             return;

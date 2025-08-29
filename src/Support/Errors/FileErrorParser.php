@@ -18,7 +18,7 @@ use Charcoal\Filesystem\Path\FilePath;
  * formatting using ANSI escape sequences and custom end-of-line characters.
  * @api
  */
-final class FileErrorLogger extends AnsiErrorLogger implements ErrorLoggerInterface
+final class FileErrorParser implements ErrorLoggerInterface
 {
     public readonly string $logFile;
     public bool $isWriting = true;
@@ -26,11 +26,10 @@ final class FileErrorLogger extends AnsiErrorLogger implements ErrorLoggerInterf
     public function __construct(
         FilePath|string $logFile,
         public bool     $useAnsiEscapeSeq = true,
-        public string   $eolChar = PHP_EOL
+        public string   $eolChar = PHP_EOL,
+        public int      $pathOffset = 0
     )
     {
-        parent::__construct($useAnsiEscapeSeq, $eolChar);
-
         if ($logFile instanceof FilePath) {
             if (!$logFile->writable) {
                 throw new \RuntimeException("Error log file is not writable");
@@ -57,9 +56,9 @@ final class FileErrorLogger extends AnsiErrorLogger implements ErrorLoggerInterf
             return [];
         }
 
-        return match(true) {
-            $error instanceof ErrorEntry => $this->parseError($error),
-            default => $this->parseException($error),
+        return match (true) {
+            $error instanceof ErrorEntry => AnsiErrorParser::parseError($error),
+            default => AnsiErrorParser::parseException($error),
         };
     }
 
