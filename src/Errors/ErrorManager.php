@@ -256,6 +256,7 @@ class ErrorManager implements AppServiceInterface
             $exception["trace"] = $t->getTrace();
         }
 
+        $this->loggers->handleException($t);
         $this->onTerminate($exception);
     }
 

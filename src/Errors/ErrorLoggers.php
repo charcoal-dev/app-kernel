@@ -12,8 +12,9 @@ use Charcoal\App\Kernel\Contracts\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Support\ErrorHelper;
 
 /**
- * Class ErrorLoggers
- * @package Charcoal\App\Kernel\Errors
+ * A final class responsible for managing and handling error loggers within the application.
+ * This class provides capabilities to register, unregister, and delegate error handling
+ * to its registered loggers.
  */
 final class ErrorLoggers
 {
