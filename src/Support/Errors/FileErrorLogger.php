@@ -16,6 +16,7 @@ use Charcoal\Filesystem\Path\FilePath;
 /**
  * Logs errors and exceptions to a specified file while providing options for
  * formatting using ANSI escape sequences and custom end-of-line characters.
+ * @api
  */
 class FileErrorLogger implements ErrorLoggerInterface
 {
