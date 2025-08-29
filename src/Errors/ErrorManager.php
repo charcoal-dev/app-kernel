@@ -270,7 +270,9 @@ class ErrorManager implements AppServiceInterface
             header("Content-Type: application/json", response_code: 500);
         }
 
-        fwrite(STDERR, json_encode($exceptionDto, JSON_PRETTY_PRINT) . "\n");
+        $errorLine = json_encode($exceptionDto, JSON_PRETTY_PRINT);
+        error_log($errorLine);
+        fwrite(STDERR, $errorLine . "\n");
         exit(1);
     }
 
