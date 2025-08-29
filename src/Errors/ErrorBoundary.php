@@ -21,14 +21,24 @@ use Charcoal\App\Kernel\Support\ErrorHelper;
 abstract readonly class ErrorBoundary
 {
     /**
+     * Configure PHP to log errors to the Docker standard error stream.
+     * @api
+     */
+    public static function alignDockerStdError(): void
+    {
+        ini_set("log_errors", "On");
+        ini_set("error_log", "/proc/self/fd/2");
+    }
+
+    /**
      * Terminates the application by outputting error details based on the SAPIs type.
      * @api
      */
     public static function terminate(
         SapiType                     $sapi,
         AppCrashException|\Throwable $exception,
-        bool                         $stdError = true,
-        bool                         $errorLog = false,
+        bool                         $stdError = false,
+        bool                         $errorLog = true,
         int                          $pathOffset = 0
     ): never
     {
