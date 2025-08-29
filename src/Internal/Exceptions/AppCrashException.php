@@ -17,6 +17,7 @@ final class AppCrashException extends \RuntimeException
 {
     public function __construct(\Throwable $previous)
     {
-        parent::__construct('Application crashed', 0, $previous);
+        parent::__construct("Application crashed with " . $previous::class .
+            "; Execution terminated", 0, $previous);
     }
 }
