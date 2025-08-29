@@ -66,7 +66,7 @@ final class FileErrorLogger implements ErrorLoggerInterface
 
         return match (true) {
             $error instanceof ErrorEntry => AnsiErrorParser::parseError($error),
-            default => AnsiErrorParser::parseException($error),
+            default => AnsiErrorParser::parseException($error, $this->pathOffset),
         };
     }
 

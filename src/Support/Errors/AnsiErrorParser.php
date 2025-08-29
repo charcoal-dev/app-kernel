@@ -22,7 +22,7 @@ abstract readonly class AnsiErrorParser
      */
     final public static function parseException(\Throwable $exception, int $pathOffset = 0): array
     {
-        $dto = ErrorHelper::getExceptionDto($exception);
+        $dto = ErrorHelper::getExceptionDto($exception, true, true, $pathOffset);
 
         $buffer[] = "";
         $buffer[] = str_repeat(".", 10);
@@ -33,7 +33,7 @@ abstract readonly class AnsiErrorParser
         $buffer[] = sprintf("\e[33mCode:\e[0m %d", $dto["code"]);
         $buffer[] = sprintf("\e[33mFile:\e[0m \e[34m%s\e[0m", trim(substr($dto["file"], $pathOffset), "\\"));
         $buffer[] = sprintf("\e[33mLine:\e[0m \e[36m%d\e[0m", $dto["line"]);
-        self::parseTrace($buffer, $exception->getTrace());
+        self::parseTrace($buffer, $exception->getTrace(), $pathOffset);
         $buffer[] = "";
         $buffer[] = str_repeat(".", 10);
         $buffer[] = "";
@@ -62,7 +62,7 @@ abstract readonly class AnsiErrorParser
     /**
      * Parses and appends trace information to the provided buffer.
      */
-    private static function parseTrace(array &$buffer, array $trace): void
+    private static function parseTrace(array &$buffer, array $trace, int $pathOffset = 0): void
     {
         if (!$trace) {
             return;
@@ -78,6 +78,7 @@ abstract readonly class AnsiErrorParser
             $line = $sf["line"] ?? null;
 
             if ($file && is_string($file) && $line) {
+                $file = ltrim(substr($file, $pathOffset), "\\");
                 $method = $function;
                 if ($class && $type) {
                     $method = $class . $type . $function;
