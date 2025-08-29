@@ -120,19 +120,11 @@ abstract class AbstractApp extends AppSerializable
         $this->errors->subscribe($this->diagnostics);
         if ($this->errors->policy) {
             $this->errors->setHandlers();
-            $this->errorHandlersDeployedHook();
             $this->diagnostics->buildStageStream(BuildStageEvents::ErrorHandlersOn);
         }
 
         ErrorManager::initializeStatic($this->errors);
         return $this;
-    }
-
-    /**
-     * @return void
-     */
-    protected function errorHandlersDeployedHook(): void
-    {
     }
 
     /**
