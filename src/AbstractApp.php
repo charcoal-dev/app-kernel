@@ -168,6 +168,7 @@ abstract class AbstractApp extends AppSerializable
     /**
      * @param MonotonicTimestamp $startTime
      * @return void
+     * @api
      */
     public function bootstrap(MonotonicTimestamp $startTime): void
     {
