@@ -13,7 +13,6 @@ use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
 use Charcoal\App\Kernel\Database\DatabaseManager;
 use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
 use Charcoal\App\Kernel\Enums\AppEnv;
-use Charcoal\App\Kernel\Errors\ErrorManager;
 use Charcoal\App\Kernel\Events\EventsManager;
 use Charcoal\App\Kernel\Internal\DomainBundle;
 use Charcoal\App\Kernel\Internal\PathRegistry;
@@ -70,14 +69,6 @@ class AppManifest
         $bundle = new DomainBundle($app, $this->domain);
         $app->diagnostics->buildStageStream(BuildStageEvents::DomainModulesLoaded);
         return $bundle;
-    }
-
-    /**
-     * Provides an instance of the ErrorManager service configured with the application's environment and root path.
-     */
-    public function resolveErrorService(AppEnv $env, PathRegistry $paths): ErrorManager
-    {
-        return new ErrorManager($env, $paths);
     }
 
     /**

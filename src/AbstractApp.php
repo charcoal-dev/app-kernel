@@ -61,7 +61,7 @@ abstract class AbstractApp extends AppSerializable
 
         // Error service and configurator may require paths to be defined first
         $this->paths = $manifest->resolvePathsRegistry($env, $root);
-        $this->errors = $manifest->resolveErrorService($env, $this->paths);
+        $this->errors = new ErrorManager($env, $this->paths);
         $this->initializeErrorService();
         $this->paths->acceptPathsDeclaration($this);
 
