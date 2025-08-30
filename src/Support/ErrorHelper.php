@@ -57,18 +57,20 @@ abstract readonly class ErrorHelper extends \Charcoal\Base\Support\Helpers\Error
     }
 
     /**
-     * @return string
+     * @return string[]
      */
-    public static function errorDtoTemplate(): string
+    public static function errorDtoTemplate(): array
     {
-        return implode("\n", [
+        return [
+            // [0]: Backtrace line template:
+            "\x20\x20\x20\x20\x20\x20{cyan}[%1\$s, @%2\$s{cyan}]{/}",
+            // [1]: Previous boundary
+            "{yellow}Next:{/} {grey}%s{/}",
+            // [...]: Error DTO template:
             "{cyan}@{:datetime:}{/}",
             "{red}[@{:class:}][{yellow}#@{:code:}{red}]{/}",
             "@{:message:}",
-            "{yellow}File:{/} {cyan}[@@{:line:}]{/} {blue}@{:file2:}{/}",
-            "{yellow}Backtrace:{/} @{:trace:}{/}",
-            "{yellow}Previous:{/} {yellow}@{:next:}{/}"
-        ]);
+            "{yellow}Trace:{/}\x20{blue}[@{:file:}, {cyan}@{:line:}{blue}]{/}"];
     }
 
     /**

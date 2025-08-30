@@ -15,21 +15,17 @@ namespace Charcoal\App\Kernel\Errors;
 final readonly class ErrorEntry
 {
     public string $level;
-    public string $filepath;
     public ?array $backtrace;
 
     public function __construct(
-        ErrorManager  $errorService,
         public int    $errno,
         public string $message,
-        string        $file,
+        public string $filepath,
         public int    $line,
     )
     {
-        $this->filepath = $errorService->getRelativeFilepath($file);
         $this->level = self::getErrorLevelStr($this->errno);
-        $this->backtrace = $errorService->debugging ? array_slice(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS),
-            $errorService->debugBacktraceOffset(null)) : null;
+        $this->backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
     }
 
     /**

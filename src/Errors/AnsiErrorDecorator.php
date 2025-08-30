@@ -8,9 +8,9 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Errors;
 
-use Charcoal\App\Kernel\Contracts\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Support\ErrorHelper;
 use Charcoal\App\Kernel\Support\PathHelper;
+use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Console\Ansi\AnsiDecorator;
 
 /**
@@ -20,32 +20,36 @@ use Charcoal\Console\Ansi\AnsiDecorator;
  *
  * Implements the ErrorLoggerInterface to ensure compatibility with error logging systems.
  */
-abstract class AnsiErrorDecorator implements ErrorLoggerInterface
+class AnsiErrorDecorator
 {
     private string $template;
+    private string $traceLineTpl;
+    private string $previousBoundary;
     private array $templateVars;
     private array $templatePrep;
 
     public function __construct(
         public bool   $useAnsiEscapeSeq = true,
-        public string $eolChar = "\n",
+        public string $eolChar = PHP_EOL,
         public string $tabChar = "\t",
-        ?string       $template = null,
+        ?array        $template = null,
     )
     {
-        $this->template = $template ?: ErrorHelper::errorDtoTemplate();
+        $template = $template ?: ErrorHelper::errorDtoTemplate();
+        $this->traceLineTpl = array_shift($template);
+        $this->previousBoundary = array_shift($template);
+        $this->template = implode($this->eolChar, $template);
 
-        // Ordering is important here, do not change:
-        $this->templateVars = ["class", "message", "code", "file", "line", "trace",
-            "datetime", "file2", "next"];
-        $this->templatePrep = array_map(fn($k) => "@{:" . $k . ":}", $this->templateVars);
+        $templateVars = ["class", "message", "code", "file", "line", "datetime"];
+        $this->templatePrep = array_map(fn($k) => "@{:" . $k . ":}", $templateVars);
+        $this->templateVars = array_fill_keys($templateVars, "1");
     }
 
     /**
      * @param \Throwable|ErrorEntry $error
      * @return array<array<string>>
      */
-    protected function getLines(\Throwable|ErrorEntry $error): array
+    final protected function getLines(\Throwable|ErrorEntry $error): array
     {
         $errors = $error instanceof \Throwable ?
             ErrorHelper::getExceptionChain($error, reverse: true) : [$error];
@@ -55,42 +59,33 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
         foreach ($errors as $error) {
             $tabIndex++;
             $tabs = str_repeat($this->tabChar, $tabIndex);
-            $lines = preg_split("/\r\n|\r|\n/", $this->getTemplated($error));
-            foreach ($lines as $line) {
-                $result[] = $tabs . $line;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param \Throwable|ErrorEntry $error
-     * @return string
-     */
-    protected function getTemplated(\Throwable|ErrorEntry $error): string
-    {
-        $dto = ErrorHelper::getErrorDto($error, trace: true);
-        $dto["datetime"] = date("d-m-Y H:i:s");
-        $dto["file2"] = PathHelper::takeLastParts($dto["file"], 2);
-        if (isset($dto["trace"])) {
-            $trace = [];
-            foreach ($dto["trace"] as $et) {
-                if (isset($et["file"])) {
-                    $trace[] = PathHelper::takeLastParts($et["file"]) . "@" . ($et["line"] ?? -1);
+            $dto = ErrorHelper::getErrorDto($error, trace: true);
+            $trace = $dto["trace"] ?? null;
+            $dto = array_intersect_key($dto, $this->templateVars);
+            $dto["datetime"] = date("d-m-Y H:i:s");
+            $dto["file"] = PathHelper::takeLastParts($dto["file"], 2);
+            $templated = strtr($this->template, array_combine($this->templatePrep, array_values($dto)));
+            $lines = array_map(fn($l) => $tabs . $l, preg_split("/\r\n|\r|\n/", $templated));
+            if ($trace) {
+                foreach ($trace as $tL) {
+                    $lines[] = $tabs . sprintf(
+                            $this->traceLineTpl,
+                            PathHelper::takeLastParts($tL["file"], 2),
+                            $tL["line"] ?? -1);
                 }
             }
 
-            $dto["trace"] = implode(", ", $trace);
+            if ($error instanceof \Throwable) {
+                $nextInChain = $errors[$tabIndex + 1] ?? null;
+                if ($nextInChain) {
+                    $lines[] = $tabs . sprintf($this->previousBoundary, ObjectHelper::baseClassName($nextInChain));
+                }
+            }
+
+            $result[] = $lines;
         }
 
-        if (!isset($dto["trace"])) {
-            $dto["trace"] = "~";
-        }
-
-        $dto["next"] = $dto["previous"]["class"] ?? "~";
-        $data = array_intersect_key($dto, array_fill_keys($this->templateVars, "~"));
-        $templated = strtr($this->template, array_combine($this->templatePrep, array_values($data)));
-        return AnsiDecorator::parse($templated, true, strip: !$this->useAnsiEscapeSeq);
+        $decorated = AnsiDecorator::parse(implode($this->eolChar, array_merge(...$result)));
+        return preg_split("/\r\n|\r|\n/", $decorated);
     }
 }

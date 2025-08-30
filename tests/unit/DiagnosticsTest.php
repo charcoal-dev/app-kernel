@@ -35,7 +35,7 @@ class DiagnosticsTest extends TestCase
     protected function setUp(): void
     {
         // Fresh Diagnostics instance and startup timestamp for each test
-        Diagnostics::initialize()->setStartupTime(MonotonicTimestamp::now());
+        Diagnostics::initialize()->setStartupTime(Clock::getInstance(),MonotonicTimestamp::now());
     }
 
     protected function tearDown(): void
@@ -134,13 +134,7 @@ class DiagnosticsTest extends TestCase
     {
         $diag = Diagnostics::app();
 
-        // Use a real ErrorManager; in AppEnv::Test no handlers are deployed
-        $errMgr = new ErrorManager(AppEnv::Test, new PathRegistry(AppEnv::Test, new DirectoryPath(__DIR__)));
-        // Keep the entry minimal (no backtrace inflation)
-        $errMgr->debugging = false;
-
         $entry = new ErrorEntry(
-            $errMgr,
             E_USER_WARNING,
             'User warning occurred',
             __FILE__,

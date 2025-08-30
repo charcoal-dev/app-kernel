@@ -240,7 +240,7 @@ final class ErrorManager implements AppServiceInterface
         }
 
         if (in_array($level, $this->loggable)) {
-            $err = new ErrorEntry($this, $level, $message, $file, $line);
+            $err = new ErrorEntry($level, $message, $file, $line);
             $this->loggers->handleError($err);
             return true;
         }
