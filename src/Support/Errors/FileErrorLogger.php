@@ -60,10 +60,6 @@ final class FileErrorLogger implements ErrorLoggerInterface
      */
     private function getLines(\Throwable|ErrorEntry $error): array
     {
-        if (!$this->isWriting) {
-            return [];
-        }
-
         return match (true) {
             $error instanceof ErrorEntry => AnsiErrorParser::parseError($error),
             default => AnsiErrorParser::parseException($error, $this->pathOffset),
@@ -75,6 +71,11 @@ final class FileErrorLogger implements ErrorLoggerInterface
      */
     private function writeToFile(array $buffer): void
     {
+        if ($this->isWriting) {
+            return;
+        }
+
+        $this->isWriting = true;
         $buffer = implode($this->eolChar, $buffer);
         if (!$this->useAnsiEscapeSeq) {
             $buffer = preg_replace("/\\e\[\d+m/", "", $buffer);
@@ -85,6 +86,8 @@ final class FileErrorLogger implements ErrorLoggerInterface
             throw new \RuntimeException('Failed to write to error log file',
                 previous: ErrorHelper::lastErrorToRuntimeException());
         }
+
+        $this->isWriting = false;
     }
 
     /**
