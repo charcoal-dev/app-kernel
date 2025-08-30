@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Errors;
 
+use Charcoal\App\Kernel\Contracts\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Support\ErrorHelper;
 use Charcoal\App\Kernel\Support\PathHelper;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
@@ -20,7 +21,7 @@ use Charcoal\Console\Ansi\AnsiDecorator;
  *
  * Implements the ErrorLoggerInterface to ensure compatibility with error logging systems.
  */
-class AnsiErrorDecorator
+abstract class AnsiErrorDecorator implements ErrorLoggerInterface
 {
     private string $template;
     private string $traceLineTpl;
