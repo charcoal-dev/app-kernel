@@ -71,7 +71,7 @@ abstract class ErrorBoundary
             try {
                 call_user_func(static::$exceptionHandler, $exception);
             } catch (\Throwable $e) {
-                static::toErrorStream($e, $errorLog, $stdError, $pathOffset);
+                static::toErrorStream($e, self::$writeErrorLog, self::$writeStdError, self::$pathOffset);
                 exit(1);
             }
         }
