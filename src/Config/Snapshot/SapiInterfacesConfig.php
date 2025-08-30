@@ -26,13 +26,16 @@ final readonly class SapiInterfacesConfig implements ConfigSnapshotInterface
      */
     public function __construct(SapiHttpInterfaceConfig ...$configs)
     {
+        $final = [];
         foreach ($configs as $config) {
-            if (isset($this->interfaces[$config->interface->name])) {
+            if (isset($final[$config->interface->name])) {
                 throw new \DomainException(sprintf('SAPI interface config "%s" already registered',
                     $config->interface->name));
             }
 
-            $this->interfaces[$config->interface->name] = $config;
+            $final[$config->interface->name] = $config;
         }
+
+        $this->interfaces = $final;
     }
 }
