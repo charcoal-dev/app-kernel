@@ -12,6 +12,8 @@ use Charcoal\App\Kernel\Cache\CacheManager;
 use Charcoal\App\Kernel\Clock\Clock;
 use Charcoal\App\Kernel\Clock\MonotonicTimestamp;
 use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
+use Charcoal\App\Kernel\Contracts\EntryPoint\AppRoutesProviderInterface;
+use Charcoal\App\Kernel\Contracts\Enums\SapiEnumInterface;
 use Charcoal\App\Kernel\Database\DatabaseManager;
 use Charcoal\App\Kernel\Diagnostics\Diagnostics;
 use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
@@ -30,10 +32,14 @@ use Charcoal\Base\Traits\NotCloneableTrait;
 use Charcoal\Events\Exceptions\SubscriptionClosedException;
 use Charcoal\Filesystem\Node\DirectoryNode;
 use Charcoal\Filesystem\Path\PathInfo;
+use Charcoal\Http\Server\HttpServer;
+use Charcoal\Http\Server\Middleware\MiddlewareRegistry;
 
 /**
- * Class AbstractApp
- * @package Charcoal\App\Kernel
+ * This class serves as the foundational base for applications, managing various services
+ * such as cache management, routing, security, diagnostics, and error handling. It ensures
+ * proper initialization and configuration of essential parts, facilitating the execution
+ * of application-specific logic through extensions.
  */
 abstract class AbstractApp extends AppSerializable
 {
@@ -53,6 +59,7 @@ abstract class AbstractApp extends AppSerializable
     public readonly Diagnostics $diagnostics;
 
     private bool $bootstrapped = false;
+    private array $servers = [];
 
     final public function __construct(AppEnv $env, DirectoryNode $root, ?callable $monitor = null)
     {
@@ -164,6 +171,44 @@ abstract class AbstractApp extends AppSerializable
      * @return void
      */
     protected function onReadyCallback(): void
+    {
+    }
+
+    /**
+     * @param AppRoutesProviderInterface $sapi
+     * @return void
+     * @api
+     */
+    final protected function configHttpServer(AppRoutesProviderInterface $sapi): void
+    {
+        if ($this->bootstrapped) {
+            throw new \BadMethodCallException("App is already bootstrapped");
+        }
+
+        $enum = $sapi->sapi();
+        if (isset($this->routers[$enum->name])) {
+            throw new \RuntimeException("Router for SAPI \"" . $enum->name . "\" already registered");
+        }
+
+        $config = $this->config->sapi->interfaces[$enum->name] ?? null;
+        if (!isset($config)) {
+            throw new \RuntimeException("No HTTP SAPI interface config found for SAPI \"" . $enum->name . "\"");
+        }
+
+        $router = new HttpServer($config, $sapi->routes(), function (MiddlewareRegistry $mw) use ($sapi) {
+            $this->globalHttpPipelinesHook($sapi->sapi(), $mw);
+            $sapi->configPipelineCallback($mw);
+        });
+
+        $this->servers[$enum->name] = $router;
+    }
+
+    /**
+     * @param SapiEnumInterface $sapi
+     * @param MiddlewareRegistry $mw
+     * @return void
+     */
+    protected function globalHttpPipelinesHook(SapiEnumInterface $sapi, MiddlewareRegistry $mw): void
     {
     }
 
