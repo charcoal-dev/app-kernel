@@ -231,14 +231,14 @@ final class ErrorManager implements AppServiceInterface
     /**
      * Default exception handler function
      * @param \Throwable $t
-     * @return never
+     * @return void
      * @throws AppCrashException
      * @internal
      */
-    final public function handleThrowable(\Throwable $t): never
+    final public function handleThrowable(\Throwable $t): void
     {
         if (self::$handlingThrowable) {
-            exit(1);
+            return;
         }
 
         self::$handlingThrowable = true;
