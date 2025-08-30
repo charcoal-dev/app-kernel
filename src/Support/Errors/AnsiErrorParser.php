@@ -27,7 +27,7 @@ abstract readonly class AnsiErrorParser
         $buffer[] = "";
         $buffer[] = str_repeat(".", 10);
         $buffer[] = "";
-        $buffer[] = sprintf("\e[36m[%s]\e[0m", date("d-m-Y H:i"));
+        $buffer[] = sprintf("\e[36m[%s]\e[0m", date("d-m-Y H:i:s"));
         $buffer[] = sprintf("\e[33mCaught:\e[0m \e[31m%s\e[0m", $dto["class"]);
         $buffer[] = sprintf("\e[33mMessage:\e[0m %s", $dto["message"]);
         $buffer[] = sprintf("\e[33mCode:\e[0m %d", $dto["code"]);
