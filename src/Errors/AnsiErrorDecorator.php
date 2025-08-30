@@ -34,8 +34,10 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
     )
     {
         $this->template = $template ?: ErrorHelper::errorDtoTemplate();
-        $this->templateVars = ["datetime", "class", "code", "message",
-            "file", "file2", "line", "trace", "next"];
+
+        // Ordering is important here, do not change:
+        $this->templateVars = ["class", "message", "code", "file", "line", "trace",
+            "datetime", "file2", "next"];
         $this->templatePrep = array_map(fn($k) => "@{:" . $k . ":}", $this->templateVars);
     }
 
@@ -89,6 +91,6 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
         $dto["next"] = $dto["previous"]["class"] ?? "~";
         $data = array_intersect_key($dto, array_fill_keys($this->templateVars, "~"));
         $templated = strtr($this->template, array_combine($this->templatePrep, array_values($data)));
-        return AnsiDecorator::parse($templated, true, strip: $this->useAnsiEscapeSeq);
+        return AnsiDecorator::parse($templated, true, strip: !$this->useAnsiEscapeSeq);
     }
 }
