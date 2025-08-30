@@ -14,6 +14,7 @@ use Charcoal\App\Kernel\Config\Snapshot\CacheStoreConfig;
 use Charcoal\App\Kernel\Config\Snapshot\DatabaseConfig;
 use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Enums\CacheDriver;
+use Charcoal\App\Kernel\Enums\SemaphoreType;
 use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\Database\Enums\DbConnectionStrategy;
 use Charcoal\Database\Enums\DbDriver;
@@ -43,7 +44,7 @@ final class ConfigProvider
             )
         );
 
-        $appConfig->security->setSemaphoreDirectory("./tmp/semaphore");
+        $appConfig->security->setSemaphoreDirectory(SemaphoreType::Filesystem_Private, "./tmp/semaphore");
         return $appConfig->build();
     }
 }
