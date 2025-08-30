@@ -83,10 +83,9 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
                 }
             }
 
-            $result[] = $lines;
+            $result[] = preg_split("/\r\n|\r|\n/", AnsiDecorator::parse(implode($this->eolChar, $lines)));
         }
 
-        $decorated = AnsiDecorator::parse(implode($this->eolChar, array_merge(...$result)));
-        return preg_split("/\r\n|\r|\n/", $decorated);
+        return $result;
     }
 }
