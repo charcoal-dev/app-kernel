@@ -108,11 +108,11 @@ abstract class ErrorBoundary
         }
 
         if ($stdError) {
-            error_log($exceptionDto ?: $exceptionStr);
+            fwrite(STDERR, $exceptionDto ?: $exceptionStr);
         }
 
         if ($errorLog) {
-            fwrite(STDERR, $exceptionDto ?: $exceptionStr);
+            error_log($exceptionDto ?: $exceptionStr);
         }
 
         return $exceptionDto;
