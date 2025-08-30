@@ -79,7 +79,7 @@ final class FileErrorLogger implements ErrorLoggerInterface
         $this->isWriting = true;
         $buffer = implode($this->eolChar, $buffer);
         if (!$this->useAnsiEscapeSeq) {
-            $buffer = preg_replace("/\\e\[\d+m/", "", $buffer);
+            $buffer = AnsiErrorParser::strip($buffer)[0];
         }
 
         error_clear_last();

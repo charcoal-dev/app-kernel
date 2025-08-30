@@ -60,6 +60,16 @@ abstract readonly class AnsiErrorParser
     }
 
     /**
+     * @param string|array $buffer
+     * @return array
+     */
+    final public static function strip(string|array $buffer): array
+    {
+        $buffer = is_array($buffer) ? $buffer : [$buffer];
+        return array_map(fn($line) => preg_replace("/\\e\[\d+m/", "", $line), $buffer);
+    }
+
+    /**
      * Parses and appends trace information to the provided buffer.
      */
     private static function parseTrace(array &$buffer, array $trace, int $pathOffset = 0): void
