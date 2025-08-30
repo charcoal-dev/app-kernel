@@ -82,7 +82,7 @@ final class FileErrorLogger implements ErrorLoggerInterface
         }
 
         error_clear_last();
-        if (!@file_put_contents($this->logFile, $buffer)) {
+        if (!@file_put_contents($this->logFile, $buffer, FILE_APPEND)) {
             throw new \RuntimeException('Failed to write to error log file',
                 previous: ErrorHelper::lastErrorToRuntimeException());
         }
