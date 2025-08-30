@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Support;
 
+use Charcoal\App\Kernel\Errors\ErrorEntry;
+
 /**
  * This class provides helper methods for handling and formatting error information.
  * It extends the base ErrorHelper class to include additional functionality.
@@ -26,6 +28,47 @@ abstract readonly class ErrorHelper extends \Charcoal\Base\Support\Helpers\Error
     ): array
     {
         return DtoHelper::getExceptionObject($t, $previous, $trace, $pathOffset);
+    }
+
+    /**
+     * Produces universal error DTO.
+     */
+    public static function getErrorDto(\Throwable|ErrorEntry $error, bool $trace = true): array
+    {
+        $dto = [];
+        if ($error instanceof ErrorEntry) {
+            $dto["class"] = $error->level;
+            $dto["file"] = $error->filepath;
+            $dto["line"] = $error->line;
+            $dto["code"] = $error->errno;
+            $dto["message"] = $error->message;
+            $dto["trace"] = $error->backtrace;
+        }
+
+        if ($error instanceof \Throwable) {
+            $dto = self::getExceptionDto($error, true, true);
+        }
+
+        if (!$trace) {
+            unset($dto["trace"]);
+        }
+
+        return $dto;
+    }
+
+    /**
+     * @return string
+     */
+    public static function errorDtoTemplate(): string
+    {
+        return implode("\n", [
+            "{cyan}{{datetime}}{/}",
+            "{red}[{{class}}][{yellow}#{{code}}{red}]{/}",
+            "{{message}}",
+            "{yellow}File:{/} {cyan}[@{{line}}]{/} {blue}{{file2}}{/}",
+            "{yellow}Backtrace:{/} {{trace}}{/}",
+            "{yellow}Previous:{/} {yellow}{{next}}{/}"
+        ]);
     }
 
     /**
