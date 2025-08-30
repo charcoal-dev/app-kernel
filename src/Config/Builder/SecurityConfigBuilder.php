@@ -40,7 +40,7 @@ final class SecurityConfigBuilder implements ConfigBuilderInterface
         try {
             $this->$prop = $this->root->join($dir)->isDirectory();
         } catch (FilesystemException $e) {
-            throw new \DomainException("Failed to load semaphore directory", previous: $e);
+            throw new \DomainException("Failed to load semaphore directory " . $type->name, previous: $e);
         }
 
         return $this;
