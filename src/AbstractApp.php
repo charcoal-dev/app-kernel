@@ -94,6 +94,14 @@ abstract class AbstractApp extends AppSerializable
         Clock::initializeStatic($this->clock);
         $this->domain = $manifest->getDomain($this);
 
+        // Check configured HTTP servers...
+        $httpServers = $manifest->resolveHttpServers();
+        if ($httpServers) {
+            foreach ($httpServers as $httpServer) {
+                $this->configHttpServer($httpServer);
+            }
+        }
+
         // Set context and invoke isReady > onReady hooks
         $this->context = new AppContext($env, $this->clock->getImmutable(), $this->domain->inspect());
         $this->isReady("New app instance initialized");
@@ -179,7 +187,7 @@ abstract class AbstractApp extends AppSerializable
      * @return void
      * @api
      */
-    final protected function configHttpServer(AppRoutesProviderInterface $sapi): void
+    private function configHttpServer(AppRoutesProviderInterface $sapi): void
     {
         if ($this->bootstrapped) {
             throw new \BadMethodCallException("App is already bootstrapped");
@@ -195,12 +203,13 @@ abstract class AbstractApp extends AppSerializable
             throw new \RuntimeException("No HTTP SAPI interface config found for SAPI \"" . $enum->name . "\"");
         }
 
-        $router = new HttpServer($config, $sapi->routes(), function (MiddlewareRegistry $mw) use ($sapi) {
-            $this->globalHttpPipelinesHook($sapi->sapi(), $mw);
+        $server = new HttpServer($config, $sapi->routes(), function (MiddlewareRegistry $mw) use ($enum, $sapi) {
+            $this->globalHttpPipelinesHook($enum, $mw);
             $sapi->configPipelineCallback($mw);
         });
 
-        $this->servers[$enum->name] = $router;
+        $this->servers[$enum->name] = $server;
+        $this->diagnostics->buildStageStream(BuildStageEvents::HttpServerLoaded);
     }
 
     /**
@@ -208,7 +217,10 @@ abstract class AbstractApp extends AppSerializable
      * @param MiddlewareRegistry $mw
      * @return void
      */
-    protected function globalHttpPipelinesHook(SapiEnumInterface $sapi, MiddlewareRegistry $mw): void
+    protected function globalHttpPipelinesHook(
+        SapiEnumInterface  $sapi,
+        MiddlewareRegistry $mw
+    ): void
     {
     }
 

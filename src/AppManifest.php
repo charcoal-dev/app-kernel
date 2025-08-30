@@ -14,6 +14,7 @@ use Charcoal\App\Kernel\Database\DatabaseManager;
 use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
 use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Events\EventsManager;
+use Charcoal\App\Kernel\Internal\AppRoutesBundle;
 use Charcoal\App\Kernel\Internal\DomainBundle;
 use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Internal\Services\ServicesBundle;
@@ -22,8 +23,8 @@ use Charcoal\App\Kernel\Security\SecurityService;
 use Charcoal\Filesystem\Node\DirectoryNode;
 
 /**
- * Class AppManifest
- * @package Charcoal\App\Kernel
+ * Handles the application's core manifest, including initialization of services,
+ * domain bindings, and runtime configurations.
  */
 class AppManifest
 {
@@ -62,6 +63,7 @@ class AppManifest
     /**
      * @param AbstractApp $app
      * @return DomainBundle
+     * @internal
      */
     final public function getDomain(AbstractApp $app): DomainBundle
     {
@@ -69,6 +71,14 @@ class AppManifest
         $bundle = new DomainBundle($app, $this->domain);
         $app->diagnostics->buildStageStream(BuildStageEvents::DomainModulesLoaded);
         return $bundle;
+    }
+
+    /**
+     * @return AppRoutesBundle|null
+     */
+    public function resolveHttpServers(): ?AppRoutesBundle
+    {
+        return null;
     }
 
     /**
