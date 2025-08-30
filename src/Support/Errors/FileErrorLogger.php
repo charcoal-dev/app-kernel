@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Support\Errors;
 
-use Charcoal\App\Kernel\Contracts\Errors\ErrorLoggerInterface;
+use Charcoal\App\Kernel\Errors\AnsiErrorDecorator;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
 use Charcoal\App\Kernel\Support\ErrorHelper;
 use Charcoal\Filesystem\Path\FilePath;
@@ -19,18 +19,21 @@ use Charcoal\Filesystem\Path\SafePath;
  * formatting using ANSI escape sequences and custom end-of-line characters.
  * @api
  */
-final class FileErrorLogger implements ErrorLoggerInterface
+final class FileErrorLogger extends AnsiErrorDecorator
 {
     public readonly string $logFile;
-    public bool $isWriting = false;
+    private bool $isWriting = false;
 
     public function __construct(
         FilePath|SafePath|string $logFile,
-        public bool              $useAnsiEscapeSeq = true,
-        public string            $eolChar = PHP_EOL,
-        public int               $pathOffset = 0
+        bool                     $useAnsiEscapeSeq = true,
+        string                   $eolChar = "\n",
+        string                   $tabChar = "\t",
+        ?string                  $template = null,
     )
     {
+        parent::__construct($useAnsiEscapeSeq, $eolChar, $tabChar, $template);
+
         if ($logFile instanceof FilePath) {
             if (!$logFile->writable) {
                 throw new \RuntimeException("Error log file is not writable");
@@ -57,37 +60,32 @@ final class FileErrorLogger implements ErrorLoggerInterface
     }
 
     /**
-     * @internal
+     * @param array $dtoObjects
+     * @return void
      */
-    private function getLines(\Throwable|ErrorEntry $error): array
-    {
-        return match (true) {
-            $error instanceof ErrorEntry => AnsiErrorParser::parseError($error),
-            default => AnsiErrorParser::parseException($error, $this->pathOffset),
-        };
-    }
-
-    /**
-     * @internal
-     */
-    private function writeToFile(array $buffer): void
+    private function writeToFile(array $dtoObjects): void
     {
         if ($this->isWriting) {
             return;
         }
 
         $this->isWriting = true;
-        $buffer = implode($this->eolChar, $buffer);
-        if (!$this->useAnsiEscapeSeq) {
-            $buffer = AnsiErrorParser::strip($buffer)[0];
-        }
 
         error_clear_last();
-        if (!@file_put_contents($this->logFile, $buffer, FILE_APPEND)) {
-            throw new \RuntimeException('Failed to write to error log file',
+        $fp = @fopen($this->logFile, "a");
+        if (!$fp) {
+            throw new \RuntimeException("Failed to open error log file for writing",
                 previous: ErrorHelper::lastErrorToRuntimeException());
         }
 
+        foreach ($dtoObjects as $dtoObject) {
+            if (!@fwrite($fp, implode($this->eolChar, $dtoObject) . $this->eolChar)) {
+                throw new \RuntimeException("Failed to write to error log file",
+                    previous: ErrorHelper::lastErrorToRuntimeException());
+            }
+        }
+
+        fclose($fp);
         $this->isWriting = false;
     }
 
