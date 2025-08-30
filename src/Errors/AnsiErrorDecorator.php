@@ -24,6 +24,7 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
 {
     private string $template;
     private array $templateVars;
+    private array $templatePrep;
 
     public function __construct(
         public bool   $useAnsiEscapeSeq = true,
@@ -35,6 +36,7 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
         $this->template = $template ?: ErrorHelper::errorDtoTemplate();
         $this->templateVars = ["datetime", "class", "code", "message",
             "file", "file2", "line", "trace", "next"];
+        $this->templatePrep = array_map(fn($k) => "@{:" . $k . ":}", $this->templateVars);
     }
 
     /**
@@ -51,7 +53,7 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
         foreach ($errors as $error) {
             $tabIndex++;
             $tabs = str_repeat($this->tabChar, $tabIndex);
-            $lines = explode($this->eolChar, $this->getTemplated($error));
+            $lines = preg_split("/\r\n|\r|\n/", $this->getTemplated($error));
             foreach ($lines as $line) {
                 $result[] = $tabs . $line;
             }
@@ -86,9 +88,7 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
 
         $dto["next"] = $dto["previous"]["class"] ?? "~";
         $data = array_intersect_key($dto, array_fill_keys($this->templateVars, "~"));
-        $templated = strtr($this->template, array_combine(array_map(fn($k) => "{{" . $k . "}}", $this->templateVars),
-            array_values($data)));
-
+        $templated = strtr($this->template, array_combine($this->templatePrep, array_values($data)));
         return AnsiDecorator::parse($templated, true, strip: $this->useAnsiEscapeSeq);
     }
 }

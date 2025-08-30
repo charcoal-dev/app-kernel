@@ -62,12 +62,12 @@ abstract readonly class ErrorHelper extends \Charcoal\Base\Support\Helpers\Error
     public static function errorDtoTemplate(): string
     {
         return implode("\n", [
-            "{cyan}{{datetime}}{/}",
-            "{red}[{{class}}][{yellow}#{{code}}{red}]{/}",
-            "{{message}}",
-            "{yellow}File:{/} {cyan}[@{{line}}]{/} {blue}{{file2}}{/}",
-            "{yellow}Backtrace:{/} {{trace}}{/}",
-            "{yellow}Previous:{/} {yellow}{{next}}{/}"
+            "{cyan}@{:datetime:}{/}",
+            "{red}[@{:class:}][{yellow}#@{:code:}{red}]{/}",
+            "@{:message:}",
+            "{yellow}File:{/} {cyan}[@@{:line:}]{/} {blue}@{:file2:}{/}",
+            "{yellow}Backtrace:{/} @{:trace:}{/}",
+            "{yellow}Previous:{/} {yellow}@{:next:}{/}"
         ]);
     }
 
