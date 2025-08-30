@@ -63,11 +63,11 @@ abstract readonly class ErrorHelper extends \Charcoal\Base\Support\Helpers\Error
     {
         return [
             // [0]: Backtrace line template:
-            "\x20\x20\x20\x20\x20\x20{cyan}[%1\$s, @%2\$s{cyan}]{/}",
+            "\x20\x20\x20\x20\x20\x20\x20{cyan}[%1\$s, @%2\$s{cyan}]{/}",
             // [1]: Previous boundary
             "{yellow}Next:{/} {grey}%s{/}",
             // [...]: Error DTO template:
-            "{cyan}@{:datetime:}{/}",
+            "{magenta}[@{:datetime:}]{/}",
             "{red}[@{:class:}][{yellow}#@{:code:}{red}]{/}",
             "@{:message:}",
             "{yellow}Trace:{/}\x20{blue}[@{:file:}, {cyan}@{:line:}{blue}]{/}"];
