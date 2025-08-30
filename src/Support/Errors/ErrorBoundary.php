@@ -17,8 +17,33 @@ use Charcoal\App\Kernel\Support\ErrorHelper;
  * that any unforeseen issues do not propagate beyond the defined boundary.
  * @api
  */
-abstract readonly class ErrorBoundary
+abstract class ErrorBoundary
 {
+    protected static bool $caughtFinal = false;
+
+    /**
+     * Global error handler for uncaught exceptions.
+     * @api
+     * @noinspection PhpUnhandledExceptionInspection
+     */
+    public static function handleUncaught(?\Closure $callback, bool $errorLog = true, bool $stdError = false): void
+    {
+        set_exception_handler(function (\Throwable $exception) use ($callback, $errorLog, $stdError) {
+            if (self::$caughtFinal) {
+                exit(1);
+            }
+
+            self::$caughtFinal = true;
+            self::toErrorStream($exception, $errorLog, $stdError);
+
+            if ($callback) {
+                $callback($exception);
+            }
+
+            exit(1);
+        });
+    }
+
     /**
      * Configure PHP to log errors to the Docker standard error stream.
      * @api
