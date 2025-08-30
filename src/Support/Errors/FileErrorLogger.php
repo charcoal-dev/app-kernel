@@ -22,7 +22,7 @@ use Charcoal\Filesystem\Path\SafePath;
 final class FileErrorLogger implements ErrorLoggerInterface
 {
     public readonly string $logFile;
-    public bool $isWriting = true;
+    public bool $isWriting = false;
 
     public function __construct(
         FilePath|SafePath|string $logFile,
