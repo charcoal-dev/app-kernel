@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\EntryPoint\Cli;
 
 use Charcoal\App\Kernel\AbstractApp;
+use Charcoal\App\Kernel\Support\Errors\RuntimeErrorLog;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Base\Traits\NoDumpTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
@@ -27,7 +28,7 @@ use Composer\InstalledVersions;
 class AppCliHandler extends Console
 {
     public readonly StdoutPrinter $stdout;
-    public readonly ErrorLog $errorLog;
+    public readonly RuntimeErrorLog $errorLog;
 
     use NotCloneableTrait;
     use NoDumpTrait;
@@ -46,7 +47,7 @@ class AppCliHandler extends Console
         ?string                     $defaultScriptName,
     )
     {
-        $this->errorLog = new ErrorLog();
+        $this->errorLog = new RuntimeErrorLog();
         $this->app->errors->subscribe($this->errorLog);
 
         parent::__construct($scriptsNamespace, $args, $defaultScriptName);
