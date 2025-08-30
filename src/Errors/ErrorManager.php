@@ -13,6 +13,7 @@ use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Internal\Exceptions\AppCrashException;
 use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
+use Charcoal\App\Kernel\Support\Errors\ErrorBoundary;
 use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Traits\InstanceOnStaticScopeTrait;
 use Charcoal\Base\Traits\NoDumpTrait;
@@ -58,6 +59,7 @@ final class ErrorManager implements AppServiceInterface
         $this->debugging = $env->isDebug();
         $this->loggable = [E_NOTICE, E_USER_NOTICE, E_DEPRECATED, E_USER_DEPRECATED];
         $this->loggers = $loggers ?? new ErrorLoggers();
+        register_shutdown_function([$this, "handleShutdown"]);
     }
 
     /**
@@ -130,7 +132,6 @@ final class ErrorManager implements AppServiceInterface
         self::$handlersSet = true;
         set_error_handler([$this, "handleError"]);
         set_exception_handler([$this, "handleThrowable"]);
-        register_shutdown_function([$this, "handleShutdown"]);
     }
 
     /**
@@ -209,6 +210,25 @@ final class ErrorManager implements AppServiceInterface
     }
 
     /**
+     * Default exception handler function
+     * @param \Throwable $t
+     * @return void
+     * @throws AppCrashException
+     * @internal
+     */
+    final public function handleThrowable(\Throwable $t): void
+    {
+        if (self::$handlingThrowable) {
+            return;
+        }
+
+        self::$handlingThrowable = true;
+        $this->loggers->handleException($t);
+        set_exception_handler(fn(AppCrashException|\Throwable $e) => ErrorBoundary::terminate($e));
+        throw new AppCrashException($t);
+    }
+
+    /**
      * @throws \Exception
      */
     final public function handleError(int $level, string $message, string $file, int $line): bool
@@ -226,24 +246,6 @@ final class ErrorManager implements AppServiceInterface
         }
 
         throw new \ErrorException($message, 0, $level, $file, $line);
-    }
-
-    /**
-     * Default exception handler function
-     * @param \Throwable $t
-     * @return void
-     * @throws AppCrashException
-     * @internal
-     */
-    final public function handleThrowable(\Throwable $t): void
-    {
-        if (self::$handlingThrowable) {
-            return;
-        }
-
-        self::$handlingThrowable = true;
-        $this->loggers->handleException($t);
-        throw new AppCrashException($t);
     }
 
     /**

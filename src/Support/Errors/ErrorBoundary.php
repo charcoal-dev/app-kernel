@@ -19,39 +19,44 @@ use Charcoal\App\Kernel\Support\ErrorHelper;
  */
 abstract class ErrorBoundary
 {
-    protected static bool $caughtFinal = false;
+    public static bool $writeErrorLog = true;
+    public static bool $writeStdError = false;
+    public static int $pathOffset = 0;
+
+    private static ?\Closure $exceptionHandler = null;
 
     /**
-     * Global error handler for uncaught exceptions.
+     * @return class-string<self>
      * @api
-     * @noinspection PhpUnhandledExceptionInspection
      */
-    public static function handleUncaught(?\Closure $callback, bool $errorLog = true, bool $stdError = false): void
+    public static function configStreams(bool $errorLog, bool $stdError, int $pathOffset): string
     {
-        set_exception_handler(function (\Throwable $exception) use ($callback, $errorLog, $stdError) {
-            if (self::$caughtFinal) {
-                exit(1);
-            }
-
-            self::$caughtFinal = true;
-            self::toErrorStream($exception, $errorLog, $stdError);
-
-            if ($callback) {
-                $callback($exception);
-            }
-
-            exit(1);
-        });
+        static::$writeErrorLog = $errorLog;
+        static::$writeStdError = $stdError;
+        static::$pathOffset = $pathOffset;
+        return static::class;
     }
 
     /**
      * Configure PHP to log errors to the Docker standard error stream.
+     * @return class-string<self>
      * @api
      */
-    public static function alignDockerStdError(): void
+    public static function alignDockerStdError(): string
     {
         ini_set("log_errors", "On");
         ini_set("error_log", "/proc/self/fd/2");
+        return static::class;
+    }
+
+    /**
+     * @param \Closure $callback
+     * @return class-string<self>
+     */
+    final public static function handle(\Closure $callback): string
+    {
+        static::$exceptionHandler = $callback;
+        return static::class;
     }
 
     /**
@@ -59,14 +64,18 @@ abstract class ErrorBoundary
      * @noinspection PhpUnhandledExceptionInspection
      * @api
      */
-    public static function terminate(
-        AppCrashException|\Throwable $exception,
-        bool                         $errorLog = true,
-        bool                         $stdError = false,
-        int                          $pathOffset = 0
-    ): never
+    public static function terminate(AppCrashException|\Throwable $exception): never
     {
-        static::toErrorStream($exception, $errorLog, $stdError, $pathOffset);
+        static::toErrorStream($exception, self::$writeErrorLog, self::$writeStdError, self::$pathOffset);
+        if (static::$exceptionHandler) {
+            try {
+                call_user_func(static::$exceptionHandler, $exception);
+            } catch (\Throwable $e) {
+                static::toErrorStream($e, $errorLog, $stdError, $pathOffset);
+                exit(1);
+            }
+        }
+
         exit(1);
     }
 
