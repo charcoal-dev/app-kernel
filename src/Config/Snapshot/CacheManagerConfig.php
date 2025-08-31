@@ -11,6 +11,7 @@ namespace Charcoal\App\Kernel\Config\Snapshot;
 use Charcoal\App\Kernel\Enums\CacheDriver;
 use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
 use Charcoal\App\Kernel\Support\NetworkHelper;
+use Charcoal\Net\Dns\HostnameHelper;
 
 /**
  * Class CacheConfig
@@ -33,7 +34,7 @@ final readonly class CacheManagerConfig implements ConfigSnapshotInterface
                 continue;
             }
 
-            if (!NetworkHelper::isValidHostname($config->hostname, true, true)) {
+            if (!HostnameHelper::isValidHostname($config->hostname, true, true)) {
                 throw new \InvalidArgumentException("Invalid hostname for cache provider: " . $provider);
             }
 

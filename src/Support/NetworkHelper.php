@@ -11,7 +11,7 @@ namespace Charcoal\App\Kernel\Support;
 /**
  * Helper class providing utility methods for network-related validation
  */
-abstract readonly class NetworkHelper extends \Charcoal\Base\Support\Helpers\NetworkHelper
+abstract readonly class NetworkHelper
 {
     /**
      * @param mixed $port

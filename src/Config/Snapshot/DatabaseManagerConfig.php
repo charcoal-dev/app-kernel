@@ -10,6 +10,7 @@ namespace Charcoal\App\Kernel\Config\Snapshot;
 
 use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
 use Charcoal\App\Kernel\Support\NetworkHelper;
+use Charcoal\Net\Dns\HostnameHelper;
 
 /**
  * Class DatabasesConfig
@@ -26,7 +27,7 @@ final readonly class DatabaseManagerConfig implements ConfigSnapshotInterface
     public function __construct(array $configs)
     {
         foreach ($configs as $key => $config) {
-            if (!NetworkHelper::isValidHostname($config->host, true, true)) {
+            if (!HostnameHelper::isValidHostname($config->host, true, true)) {
                 throw new \DomainException("Invalid host IP address for database: " . $key);
             }
 
