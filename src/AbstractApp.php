@@ -12,6 +12,7 @@ use Charcoal\App\Kernel\Cache\CacheManager;
 use Charcoal\App\Kernel\Clock\Clock;
 use Charcoal\App\Kernel\Clock\MonotonicTimestamp;
 use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
+use Charcoal\App\Kernel\Config\Snapshot\SapiHttpInterfaceConfig;
 use Charcoal\App\Kernel\Contracts\EntryPoint\AppRoutesProviderInterface;
 use Charcoal\App\Kernel\Contracts\Enums\SapiEnumInterface;
 use Charcoal\App\Kernel\Database\DatabaseManager;
@@ -19,6 +20,7 @@ use Charcoal\App\Kernel\Diagnostics\Diagnostics;
 use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
 use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Enums\DiagnosticsEvent;
+use Charcoal\App\Kernel\Enums\SapiType;
 use Charcoal\App\Kernel\Errors\ErrorManager;
 use Charcoal\App\Kernel\Events\EventsManager;
 use Charcoal\App\Kernel\Internal\AppContext;
@@ -198,15 +200,23 @@ abstract class AbstractApp extends AppSerializable
             throw new \RuntimeException("Router for SAPI \"" . $enum->name . "\" already registered");
         }
 
-        $config = $this->config->sapi->interfaces[$enum->name] ?? null;
-        if (!isset($config)) {
-            throw new \RuntimeException("No HTTP SAPI interface config found for SAPI \"" . $enum->name . "\"");
+        $configs = $this->config->sapi->interfaces[$enum->name] ?? null;
+        if (!isset($configs)) {
+            throw new \RuntimeException("No SAPI interface config found for SAPI \"" . $enum->name . "\"");
         }
 
-        $server = new HttpServer($config, $sapi->routes(), function (MiddlewareRegistry $mw) use ($enum, $sapi) {
-            $this->globalHttpPipelinesHook($enum, $mw);
-            $sapi->configPipelineCallback($mw);
-        });
+        foreach ($configs as $sapiConfig) {
+            if (!$sapiConfig instanceof SapiHttpInterfaceConfig) {
+                continue;
+            }
+
+            $server = new HttpServer($sapiConfig->routerConfig,
+                $sapi->routes(),
+                function (MiddlewareRegistry $mw) use ($enum, $sapi) {
+                    $this->globalHttpPipelinesHook($enum, $mw);
+                    $sapi->configPipelineCallback($mw);
+                });
+        }
 
         $this->servers[$enum->name] = $server;
         $this->diagnostics->buildStageStream(BuildStageEvents::HttpServerLoaded);
