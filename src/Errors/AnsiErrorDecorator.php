@@ -58,17 +58,17 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
             ErrorHelper::getExceptionChain($error, reverse: true) : [$error];
 
         $result = [];
-        $result[] = [AnsiDecorator::parse(sprintf($this->dtHeader, date("Y-m-d H:i:s")))];
         $tabIndex = -1;
         foreach ($errors as $error) {
             $tabIndex++;
-            $tabs = str_repeat($this->tabChar, min(0, max(3, $tabIndex)));
+            $tabs = str_repeat($this->tabChar, min(3, $tabIndex));
             $dto = ErrorHelper::getErrorDto($error, trace: true);
             $trace = $dto["trace"] ?? null;
             $dto = array_intersect_key($dto, $this->templateVars);
             $dto["file"] = PathHelper::takeLastParts($dto["file"], 2);
             $templated = strtr($this->template, array_combine($this->templatePrep, array_values($dto)));
             $lines = array_map(fn($l) => $tabs . $l, preg_split("/\r\n|\r|\n/", $templated));
+            array_unshift($lines, $tabs . sprintf($this->dtHeader, date("Y-m-d H:i:s")));
             if ($trace) {
                 foreach ($trace as $tL) {
                     $lines[] = $tabs . sprintf(
@@ -94,7 +94,7 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
     /**
      * @return string[]
      */
-    public static function defaultTemplate(): array
+    protected static function defaultTemplate(): array
     {
         return [
             // [0]: Datetime Header
@@ -102,7 +102,7 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
             // [1]: Backtrace line template:
             "\x20\x20\x20\x20\x20\x20\x20{cyan}[%1\$s {yellow}#%2\$s{cyan}]{/}",
             // [2]: Next boundary
-            "{yellow}Caught By:{/} {grey}%s{/}",
+            "{yellow}Caught By: ⤵{/} {grey}%s{/}",
             // [...]: Error DTO template:
             "{red}[@{:class:}][{yellow}#@{:code:}{red}]{/}",
             "@{:message:}",
