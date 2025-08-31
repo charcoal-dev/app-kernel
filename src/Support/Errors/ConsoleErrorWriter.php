@@ -35,6 +35,7 @@ final class ConsoleErrorWriter extends AnsiErrorDecorator
      */
     private function write(array $buffer): void
     {
+        echo $this->eolChar;
         foreach ($buffer as $decorateDto) {
             foreach ($decorateDto as $line) {
                 echo $line . $this->eolChar;

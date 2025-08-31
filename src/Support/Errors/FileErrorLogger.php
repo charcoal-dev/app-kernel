@@ -79,7 +79,7 @@ final class FileErrorLogger extends AnsiErrorDecorator
         }
 
         foreach ($dtoObjects as $dtoObject) {
-            if (!@fwrite($fp, implode($this->eolChar, $dtoObject) . $this->eolChar)) {
+            if (!@fwrite($fp, $this->eolChar . implode($this->eolChar, $dtoObject) . $this->eolChar)) {
                 throw new \RuntimeException("Failed to write to error log file",
                     previous: ErrorHelper::lastErrorToRuntimeException());
             }
