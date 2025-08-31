@@ -220,7 +220,7 @@ abstract class AbstractApp extends AppSerializable
             $this->servers[$enum->name] = $server;
         }
 
-        $this->diagnostics->buildStageStream(BuildStageEvents::HttpServerLoaded);
+        $this->diagnostics->buildStageStream(BuildStageEvents::HttpServersLoaded);
     }
 
     /**

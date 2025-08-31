@@ -21,7 +21,7 @@ enum BuildStageEvents implements DiagnosticsEventsContext
     case ConfigLoaded;
     case ServicesReady;
     case DomainModulesLoaded;
-    case HttpServerLoaded;
+    case HttpServersLoaded;
     case Ready;
     case Bootstrapped;
 }
