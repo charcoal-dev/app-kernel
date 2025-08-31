@@ -105,10 +105,10 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
             // [1]: Backtrace line template:
             "\x20\x20\x20\x20\x20\x20\x20{cyan}[%1\$s {yellow}#%2\$s{cyan}]{/}",
             // [2]: Next boundary
-            "{yellow}Caught By: ⤵{/} {grey}%s{/}",
+            "{yellow}Caught By ⤵{/} {grey}%s{/}",
             // [...]: Error DTO template:
             "{red}[@{:class:}][{yellow}#@{:code:}{red}]{/}",
             "@{:message:}",
-            "{yellow}Trace:{/}\x20{blue}[@{:file:} {yellow}#{yellow}{:line:}{blue}]{/}"];
+            "{yellow}Trace:{/}\x20{blue}[@{:file:} {yellow}\#@{:line:}{blue}]{/}"];
     }
 }

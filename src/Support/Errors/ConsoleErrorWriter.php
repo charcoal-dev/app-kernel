@@ -40,9 +40,9 @@ final class ConsoleErrorWriter extends AnsiErrorDecorator
             foreach ($decorateDto as $line) {
                 echo $line . $this->eolChar;
             }
-
-            echo $this->eolChar;
         }
+
+        echo $this->eolChar;
     }
 
     /**
