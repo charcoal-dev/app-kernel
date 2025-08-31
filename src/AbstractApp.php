@@ -216,9 +216,10 @@ abstract class AbstractApp extends AppSerializable
                     $this->globalHttpPipelinesHook($enum, $mw);
                     $sapi->configPipelineCallback($mw);
                 });
+
+            $this->servers[$enum->name] = $server;
         }
 
-        $this->servers[$enum->name] = $server;
         $this->diagnostics->buildStageStream(BuildStageEvents::HttpServerLoaded);
     }
 
