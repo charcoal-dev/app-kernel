@@ -58,7 +58,7 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
             ErrorHelper::getExceptionChain($error, reverse: true) : [$error];
 
         $result = [];
-        $result[] = [sprintf($this->dtHeader, date("Y-m-d H:i:s"))];
+        $result[] = [AnsiDecorator::parse(sprintf($this->dtHeader, date("Y-m-d H:i:s")))];
         $tabIndex = -1;
         foreach ($errors as $error) {
             $tabIndex++;
