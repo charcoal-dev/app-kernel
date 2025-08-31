@@ -21,9 +21,10 @@ use Charcoal\Console\Ansi\AnsiDecorator;
  *
  * Implements the ErrorLoggerInterface to ensure compatibility with error logging systems.
  */
-abstract class AnsiErrorDecorator implements ErrorLoggerInterface
+class AnsiErrorDecorator
 {
     private string $template;
+    private string $dtHeader;
     private string $traceLineTpl;
     private string $previousBoundary;
     private array $templateVars;
@@ -36,12 +37,13 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
         ?array        $template = null,
     )
     {
-        $template = $template ?: ErrorHelper::errorDtoTemplate();
+        $template = $template ?: self::defaultTemplate();
+        $this->dtHeader = array_shift($template);
         $this->traceLineTpl = array_shift($template);
         $this->previousBoundary = array_shift($template);
         $this->template = implode($this->eolChar, $template);
 
-        $templateVars = ["class", "message", "code", "file", "line", "datetime"];
+        $templateVars = ["class", "message", "code", "file", "line"];
         $this->templatePrep = array_map(fn($k) => "@{:" . $k . ":}", $templateVars);
         $this->templateVars = array_fill_keys($templateVars, "1");
     }
@@ -50,20 +52,20 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
      * @param \Throwable|ErrorEntry $error
      * @return array<array<string>>
      */
-    final protected function getLines(\Throwable|ErrorEntry $error): array
+    final public function getLines(\Throwable|ErrorEntry $error): array
     {
         $errors = $error instanceof \Throwable ?
             ErrorHelper::getExceptionChain($error, reverse: true) : [$error];
 
         $result = [];
+        $result[] = [sprintf($this->dtHeader, date("Y-m-d H:i:s"))];
         $tabIndex = -1;
         foreach ($errors as $error) {
             $tabIndex++;
-            $tabs = str_repeat($this->tabChar, $tabIndex);
+            $tabs = str_repeat($this->tabChar, max(3, $tabIndex));
             $dto = ErrorHelper::getErrorDto($error, trace: true);
             $trace = $dto["trace"] ?? null;
             $dto = array_intersect_key($dto, $this->templateVars);
-            $dto["datetime"] = date("d-m-Y H:i:s");
             $dto["file"] = PathHelper::takeLastParts($dto["file"], 2);
             $templated = strtr($this->template, array_combine($this->templatePrep, array_values($dto)));
             $lines = array_map(fn($l) => $tabs . $l, preg_split("/\r\n|\r|\n/", $templated));
@@ -87,5 +89,23 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
         }
 
         return $result;
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function defaultTemplate(): array
+    {
+        return [
+            // [0]: Datetime Header
+            "{magenta}[%1\$s]{/}",
+            // [1]: Backtrace line template:
+            "\x20\x20\x20\x20\x20\x20\x20{cyan}[%1\$s {yellow}\#%2\$s{cyan}]{/}",
+            // [2]: Next boundary
+            "{yellow}Caught By:{/} {grey}%s{/}",
+            // [...]: Error DTO template:
+            "{red}[@{:class:}][{yellow}#@{:code:}{red}]{/}",
+            "@{:message:}",
+            "{yellow}Trace:{/}\x20{blue}[@{:file:} {yellow}#{:line:}{blue}]{/}"];
     }
 }
