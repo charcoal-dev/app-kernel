@@ -76,7 +76,7 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
                 foreach ($trace as $tL) {
                     $lines[] = $tabs . sprintf(
                             $this->traceLineTpl,
-                            PathHelper::takeLastParts($tL["file"], 2),
+                            isset($tL["file"]) ? PathHelper::takeLastParts($tL["file"], 2) : "~",
                             $tL["line"] ?? -1);
                 }
             }
