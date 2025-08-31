@@ -62,7 +62,7 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
         $tabIndex = -1;
         foreach ($errors as $error) {
             $tabIndex++;
-            $tabs = str_repeat($this->tabChar, max(3, $tabIndex));
+            $tabs = str_repeat($this->tabChar, min(0, max(3, $tabIndex)));
             $dto = ErrorHelper::getErrorDto($error, trace: true);
             $trace = $dto["trace"] ?? null;
             $dto = array_intersect_key($dto, $this->templateVars);
