@@ -27,7 +27,7 @@ final class FileErrorLogger extends AnsiErrorDecorator
     public function __construct(
         FilePath|SafePath|string $logFile,
         bool                     $useAnsiEscapeSeq = true,
-        string                   $eolChar = "\n",
+        string                   $eolChar = PHP_EOL,
         string                   $tabChar = "\t",
         ?string                  $template = null,
     )
