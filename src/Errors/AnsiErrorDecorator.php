@@ -106,6 +106,6 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
             // [...]: Error DTO template:
             "{red}[@{:class:}][{yellow}#@{:code:}{red}]{/}",
             "@{:message:}",
-            "{yellow}Trace:{/}\x20{blue}[@{:file:} {yellow}#{:line:}{blue}]{/}"];
+            "{yellow}Trace:{/}\x20{blue}[@{:file:} {yellow}#{yellow}{:line:}{blue}]{/}"];
     }
 }
