@@ -68,7 +68,10 @@ abstract class AnsiErrorDecorator implements ErrorLoggerInterface
             $dto["file"] = PathHelper::takeLastParts($dto["file"], 2);
             $templated = strtr($this->template, array_combine($this->templatePrep, array_values($dto)));
             $lines = array_map(fn($l) => $tabs . $l, preg_split("/\r\n|\r|\n/", $templated));
-            array_unshift($lines, $tabs . sprintf($this->dtHeader, date("Y-m-d H:i:s")));
+            if ($tabIndex === 0) {
+                array_unshift($lines, $tabs . sprintf($this->dtHeader, date("Y-m-d H:i:s")));
+            }
+
             if ($trace) {
                 foreach ($trace as $tL) {
                     $lines[] = $tabs . sprintf(
