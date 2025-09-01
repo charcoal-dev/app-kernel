@@ -38,9 +38,9 @@ final readonly class SapiBundle
         private array $sapiContexts,
     )
     {
+        $this->events = new ServerApiEvents();
         $cliCount = 0;
         $httpCount = 0;
-
         foreach ($this->sapiContexts as $sapiContext) {
             if (!$sapiContext instanceof ServerApiContextInterface) {
                 throw new \RuntimeException("Invalid SAPI context: " . get_debug_type($sapiContext));
@@ -55,12 +55,12 @@ final readonly class SapiBundle
             throw new \UnexpectedValueException("Invalid SAPI context: " . get_debug_type($sapiContext));
         }
 
+        $this->cliCount = $cliCount;
         $this->httpCount = $httpCount;
+
         if ($this->httpCount > 0) {
             $app->diagnostics->buildStageStream(BuildStageEvents::HttpServersLoaded);
         }
-
-        $this->cliCount = $cliCount;
     }
 
     /**
