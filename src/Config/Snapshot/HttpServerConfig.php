@@ -8,9 +8,9 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config\Snapshot;
 
-use Charcoal\App\Kernel\Contracts\Enums\SapiEnumInterface;
-use Charcoal\App\Kernel\Enums\SapiType;
 use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
+use Charcoal\Contracts\Enums\SapiType;
+use Charcoal\Contracts\ServerApi\ServerApiEnumInterface;
 use Charcoal\Http\Server\Config\ServerConfig;
 
 /**
@@ -18,15 +18,15 @@ use Charcoal\Http\Server\Config\ServerConfig;
  * It captures and stores the specific interface and related server configuration instances.
  * Implements the ConfigSnapshotInterface.
  */
-final readonly class SapiHttpInterfaceConfig implements ConfigSnapshotInterface
+final readonly class HttpServerConfig implements ConfigSnapshotInterface
 {
     public function __construct(
-        public SapiEnumInterface $interface,
-        public ServerConfig      $routerConfig
+        public ServerApiEnumInterface $interface,
+        public ServerConfig           $routerConfig
     )
     {
         // Interface/EntryPoint Enum
-        if ($this->interface->getType() !== SapiType::Http) {
+        if ($this->interface->type() !== SapiType::Http) {
             throw new \InvalidArgumentException("Invalid SAPI type for: " . $interface->name);
         }
     }

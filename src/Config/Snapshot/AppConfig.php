@@ -26,7 +26,7 @@ readonly class AppConfig implements ConfigSnapshotInterface
         public ?CacheManagerConfig    $cache,
         public ?DatabaseManagerConfig $database,
         public SecurityConfig         $security,
-        public SapiInterfacesConfig   $sapi
+        public ServerApiConfig        $sapi
     )
     {
     }
