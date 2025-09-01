@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\EntryPoint\Cli;
+namespace Charcoal\App\Kernel\ServerApi\Cli;
 
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Support\Errors\RuntimeErrorLog;

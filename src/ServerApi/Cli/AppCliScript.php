@@ -6,14 +6,16 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\EntryPoint\Cli;
+namespace Charcoal\App\Kernel\ServerApi\Cli;
 
 use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Cli\Enums\ExecutionState;
 
 /**
- * Class AbstractCliScript
- * @package Charcoal\App\Kernel\EntryPoint\Cli
+ * This abstract class extends the capabilities of Charcoal's AbstractCliScript
+ * to include additional configuration and behavior specific to the application's
+ * CLI implementation. It ensures that error handlers are properly set before
+ * proceeding with the CLI operations.
  * @property AppCliHandler $cli
  * @api
  */
