@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config\Builder;
 
-use Charcoal\App\Kernel\Config\Snapshot\ServerApiConfigBundle;
+use Charcoal\App\Kernel\Config\Snapshot\SapiConfigBundle;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
 use Charcoal\Contracts\ServerApi\ServerApiEnumInterface;
 
@@ -54,13 +54,13 @@ final class SapiConfigBuilder implements ConfigBuilderInterface
     /**
      * Builds and returns a configuration snapshot based on the current configuration state.
      */
-    public function build(): ServerApiConfigBundle
+    public function build(): SapiConfigBundle
     {
         $built = [];
         foreach ($this->config as $config) {
             $built[] = $config->build();
         }
 
-        return new ServerApiConfigBundle(...$built);
+        return new SapiConfigBundle(...$built);
     }
 }

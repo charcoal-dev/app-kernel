@@ -15,7 +15,7 @@ use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
  * This class ensures that all provided configurations implement the SapiConfigInterface.
  * It also guarantees that duplicate configurations for the same interface name are rejected.
  */
-final readonly class ServerApiConfigBundle implements ConfigSnapshotInterface
+final readonly class SapiConfigBundle implements ConfigSnapshotInterface
 {
     /** @var array<string, HttpServerConfig> */
     public array $interfaces;
