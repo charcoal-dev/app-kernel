@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config\Snapshot;
 
-use Charcoal\App\Kernel\Contracts\EntryPoint\SapiConfigInterface;
 use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
 
 /**
@@ -16,15 +15,15 @@ use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
  * This class ensures that all provided configurations implement the SapiConfigInterface.
  * It also guarantees that duplicate configurations for the same interface name are rejected.
  */
-final readonly class SapiInterfacesConfig implements ConfigSnapshotInterface
+final readonly class ServerApiConfig implements ConfigSnapshotInterface
 {
-    /** @var array<SapiConfigInterface> */
+    /** @var array<HttpServerConfig> */
     public array $interfaces;
 
     /**
-     * @param SapiHttpInterfaceConfig ...$configs
+     * @param HttpServerConfig ...$configs
      */
-    public function __construct(SapiHttpInterfaceConfig ...$configs)
+    public function __construct(HttpServerConfig ...$configs)
     {
         $final = [];
         foreach ($configs as $config) {
