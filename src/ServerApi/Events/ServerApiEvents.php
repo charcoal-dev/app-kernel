@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\ServerApi\Events;
 
-use Charcoal\App\Kernel\Contracts\ServerApi\ServerApiContextInterface;
 use Charcoal\App\Kernel\Enums\ServerApiEvent;
 use Charcoal\App\Kernel\ServerApi\SapiLoaded;
 use Charcoal\Events\BehaviorEvent;
@@ -22,7 +21,7 @@ final class ServerApiEvents extends BehaviorEvent
     public function __construct()
     {
         parent::__construct("app.Events.ServerApi", [
-            ServerApiContextInterface::class,
+            SapiEventsContext::class,
             SapiLoaded::class
         ]);
     }
