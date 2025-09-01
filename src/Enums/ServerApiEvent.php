@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Enums;
 
-use Charcoal\App\Kernel\ServerApi\Events\SapiLoadedEventContext;
+use Charcoal\App\Kernel\ServerApi\SapiLoaded;
 
 /**
  * Enum cases correspond to specific events that can be emitted by the server API.
@@ -24,7 +24,7 @@ enum ServerApiEvent: int
     public function getEventContext(): string
     {
         return match ($this) {
-            self::onLoaded => SapiLoadedEventContext::class,
+            self::onLoaded => SapiLoaded::class,
         };
     }
 }
