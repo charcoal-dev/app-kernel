@@ -8,9 +8,9 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config\Builder;
 
-use Charcoal\App\Kernel\Config\Snapshot\SapiHttpInterfaceConfig;
-use Charcoal\App\Kernel\Contracts\Enums\SapiEnumInterface;
+use Charcoal\App\Kernel\Config\Snapshot\HttpServerConfig;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
+use Charcoal\Contracts\ServerApi\ServerApiEnumInterface;
 use Charcoal\Http\Commons\Enums\HeaderKeyValidation;
 use Charcoal\Http\Commons\Enums\ParamKeyValidation;
 use Charcoal\Http\Commons\Support\CorsPolicy;
@@ -22,9 +22,9 @@ use Charcoal\Http\TrustProxy\Config\TrustedProxy;
 /**
  * Class SapiHttpConfigBuilder
  * @package Charcoal\App\Kernel\Config\Builder
- * @implements ConfigBuilderInterface<SapiHttpInterfaceConfig>
+ * @implements ConfigBuilderInterface<HttpServerConfig>
  */
-class SapiHttpConfigBuilder implements ConfigBuilderInterface
+class HttpServerConfigBuilder implements ConfigBuilderInterface
 {
     /** @var array<VirtualHost> */
     protected array $hostnames = [];
@@ -38,7 +38,7 @@ class SapiHttpConfigBuilder implements ConfigBuilderInterface
     protected array $corsOrigins = [];
     protected int $corsMaxAge = 0;
 
-    public function __construct(public readonly SapiEnumInterface $interface)
+    public function __construct(public readonly ServerApiEnumInterface $interface)
     {
     }
 
@@ -137,9 +137,9 @@ class SapiHttpConfigBuilder implements ConfigBuilderInterface
     }
 
     /**
-     * @return SapiHttpInterfaceConfig
+     * @return HttpServerConfig
      */
-    final public function build(): SapiHttpInterfaceConfig
+    final public function build(): HttpServerConfig
     {
         if (!$this->hostnames) {
             throw new \BadMethodCallException("No hostnames provided for HTTP SAPI interface: " .
@@ -156,7 +156,7 @@ class SapiHttpConfigBuilder implements ConfigBuilderInterface
                 $this->interface->name);
         }
 
-        return new SapiHttpInterfaceConfig(
+        return new HttpServerConfig(
             $this->interface,
             new ServerConfig(
                 $this->hostnames,
