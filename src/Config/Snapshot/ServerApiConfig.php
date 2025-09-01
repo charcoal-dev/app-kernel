@@ -17,7 +17,7 @@ use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
  */
 final readonly class ServerApiConfig implements ConfigSnapshotInterface
 {
-    /** @var array<HttpServerConfig> */
+    /** @var array<string, HttpServerConfig> */
     public array $interfaces;
 
     /**
