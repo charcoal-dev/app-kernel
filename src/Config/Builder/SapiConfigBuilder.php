@@ -8,9 +8,9 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config\Builder;
 
-use Charcoal\App\Kernel\Config\Snapshot\SapiInterfacesConfig;
-use Charcoal\App\Kernel\Contracts\Enums\SapiEnumInterface;
+use Charcoal\App\Kernel\Config\Snapshot\ServerApiConfig;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
+use Charcoal\Contracts\ServerApi\ServerApiEnumInterface;
 
 /**
  * Responsible for building and managing the configuration of Server Application Programming Interface (SAPI) interfaces.
@@ -19,7 +19,7 @@ use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
  */
 final class SapiConfigBuilder implements ConfigBuilderInterface
 {
-    /** @var array<SapiHttpConfigBuilder> */
+    /** @var array<HttpServerConfigBuilder> */
     private array $config = [];
 
     public function __construct()
@@ -27,21 +27,21 @@ final class SapiConfigBuilder implements ConfigBuilderInterface
     }
 
     /**
-     * @param SapiEnumInterface $interface
-     * @return SapiHttpConfigBuilder
+     * @param ServerApiEnumInterface $interface
+     * @return HttpServerConfigBuilder
      */
-    public function http(SapiEnumInterface $interface): SapiHttpConfigBuilder
+    public function http(ServerApiEnumInterface $interface): HttpServerConfigBuilder
     {
-        $config = new SapiHttpConfigBuilder($interface);
+        $config = new HttpServerConfigBuilder($interface);
         $this->include($config);
         return $config;
     }
 
     /**
-     * @param SapiHttpConfigBuilder $builder
+     * @param HttpServerConfigBuilder $builder
      * @return void
      */
-    public function include(SapiHttpConfigBuilder $builder): void
+    private function include(HttpServerConfigBuilder $builder): void
     {
         if (isset($this->config[$builder->interface->name])) {
             throw new \InvalidArgumentException("HTTP SAPI interface already configured: " .
@@ -54,13 +54,13 @@ final class SapiConfigBuilder implements ConfigBuilderInterface
     /**
      * Builds and returns a configuration snapshot based on the current configuration state.
      */
-    public function build(): SapiInterfacesConfig
+    public function build(): ServerApiConfig
     {
         $built = [];
         foreach ($this->config as $config) {
             $built[] = $config->build();
         }
 
-        return new SapiInterfacesConfig(...$built);
+        return new ServerApiConfig(...$built);
     }
 }
