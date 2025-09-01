@@ -18,12 +18,12 @@ use Charcoal\Base\Support\Helpers\ObjectHelper;
  * The class is responsible for managing modules, constructing them, and providing methods to
  * bootstrap and retrieve these modules. Each module must implement the AppBindableInterface.
  */
-final class DomainBundle implements AppBootstrappableInterface
+final readonly class DomainBundle implements AppBootstrappableInterface
 {
     /** @var array<string, AppBindableInterface> */
-    private array $modules = [];
+    private array $modules;
     /** @var array<string, class-string<AppBindableInterface>> */
-    private array $map = [];
+    private array $map;
 
     /**
      * @param array<array<\UnitEnum, callable(AbstractApp): AppBindableInterface>> $modules
@@ -31,6 +31,8 @@ final class DomainBundle implements AppBootstrappableInterface
      */
     public function __construct(AbstractApp $app, array $modules)
     {
+        $resolved = [];
+        $map = [];
         foreach ($modules as $module) {
             $name = $module[0] ?? null;
             $callable = $module[1] ?? null;
@@ -59,9 +61,12 @@ final class DomainBundle implements AppBootstrappableInterface
                 ));
             }
 
-            $this->modules[$name->name] = $bindable;
-            $this->map[$name->name] = get_class($bindable);
+            $resolved[$name->name] = $bindable;
+            $map[$name->name] = get_class($bindable);
         }
+
+        $this->modules = $resolved;
+        $this->map = $map;
     }
 
     /**
