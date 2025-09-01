@@ -19,6 +19,7 @@ use Charcoal\Filesystem\Path\PathInfo;
 
 /**
  * Provides functionality to load and create serialized application builds.
+ * Todo: Implement versioning
  * @internal
  */
 abstract readonly class AppSerializable
