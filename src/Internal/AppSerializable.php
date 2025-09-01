@@ -18,11 +18,10 @@ use Charcoal\Filesystem\Node\FileNode;
 use Charcoal\Filesystem\Path\PathInfo;
 
 /**
- * Class AppSerializable
- * @package Charcoal\App\Kernel\Internal
+ * Provides functionality to load and create serialized application builds.
  * @internal
  */
-abstract class AppSerializable
+abstract readonly class AppSerializable
 {
     /**
      * @param AppEnv $env
@@ -30,6 +29,7 @@ abstract class AppSerializable
      * @param array $dirs
      * @return static
      * @throws \Exception
+     * @api
      */
     public static function Load(AppEnv $env, DirectoryNode $root, array $dirs = []): static
     {
@@ -58,6 +58,7 @@ abstract class AppSerializable
      * @param DirectoryNode $root
      * @param array $dirs
      * @return PathInfo
+     * @api
      */
     public static function CreateBuild(AbstractApp $app, DirectoryNode $root, array $dirs = []): PathInfo
     {
