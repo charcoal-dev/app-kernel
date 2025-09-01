@@ -12,29 +12,27 @@ use Charcoal\App\Kernel\Cache\CacheManager;
 use Charcoal\App\Kernel\Clock\Clock;
 use Charcoal\App\Kernel\Clock\MonotonicTimestamp;
 use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
-use Charcoal\App\Kernel\Config\Snapshot\SapiHttpInterfaceConfig;
-use Charcoal\App\Kernel\Contracts\EntryPoint\AppRoutesProviderInterface;
-use Charcoal\App\Kernel\Contracts\Enums\SapiEnumInterface;
 use Charcoal\App\Kernel\Database\DatabaseManager;
 use Charcoal\App\Kernel\Diagnostics\Diagnostics;
 use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
+use Charcoal\App\Kernel\Domain\DomainBundle;
 use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Enums\DiagnosticsEvent;
-use Charcoal\App\Kernel\Enums\SapiType;
 use Charcoal\App\Kernel\Errors\ErrorManager;
 use Charcoal\App\Kernel\Events\EventsManager;
 use Charcoal\App\Kernel\Internal\AppContext;
 use Charcoal\App\Kernel\Internal\AppSerializable;
-use Charcoal\App\Kernel\Internal\DomainBundle;
 use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Security\SecurityService;
+use Charcoal\App\Kernel\ServerApi\SapiBundle;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
 use Charcoal\Base\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Traits\NotCloneableTrait;
+use Charcoal\Contracts\ServerApi\ServerApiEnumInterface;
+use Charcoal\Contracts\ServerApi\ServerApiInterface;
 use Charcoal\Events\Exceptions\SubscriptionClosedException;
 use Charcoal\Filesystem\Node\DirectoryNode;
 use Charcoal\Filesystem\Path\PathInfo;
-use Charcoal\Http\Server\HttpServer;
 use Charcoal\Http\Server\Middleware\MiddlewareRegistry;
 
 /**
@@ -43,25 +41,25 @@ use Charcoal\Http\Server\Middleware\MiddlewareRegistry;
  * proper initialization and configuration of essential parts, facilitating the execution
  * of application-specific logic through extensions.
  */
-abstract class AbstractApp extends AppSerializable
+abstract readonly class AbstractApp extends AppSerializable
 {
     use NotCloneableTrait;
     use ControlledSerializableTrait;
 
-    public readonly AppContext $context;
-    public readonly CacheManager $cache;
-    public readonly Clock $clock;
-    public readonly AppConfig $config;
-    public readonly DatabaseManager $database;
-    public readonly ErrorManager $errors;
-    public readonly EventsManager $events;
-    public readonly PathRegistry $paths;
-    public readonly SecurityService $security;
-    public readonly DomainBundle $domain;
-    public readonly Diagnostics $diagnostics;
+    public AppContext $context;
+    public CacheManager $cache;
+    public Clock $clock;
+    public AppConfig $config;
+    public DatabaseManager $database;
+    public ErrorManager $errors;
+    public EventsManager $events;
+    public PathRegistry $paths;
+    public SecurityService $security;
+    public DomainBundle $domain;
+    public Diagnostics $diagnostics;
+    public SapiBundle $sapi;
 
-    private bool $bootstrapped = false;
-    private array $servers = [];
+    private bool $bootstrapped;
 
     final public function __construct(AppEnv $env, DirectoryNode $root, ?callable $monitor = null)
     {
@@ -96,13 +94,8 @@ abstract class AbstractApp extends AppSerializable
         Clock::initializeStatic($this->clock);
         $this->domain = $manifest->getDomain($this);
 
-        // Check configured HTTP servers...
-        $httpServers = $manifest->resolveHttpServers();
-        if ($httpServers) {
-            foreach ($httpServers as $httpServer) {
-                $this->configHttpServer($httpServer);
-            }
-        }
+        // Check Server API Bundle...
+        $this->sapi = $manifest->getSapiBundle($this);
 
         // Set context and invoke isReady > onReady hooks
         $this->context = new AppContext($env, $this->clock->getImmutable(), $this->domain->inspect());
@@ -184,68 +177,31 @@ abstract class AbstractApp extends AppSerializable
     {
     }
 
-    /**
-     * @param AppRoutesProviderInterface $sapi
-     * @return void
-     * @api
-     */
-    private function configHttpServer(AppRoutesProviderInterface $sapi): void
+    /** @internal */
+    final public function setupHttpPipelinesHook(ServerApiEnumInterface $sapi, MiddlewareRegistry $mw): void
     {
-        if ($this->bootstrapped) {
-            throw new \BadMethodCallException("App is already bootstrapped");
-        }
-
-        $enum = $sapi->sapi();
-        if (isset($this->routers[$enum->name])) {
-            throw new \RuntimeException("Router for SAPI \"" . $enum->name . "\" already registered");
-        }
-
-        $configs = $this->config->sapi->interfaces[$enum->name] ?? null;
-        if (!isset($configs)) {
-            throw new \RuntimeException("No SAPI interface config found for SAPI \"" . $enum->name . "\"");
-        }
-
-        foreach ($configs as $sapiConfig) {
-            if (!$sapiConfig instanceof SapiHttpInterfaceConfig) {
-                continue;
-            }
-
-            $server = new HttpServer($sapiConfig->routerConfig,
-                $sapi->routes(),
-                function (MiddlewareRegistry $mw) use ($enum, $sapi) {
-                    $this->globalHttpPipelinesHook($enum, $mw);
-                    $sapi->configPipelineCallback($mw);
-                });
-
-            $this->servers[$enum->name] = $server;
-        }
-
-        $this->diagnostics->buildStageStream(BuildStageEvents::HttpServersLoaded);
+        $this->declareHttpPipelines($sapi, $mw);
     }
 
     /**
-     * @param SapiEnumInterface $sapi
+     * @param ServerApiEnumInterface $sapi
      * @param MiddlewareRegistry $mw
      * @return void
      */
-    protected function globalHttpPipelinesHook(
-        SapiEnumInterface  $sapi,
-        MiddlewareRegistry $mw
-    ): void
+    protected function declareHttpPipelines(ServerApiEnumInterface $sapi, MiddlewareRegistry $mw): void
     {
     }
 
-    /**
-     * @param MonotonicTimestamp $startTime
-     * @return void
-     * @api
-     */
-    public function bootstrap(MonotonicTimestamp $startTime): void
+    /** @api */
+    public function bootstrap(MonotonicTimestamp $startTime, ?ServerApiEnumInterface $sapi = null): ?ServerApiInterface
     {
-        if ($this->bootstrapped) {
+        if (isset($this->bootstrapped) && $this->bootstrapped) {
             throw new \BadMethodCallException("App is already bootstrapped");
         }
 
+        $sapi = $this->sapi->load($this, $sapi);
+
+        // Bootstrap completed
         $this->bootstrapped = true;
         $this->diagnostics->buildStageStream(BuildStageEvents::Bootstrapped);
         $this->diagnostics->setStartupTime($this->clock, $startTime);
@@ -253,6 +209,8 @@ abstract class AbstractApp extends AppSerializable
         // All declared services and modules:
         $this->domain->bootstrap($this);
         $this->diagnostics->verbose(ObjectHelper::baseClassName(static::class) . " bootstrapped");
+
+        return $sapi;
     }
 
     /**
@@ -271,7 +229,9 @@ abstract class AbstractApp extends AppSerializable
             "paths" => $this->paths,
             "domain" => $this->domain,
             "security" => $this->security,
+            "sapi" => $this->sapi,
             "diagnostics" => null,
+            "bootstrapped" => null,
         ];
     }
 
@@ -281,7 +241,6 @@ abstract class AbstractApp extends AppSerializable
      */
     public function __unserialize(array $data): void
     {
-        $this->bootstrapped = false;
         $this->context = $data["context"];
         $this->paths = $data["paths"];
         $this->errors = $data["errors"];
@@ -297,7 +256,7 @@ abstract class AbstractApp extends AppSerializable
         Clock::initializeStatic($this->clock);
         $this->security = $data["security"];
         $this->domain = $data["domain"];
-
+        $this->sapi = $data["sapi"];
         $this->isReady("Restore app states successful");
     }
 

@@ -18,5 +18,5 @@ interface AppRoutesProviderInterface extends ServerApiContextInterface
 {
     public function routes(): HttpRoutes;
 
-    public function configPipelineCallback(MiddlewareRegistry $mw): void;
+    public function onConstructCallback(MiddlewareRegistry $mw): void;
 }

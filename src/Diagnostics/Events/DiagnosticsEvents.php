@@ -26,7 +26,7 @@ final class DiagnosticsEvents extends BehaviorEvent
      */
     public function subscribe(): Subscription
     {
-        return $this->createSubscription("diagnostics-" . count($this->subscribers()));
+        return $this->createSubscription("diagnostics-" . $this->count());
     }
 
     /**

@@ -12,6 +12,7 @@ use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Contracts\Enums\CacheStoreEnumInterface;
 use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
 use Charcoal\App\Kernel\Enums\DiagnosticsEvent;
+use Charcoal\App\Kernel\Enums\ServerApiEvent;
 use Charcoal\App\Kernel\Internal\Services\AppServiceConfigAwareInterface;
 
 /**
@@ -53,5 +54,16 @@ readonly class EventsManager implements AppServiceConfigAwareInterface
     public function cache(CacheStoreEnumInterface $cacheStore): CacheEvents
     {
         return new CacheEvents($this->app, $cacheStore);
+    }
+
+    /**
+     * @param ServerApiEvent $event
+     * @param \Closure $closure
+     * @return void
+     * @api
+     */
+    public function sapi(ServerApiEvent $event, \Closure $closure): void
+    {
+        $this->app->sapi->events->subscribe($event, $closure);
     }
 }

@@ -27,7 +27,7 @@ use Charcoal\Http\Server\Middleware\MiddlewareRegistry;
  */
 final readonly class SapiBundle
 {
-    private SapiLoaded $loaded;
+    private ?SapiLoaded $loaded;
 
     public ServerApiEvents $events;
     public int $httpCount;
@@ -63,20 +63,39 @@ final readonly class SapiBundle
         $this->cliCount = $cliCount;
     }
 
+    /**
+     * @return SapiLoaded
+     */
+    public function current(): SapiLoaded
+    {
+        if (!isset($this->loaded)) {
+            throw new \BadMethodCallException("SAPI not loaded");
+        }
+
+        return $this->loaded;
+    }
+
     /** @internal */
-    public function load(AbstractApp $app, ServerApiEnumInterface $sapi): ServerApiInterface
+    public function load(AbstractApp $app, ?ServerApiEnumInterface $sapi): ?ServerApiInterface
     {
         if (isset($this->loaded)) {
             throw new \BadMethodCallException("SAPI already loaded");
         }
 
-        $this->loaded = new SapiLoaded($sapi, match ($sapi->type()) {
-            SapiType::Http => $this->createHttpServer($app, $sapi),
-            default => throw new \RuntimeException("Invalid SAPI type: " . $sapi->type()->name),
-        });
+        if ($sapi) {
+            $this->loaded = new SapiLoaded($sapi, match ($sapi->type()) {
+                SapiType::Http => $this->createHttpServer($app, $sapi),
+                default => throw new \RuntimeException("Invalid SAPI type: " . $sapi->type()->name),
+            });
 
-        $this->events->dispatch($this->loaded);
-        return $this->loaded->sapi;
+            $this->events->dispatch($this->loaded);
+        }
+
+        if (!isset($this->loaded)) {
+            $this->loaded = null;
+        }
+
+        return $this->loaded?->sapi;
     }
 
     /**

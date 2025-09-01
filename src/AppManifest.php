@@ -9,17 +9,19 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel;
 
 use Charcoal\App\Kernel\Cache\CacheManager;
+use Charcoal\App\Kernel\Clock\Clock;
 use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
+use Charcoal\App\Kernel\Contracts\ServerApi\ServerApiContextInterface;
 use Charcoal\App\Kernel\Database\DatabaseManager;
 use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
+use Charcoal\App\Kernel\Domain\DomainBundle;
 use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Events\EventsManager;
-use Charcoal\App\Kernel\Internal\AppRoutesBundle;
-use Charcoal\App\Kernel\Internal\DomainBundle;
 use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Internal\Services\ServicesBundle;
-use Charcoal\App\Kernel\Clock\Clock;
 use Charcoal\App\Kernel\Security\SecurityService;
+use Charcoal\App\Kernel\ServerApi\Http\AppRouter;
+use Charcoal\App\Kernel\ServerApi\SapiBundle;
 use Charcoal\Filesystem\Node\DirectoryNode;
 
 /**
@@ -30,6 +32,8 @@ class AppManifest
 {
     /** @var array<array<\UnitEnum, callable(AbstractApp): AppBindableInterface>> */
     private array $domain = [];
+    /** @var array<string,ServerApiContextInterface> */
+    private array $sapiContexts = [];
 
     /**
      * @param AbstractApp $app
@@ -61,8 +65,17 @@ class AppManifest
     }
 
     /**
-     * @param AbstractApp $app
-     * @return DomainBundle
+     * @param AppRouter $router
+     * @return $this
+     * @api
+     */
+    final protected function httpServer(AppRouter $router): self
+    {
+        $this->sapiContexts[$router->sapi->name] = $router;
+        return $this;
+    }
+
+    /**
      * @internal
      */
     final public function getDomain(AbstractApp $app): DomainBundle
@@ -74,11 +87,11 @@ class AppManifest
     }
 
     /**
-     * @return AppRoutesBundle|null
+     * @internal
      */
-    public function resolveHttpServers(): ?AppRoutesBundle
+    final public function getSapiBundle(AbstractApp $app): SapiBundle
     {
-        return null;
+        return new SapiBundle($app, $this->sapiContexts);
     }
 
     /**
