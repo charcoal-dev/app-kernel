@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Internal;
+namespace Charcoal\App\Kernel\Domain;
 
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
@@ -14,8 +14,9 @@ use Charcoal\App\Kernel\Contracts\Domain\AppBootstrappableInterface;
 use Charcoal\Base\Support\Helpers\ObjectHelper;
 
 /**
- * Class DomainBundle
- * @package Charcoal\App\Kernel\Internal
+ * Represents a bundle of domain-specific modules within the application.
+ * The class is responsible for managing modules, constructing them, and providing methods to
+ * bootstrap and retrieve these modules. Each module must implement the AppBindableInterface.
  */
 final class DomainBundle implements AppBootstrappableInterface
 {
