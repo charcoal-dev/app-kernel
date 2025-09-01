@@ -11,6 +11,7 @@ namespace Charcoal\App\Kernel\ServerApi\Http;
 use Charcoal\App\Kernel\Contracts\ServerApi\ServerApiContextInterface;
 use Charcoal\Contracts\ServerApi\ServerApiEnumInterface;
 use Charcoal\Http\Server\Middleware\MiddlewareRegistry;
+use Charcoal\Http\Server\Routing\HttpRoutes;
 use Charcoal\Http\Server\Routing\Snapshot\RoutingSnapshot;
 
 /**
@@ -19,14 +20,16 @@ use Charcoal\Http\Server\Routing\Snapshot\RoutingSnapshot;
  */
 abstract readonly class AppRouter implements ServerApiContextInterface
 {
-    public function __construct(
-        public ServerApiEnumInterface $sapi,
-        public RoutingSnapshot        $routes,
-    )
+    public RoutingSnapshot $routes;
+
+    final public function __construct(public ServerApiEnumInterface $sapi)
     {
+        $this->routes = $this->declareRoutes()->snapshot();
     }
 
-    abstract public static function middleware(): MiddlewareRegistry;
+    abstract protected function middleware(): MiddlewareRegistry;
+
+    abstract protected function declareRoutes(): HttpRoutes;
 
     abstract public function onServerConstruct(MiddlewareRegistry $mw): void;
 
