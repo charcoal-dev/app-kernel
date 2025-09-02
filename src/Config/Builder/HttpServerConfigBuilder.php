@@ -46,10 +46,10 @@ class HttpServerConfigBuilder implements ConfigBuilderInterface
      * Adds a new server instance to the hostname list.
      * @api
      */
-    public function addServer(string $hostname, int ...$ports): self
+    public function addServer(string $hostname, bool $tls, int ...$ports): self
     {
         try {
-            $this->hostnames[] = new VirtualHost($hostname, ...$ports);
+            $this->hostnames[] = new VirtualHost($hostname, $tls, ...$ports);
         } catch (\Exception $e) {
             throw new \InvalidArgumentException(sprintf("Http [%s]: %s",
                 $this->interface->name, $e->getMessage()),
