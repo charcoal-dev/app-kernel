@@ -12,8 +12,8 @@ use Charcoal\App\Kernel\Contracts\Clock\ClockInterface;
 use Charcoal\App\Kernel\Contracts\Enums\TimezoneEnumInterface;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\App\Kernel\Support\ErrorHelper;
-use Charcoal\Base\Traits\InstanceOnStaticScopeTrait;
-use Charcoal\Base\Traits\NotCloneableTrait;
+use Charcoal\Base\Objects\Traits\InstanceOnStaticScopeTrait;
+use Charcoal\Base\Objects\Traits\NotCloneableTrait;
 
 /**
  * Provides functionalities to manage time and datetime operations with timezone awareness.

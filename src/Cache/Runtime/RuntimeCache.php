@@ -9,9 +9,9 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Cache\Runtime;
 
 use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
-use Charcoal\Base\Traits\NoDumpTrait;
-use Charcoal\Base\Traits\NotCloneableTrait;
-use Charcoal\Base\Traits\NotSerializableTrait;
+use Charcoal\Base\Objects\Traits\NoDumpTrait;
+use Charcoal\Base\Objects\Traits\NotCloneableTrait;
+use Charcoal\Base\Objects\Traits\NotSerializableTrait;
 
 /**
  * Class RuntimeCache
