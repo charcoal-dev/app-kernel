@@ -10,10 +10,10 @@ namespace Charcoal\App\Kernel\Entity;
 
 use Charcoal\App\Kernel\Entity\Exceptions\ChecksumComputeException;
 use Charcoal\App\Kernel\Entity\Exceptions\ChecksumMismatchException;
-use Charcoal\Base\Contracts\Vectors\StringVectorInterface;
-use Charcoal\Buffers\AbstractByteArray;
-use Charcoal\Buffers\Frames\Bytes20;
+use Charcoal\Buffers\Types\Bytes20;
 use Charcoal\Cipher\Cipher;
+use Charcoal\Contracts\Buffers\ReadableBufferInterface;
+use Charcoal\Contracts\Vectors\StringVectorInterface;
 
 /**
  * Trait ChecksumAwareTrait
@@ -45,8 +45,8 @@ trait ChecksumAwareEntityTrait
     public function calculateChecksum(Cipher $cipher, int $iterations): Bytes20
     {
         try {
-            /** @var Bytes20 */
-            return $cipher->pbkdf2("sha1", $this->checksumRawString(), $iterations);
+            // Todo: replace
+            return new Bytes20(hash("sha1", $this->checksumRawString(), true));
         } catch (\Throwable $t) {
             throw new ChecksumComputeException($this, $t);
         }
@@ -113,8 +113,8 @@ trait ChecksumAwareEntityTrait
             is_bool($value) => $value ? 1 : 0,
             $value instanceof \BackedEnum => $value->value,
             $value instanceof \UnitEnum => $value->name,
-            $value instanceof AbstractByteArray => $value->raw(),
-            $value instanceof StringVectorInterface => implode(",", $value->getArray()),
+            $value instanceof ReadableBufferInterface => $value->bytes(),
+            $value instanceof StringVectorInterface => $value->join(","),
             $value instanceof \DateTime => $value->getTimestamp(),
             default => throw new \UnexpectedValueException(sprintf(
                 'Cannot process value for "%s" of type "%s"',

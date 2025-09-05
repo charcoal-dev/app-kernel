@@ -11,7 +11,7 @@ namespace Charcoal\App\Kernel\Domain;
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
 use Charcoal\App\Kernel\Contracts\Domain\AppBootstrappableInterface;
-use Charcoal\Base\Support\Helpers\ObjectHelper;
+use Charcoal\Base\Objects\ObjectHelper;
 
 /**
  * Represents a bundle of domain-specific modules within the application.

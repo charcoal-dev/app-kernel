@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Contracts\Orm\Entity;
 
-use Charcoal\Base\Enums\FetchOrigin;
+use Charcoal\Contracts\Storage\Enums\FetchOrigin;
 
 /**
  * Interface StorageHooksInterface

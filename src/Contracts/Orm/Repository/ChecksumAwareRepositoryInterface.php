@@ -10,7 +10,7 @@ namespace Charcoal\App\Kernel\Contracts\Orm\Repository;
 
 use Charcoal\App\Kernel\Entity\Exceptions\ChecksumComputeException;
 use Charcoal\App\Kernel\Entity\Exceptions\ChecksumMismatchException;
-use Charcoal\Buffers\Frames\Bytes20;
+use Charcoal\Buffers\Types\Bytes20;
 use Charcoal\Cipher\Cipher;
 
 /**

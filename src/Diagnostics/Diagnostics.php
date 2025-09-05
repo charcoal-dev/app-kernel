@@ -18,11 +18,11 @@ use Charcoal\App\Kernel\Diagnostics\Events\ExceptionCaughtBroadcast;
 use Charcoal\App\Kernel\Enums\DiagnosticsEvent;
 use Charcoal\App\Kernel\Enums\LogLevel;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
-use Charcoal\Base\Support\Helpers\ObjectHelper;
-use Charcoal\Base\Traits\InstanceOnStaticScopeTrait;
-use Charcoal\Base\Traits\NoDumpTrait;
-use Charcoal\Base\Traits\NotCloneableTrait;
-use Charcoal\Base\Traits\NotSerializableTrait;
+use Charcoal\Base\Objects\ObjectHelper;
+use Charcoal\Base\Objects\Traits\InstanceOnStaticScopeTrait;
+use Charcoal\Base\Objects\Traits\NoDumpTrait;
+use Charcoal\Base\Objects\Traits\NotCloneableTrait;
+use Charcoal\Base\Objects\Traits\NotSerializableTrait;
 use Charcoal\Events\Stats\EventStats;
 
 /**

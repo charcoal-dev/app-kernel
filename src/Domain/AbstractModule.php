@@ -13,7 +13,7 @@ use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
 use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
 use Charcoal\App\Kernel\Contracts\Domain\AppBootstrappableInterface;
 use Charcoal\App\Kernel\Contracts\Domain\ModuleBindableInterface;
-use Charcoal\Base\Traits\ControlledSerializableTrait;
+use Charcoal\Base\Objects\Traits\ControlledSerializableTrait;
 
 /**
  * Class AbstractModule

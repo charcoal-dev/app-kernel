@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Entity;
 
-use Charcoal\Base\Traits\ControlledSerializableTrait;
-use Charcoal\Base\Vectors\StringVector;
+use Charcoal\Base\Objects\Traits\ControlledSerializableTrait;
+use Charcoal\Vectors\Strings\StringVector;
 
 /**
  * Class AbstractEntity
