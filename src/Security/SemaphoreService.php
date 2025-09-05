@@ -10,24 +10,25 @@ namespace Charcoal\App\Kernel\Security;
 
 use Charcoal\App\Kernel\Contracts\Enums\SemaphoreScopeEnumInterface;
 use Charcoal\App\Kernel\Enums\SemaphoreType;
-use Charcoal\Base\Abstracts\AbstractFactoryRegistry;
-use Charcoal\Base\Concerns\RegistryKeysLowercaseTrimmed;
 use Charcoal\Base\Exceptions\WrappedException;
-use Charcoal\Base\Traits\ControlledSerializableTrait;
-use Charcoal\Base\Traits\NoDumpTrait;
-use Charcoal\Base\Traits\NotCloneableTrait;
+use Charcoal\Base\Objects\Traits\ControlledSerializableTrait;
+use Charcoal\Base\Objects\Traits\NoDumpTrait;
+use Charcoal\Base\Objects\Traits\NotCloneableTrait;
+use Charcoal\Base\Registry\Abstracts\AbstractFactoryRegistry;
+use Charcoal\Base\Registry\Traits\RegistryKeysLowercaseTrimmed;
 use Charcoal\Filesystem\Enums\PathContext;
 use Charcoal\Filesystem\Enums\PathType;
 use Charcoal\Filesystem\Path\DirectoryPath;
 use Charcoal\Filesystem\Path\PathInfo;
-use Charcoal\Semaphore\Filesystem\FileLock;
-use Charcoal\Semaphore\Filesystem\FilesystemSemaphore;
+use Charcoal\Filesystem\Semaphore\FileLock;
+use Charcoal\Filesystem\Semaphore\SemaphoreDirectory;
+use Charcoal\Semaphore\Contracts\SemaphoreProviderInterface;
 
 /**
  * Provides management for filesystem-based semaphores using a directory-based structure.
  * Uses a factory registry pattern to handle creation and retrieval of semaphores based on scope.
  * Ensures certain traits like no cloning and no dumping are enforced.
- * @template-extends AbstractFactoryRegistry<FilesystemSemaphore>
+ * @template-extends AbstractFactoryRegistry<SemaphoreProviderInterface>
  */
 final class SemaphoreService extends AbstractFactoryRegistry
 {
@@ -45,9 +46,9 @@ final class SemaphoreService extends AbstractFactoryRegistry
 
     /**
      * @param SemaphoreScopeEnumInterface $scope
-     * @return FilesystemSemaphore
+     * @return SemaphoreDirectory
      */
-    public function get(SemaphoreScopeEnumInterface $scope): FilesystemSemaphore
+    public function get(SemaphoreScopeEnumInterface $scope): SemaphoreProviderInterface
     {
         return $this->getExistingOrCreate($scope->getConfigKey());
     }
@@ -67,13 +68,13 @@ final class SemaphoreService extends AbstractFactoryRegistry
 
     /**
      * @param string $key
-     * @return FilesystemSemaphore
+     * @return SemaphoreProviderInterface
      * @throws WrappedException
      */
-    protected function create(string $key): FilesystemSemaphore
+    protected function create(string $key): SemaphoreProviderInterface
     {
         try {
-            return new FilesystemSemaphore(new DirectoryPath($this->path->join($key)));
+            return new SemaphoreDirectory(new DirectoryPath($this->path->join($key)));
         } catch (\Exception $e) {
             throw new WrappedException($e, "Failed to resolve directory for semaphore scope: " . $key);
         }

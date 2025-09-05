@@ -12,9 +12,9 @@ use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Contracts\Enums\SemaphoreScopeEnumInterface;
 use Charcoal\App\Kernel\Enums\SemaphoreType;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
-use Charcoal\Base\Traits\ControlledSerializableTrait;
-use Charcoal\Base\Traits\NoDumpTrait;
-use Charcoal\Base\Traits\NotCloneableTrait;
+use Charcoal\Base\Objects\Traits\ControlledSerializableTrait;
+use Charcoal\Base\Objects\Traits\NoDumpTrait;
+use Charcoal\Base\Objects\Traits\NotCloneableTrait;
 
 /**
  * Represents a security service implementation within the application.
