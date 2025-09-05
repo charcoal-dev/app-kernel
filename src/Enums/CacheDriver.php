@@ -10,8 +10,8 @@ namespace Charcoal\App\Kernel\Enums;
 
 use Charcoal\App\Kernel\Config\Snapshot\CacheStoreConfig;
 use Charcoal\App\Kernel\Stubs\NullCache;
-use Charcoal\Cache\Contracts\CacheDriverInterface;
-use Charcoal\Cache\Drivers\RedisClient;
+use Charcoal\Cache\Adapters\Redis\Ext\RedisClient;
+use Charcoal\Contracts\Storage\Cache\CacheAdapterInterface;
 
 /**
  * Class CacheDriver
@@ -22,7 +22,7 @@ enum CacheDriver: string
     case NULL = "null";
     case REDIS = "redis";
 
-    public static function CreateClient(CacheStoreConfig $config): CacheDriverInterface
+    public static function CreateClient(CacheStoreConfig $config): CacheAdapterInterface
     {
         return match ($config->driver) {
             self::NULL => new NullCache(),

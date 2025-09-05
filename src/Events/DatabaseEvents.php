@@ -42,7 +42,7 @@ final readonly class DatabaseEvents extends StorageProviderEvents
      */
     public function onConnect(\Closure $closure): Subscription
     {
-        return $this->setListener($this->db->events->connectionState, ConnectionSuccess::class, $closure);
+        return $this->setListener($this->db->events, ConnectionSuccess::class, $closure);
     }
 
     /**
@@ -51,7 +51,7 @@ final readonly class DatabaseEvents extends StorageProviderEvents
      */
     public function onConnectionError(\Closure $closure): Subscription
     {
-        return $this->setListener($this->db->events->connectionState, ConnectionError::class, $closure);
+        return $this->setListener($this->db->events, ConnectionError::class, $closure);
     }
 
     /**
@@ -60,7 +60,7 @@ final readonly class DatabaseEvents extends StorageProviderEvents
      */
     public function onLazyConnect(\Closure $closure): Subscription
     {
-        return $this->setListener($this->db->events->connectionState, ConnectionWaiting::class, $closure);
+        return $this->setListener($this->db->events, ConnectionWaiting::class, $closure);
     }
 
     /**
@@ -69,6 +69,6 @@ final readonly class DatabaseEvents extends StorageProviderEvents
      */
     protected function getSubscription(AbstractEvent $event): Subscription
     {
-        return $this->db->events->connectionState->subscribe();
+        return $this->db->events->subscribe();
     }
 }

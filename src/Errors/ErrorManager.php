@@ -14,10 +14,10 @@ use Charcoal\App\Kernel\Internal\Exceptions\AppCrashException;
 use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\App\Kernel\Support\Errors\ErrorBoundary;
-use Charcoal\Base\Traits\ControlledSerializableTrait;
-use Charcoal\Base\Traits\InstanceOnStaticScopeTrait;
-use Charcoal\Base\Traits\NoDumpTrait;
-use Charcoal\Base\Traits\NotCloneableTrait;
+use Charcoal\Base\Objects\Traits\ControlledSerializableTrait;
+use Charcoal\Base\Objects\Traits\InstanceOnStaticScopeTrait;
+use Charcoal\Base\Objects\Traits\NoDumpTrait;
+use Charcoal\Base\Objects\Traits\NotCloneableTrait;
 use Charcoal\Filesystem\Path\PathInfo;
 
 /**

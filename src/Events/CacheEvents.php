@@ -41,7 +41,7 @@ final readonly class CacheEvents extends StorageProviderEvents
      */
     public function onConnect(\Closure $closure): Subscription
     {
-        return $this->setListener($this->store->events->connectionState, ConnectionSuccess::class, $closure);
+        return $this->setListener($this->store->events, ConnectionSuccess::class, $closure);
     }
 
     /**
@@ -50,7 +50,7 @@ final readonly class CacheEvents extends StorageProviderEvents
      */
     public function onConnectionError(\Closure $closure): Subscription
     {
-        return $this->setListener($this->store->events->connectionState, ConnectionError::class, $closure);
+        return $this->setListener($this->store->events, ConnectionError::class, $closure);
     }
 
     /**
@@ -59,6 +59,6 @@ final readonly class CacheEvents extends StorageProviderEvents
      */
     protected function getSubscription(AbstractEvent $event): Subscription
     {
-        return $this->store->events->connectionState->subscribe();
+        return $this->store->events->subscribe();
     }
 }
