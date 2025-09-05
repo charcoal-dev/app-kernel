@@ -10,7 +10,7 @@ namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
 use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
 use Charcoal\App\Kernel\Orm\Exceptions\EntityRepositoryException;
-use Charcoal\Base\Vectors\StringVector;
+use Charcoal\Vectors\Strings\StringVector;
 
 /**
  * Trait EntityUpsertTrait

@@ -14,8 +14,8 @@ use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
 use Charcoal\App\Kernel\Orm\Module\OrmModuleBase;
 use Charcoal\App\Kernel\Orm\Repository\Traits\EntityFetchTrait;
 use Charcoal\App\Kernel\Orm\Repository\Traits\StorageHooksInvokerTrait;
-use Charcoal\Base\Enums\ExceptionAction;
-use Charcoal\Base\Traits\ControlledSerializableTrait;
+use Charcoal\Base\Objects\Traits\ControlledSerializableTrait;
+use Charcoal\Contracts\Errors\ExceptionAction;
 
 /**
  * Class OrmRepositoryBase
@@ -77,7 +77,7 @@ abstract class OrmRepositoryBase
     }
 
     /**
-     * @return void
+     * @api
      */
     public function resolveDatabaseTable(): void
     {
@@ -89,7 +89,6 @@ abstract class OrmRepositoryBase
     /**
      * @param OrmEntityBase|string|int $entity
      * @return void
-     * @throws \Charcoal\Cache\Exceptions\CacheDriverException
      * @api
      */
     protected function deleteFromCache(OrmEntityBase|string|int $entity): void

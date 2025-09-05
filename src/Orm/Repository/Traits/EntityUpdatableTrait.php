@@ -13,8 +13,8 @@ use Charcoal\App\Kernel\Contracts\Orm\Repository\ChecksumAwareRepositoryInterfac
 use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
 use Charcoal\App\Kernel\Orm\Entity\LockedEntity;
 use Charcoal\App\Kernel\Orm\Exceptions\EntityRepositoryException;
-use Charcoal\Base\Support\Helpers\ObjectHelper;
-use Charcoal\Base\Vectors\StringVector;
+use Charcoal\Base\Objects\ObjectHelper;
+use Charcoal\Vectors\Strings\StringVector;
 
 /**
  * Trait EntityUpdatableTrait

@@ -10,7 +10,7 @@ namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
 use Charcoal\App\Kernel\Contracts\Orm\Entity\StorageHooksInterface;
 use Charcoal\App\Kernel\Diagnostics\Diagnostics;
-use Charcoal\Base\Enums\FetchOrigin;
+use Charcoal\Contracts\Storage\Enums\FetchOrigin;
 
 /**
  * Trait StorageHooksInvokerTrait

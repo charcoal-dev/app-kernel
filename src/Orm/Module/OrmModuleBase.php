@@ -18,7 +18,7 @@ use Charcoal\App\Kernel\Contracts\Orm\Module\CacheStoreAwareInterface;
 use Charcoal\App\Kernel\Orm\Db\TableRegistry;
 use Charcoal\App\Kernel\Orm\Repository\OrmRepositoryBase;
 use Charcoal\Cipher\Cipher;
-use Charcoal\Semaphore\Filesystem\FilesystemSemaphore;
+use Charcoal\Semaphore\Contracts\SemaphoreProviderInterface;
 
 /**
  * Class OrmModuleBase
@@ -49,7 +49,7 @@ abstract class OrmModuleBase extends AbstractModule implements
 
     abstract public function getCipherFor(OrmRepositoryBase $resolveFor): ?Cipher;
 
-    abstract public function getSemaphore(): FilesystemSemaphore;
+    abstract public function getSemaphore(): SemaphoreProviderInterface;
 
     /**
      * @param array $data

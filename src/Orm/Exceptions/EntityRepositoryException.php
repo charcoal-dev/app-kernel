@@ -10,7 +10,7 @@ namespace Charcoal\App\Kernel\Orm\Exceptions;
 
 use Charcoal\App\Kernel\Orm\Repository\OrmRepositoryBase;
 use Charcoal\Base\Exceptions\WrappedException;
-use Charcoal\Base\Support\Helpers\ObjectHelper;
+use Charcoal\Base\Objects\ObjectHelper;
 use Charcoal\Database\Orm\Exceptions\OrmException;
 
 /**

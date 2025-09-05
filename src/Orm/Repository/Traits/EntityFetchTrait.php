@@ -13,14 +13,12 @@ use Charcoal\App\Kernel\Diagnostics\Diagnostics;
 use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
 use Charcoal\App\Kernel\Orm\Exceptions\EntityNotFoundException;
 use Charcoal\App\Kernel\Orm\Exceptions\EntityRepositoryException;
-use Charcoal\Base\Enums\ExceptionAction;
-use Charcoal\Base\Enums\FetchOrigin;
-use Charcoal\Base\Enums\Sort;
 use Charcoal\Cache\Exceptions\CacheException;
+use Charcoal\Contracts\Storage\Enums\FetchOrigin;
 use Charcoal\Database\Enums\LockFlag;
 use Charcoal\Database\Exceptions\DatabaseException;
+use Charcoal\Database\Orm\Exceptions\OrmEntityNotFoundException;
 use Charcoal\Database\Orm\Exceptions\OrmException;
-use Charcoal\Database\Orm\Exceptions\OrmModelNotFoundException;
 
 /**
  * Trait EntityFetchTrait
@@ -48,7 +46,7 @@ trait EntityFetchTrait
             $entity = $this->table->queryFind($whereStmt, $queryData, limit: 1, lock: $lock)->getNext();
             return is_object($entity) && $invokeStorageHooks ?
                 $this->invokeStorageHooks($entity, FetchOrigin::Database) : $entity;
-        } catch (OrmModelNotFoundException) {
+        } catch (OrmEntityNotFoundException) {
             throw new EntityNotFoundException();
         } catch (OrmException $e) {
             throw new EntityRepositoryException($this, $e);

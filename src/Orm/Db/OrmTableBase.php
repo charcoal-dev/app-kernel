@@ -33,7 +33,7 @@ abstract class OrmTableBase extends \Charcoal\Database\Orm\AbstractOrmTable
     )
     {
         $this->enum = $dbTableEnum;
-        parent::__construct($this->enum->getTableName());
+        parent::__construct($this->enum->getTableName(), $this->enum->getDriver());
     }
 
     /**

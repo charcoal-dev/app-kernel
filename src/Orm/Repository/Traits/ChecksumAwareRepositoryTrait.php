@@ -10,7 +10,7 @@ namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 
 use Charcoal\App\Kernel\Contracts\Orm\Entity\ChecksumAwareEntityInterface;
 use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
-use Charcoal\Buffers\Frames\Bytes20;
+use Charcoal\Buffers\Types\Bytes20;
 use Charcoal\Cipher\Cipher;
 
 /**
