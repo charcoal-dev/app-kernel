@@ -14,6 +14,8 @@ use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
 use Charcoal\App\Kernel\Orm\Exceptions\EntityNotFoundException;
 use Charcoal\App\Kernel\Orm\Exceptions\EntityRepositoryException;
 use Charcoal\Cache\Exceptions\CacheException;
+use Charcoal\Contracts\Dataset\Sort;
+use Charcoal\Contracts\Errors\ExceptionAction;
 use Charcoal\Contracts\Storage\Enums\FetchOrigin;
 use Charcoal\Database\Enums\LockFlag;
 use Charcoal\Database\Exceptions\DatabaseException;
@@ -78,7 +80,7 @@ trait EntityFetchTrait
         try {
             return $this->table->queryFind($whereStmt, $queryData, null, $sort, $sortColumn,
                 $offset, $limit, $lock)->getAll();
-        } catch (OrmModelNotFoundException) {
+        } catch (OrmEntityNotFoundException) {
             throw new EntityNotFoundException();
         } catch (OrmException $e) {
             throw new EntityRepositoryException($this, $e);

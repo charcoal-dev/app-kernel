@@ -15,6 +15,7 @@ use Charcoal\App\Kernel\Orm\Module\OrmModuleBase;
 use Charcoal\App\Kernel\Orm\Repository\Traits\EntityFetchTrait;
 use Charcoal\App\Kernel\Orm\Repository\Traits\StorageHooksInvokerTrait;
 use Charcoal\Base\Objects\Traits\ControlledSerializableTrait;
+use Charcoal\Cache\Exceptions\CacheStoreOpException;
 use Charcoal\Contracts\Errors\ExceptionAction;
 
 /**
@@ -89,6 +90,7 @@ abstract class OrmRepositoryBase
     /**
      * @param OrmEntityBase|string|int $entity
      * @return void
+     * @throws CacheStoreOpException
      * @api
      */
     protected function deleteFromCache(OrmEntityBase|string|int $entity): void

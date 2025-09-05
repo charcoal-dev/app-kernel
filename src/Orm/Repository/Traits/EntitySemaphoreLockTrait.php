@@ -13,7 +13,6 @@ use Charcoal\App\Kernel\Diagnostics\Diagnostics;
 use Charcoal\App\Kernel\Orm\Entity\LockedEntity;
 use Charcoal\App\Kernel\Orm\Exceptions\EntityLockedException;
 use Charcoal\Database\Enums\LockFlag;
-use Charcoal\Semaphore\Exceptions\SemaphoreUnlockException;
 
 /**
  * Trait EntitySemaphoreLockTrait
@@ -31,7 +30,6 @@ trait EntitySemaphoreLockTrait
      * @param LockFlag|null $dbLockFlag
      * @return LockedEntity
      * @throws EntityLockedException
-     * @throws \Charcoal\Semaphore\Exceptions\SemaphoreLockException
      */
     protected function getLockedEntity(
         string    $entityLockId,
@@ -54,10 +52,7 @@ trait EntitySemaphoreLockTrait
         }
 
         if ($autoReleaseLock) {
-            try {
-                $lock->setAutoRelease();
-            } catch (SemaphoreUnlockException) {
-            }
+            $lock->setAutoRelease();
         }
 
         try {

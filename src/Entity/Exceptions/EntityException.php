@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Entity\Exceptions;
 
 use Charcoal\App\Kernel\Entity\AbstractEntity;
-use Charcoal\Base\Support\Helpers\ObjectHelper;
+use Charcoal\Base\Objects\ObjectHelper;
 
 /**
  * Class EntityException
