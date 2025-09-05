@@ -10,10 +10,10 @@ namespace Charcoal\App\Kernel\ServerApi\Cli;
 
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Support\Errors\RuntimeErrorLog;
-use Charcoal\Base\Support\Helpers\ObjectHelper;
-use Charcoal\Base\Traits\NoDumpTrait;
-use Charcoal\Base\Traits\NotCloneableTrait;
-use Charcoal\Base\Traits\NotSerializableTrait;
+use Charcoal\Base\Objects\ObjectHelper;
+use Charcoal\Base\Objects\Traits\NoDumpTrait;
+use Charcoal\Base\Objects\Traits\NotCloneableTrait;
+use Charcoal\Base\Objects\Traits\NotSerializableTrait;
 use Charcoal\Cli\Console;
 use Charcoal\Cli\Display\Banners;
 use Charcoal\Cli\Events\State\RuntimeStatus;

@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\ServerApi\Cli;
 
-use Charcoal\Base\Support\Helpers\ObjectHelper;
+use Charcoal\Base\Objects\ObjectHelper;
 use Charcoal\Cli\Enums\ExecutionState;
 
 /**

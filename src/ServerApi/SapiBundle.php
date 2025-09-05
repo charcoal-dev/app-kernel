@@ -11,12 +11,12 @@ namespace Charcoal\App\Kernel\ServerApi;
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Config\Snapshot\HttpServerConfig;
 use Charcoal\App\Kernel\Contracts\ServerApi\ServerApiContextInterface;
+use Charcoal\App\Kernel\Contracts\ServerApi\ServerApiEnumInterface;
 use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
 use Charcoal\App\Kernel\ServerApi\Events\ServerApiEvents;
 use Charcoal\App\Kernel\ServerApi\Http\AppRouter;
-use Charcoal\Contracts\Enums\SapiType;
-use Charcoal\Contracts\ServerApi\ServerApiEnumInterface;
-use Charcoal\Contracts\ServerApi\ServerApiInterface;
+use Charcoal\Contracts\Sapi\SapiType;
+use Charcoal\Contracts\Sapi\ServerApiInterface;
 use Charcoal\Http\Server\HttpServer;
 use Charcoal\Http\Server\Middleware\MiddlewareRegistry;
 
