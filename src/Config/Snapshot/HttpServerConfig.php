@@ -8,9 +8,9 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config\Snapshot;
 
+use Charcoal\App\Kernel\Contracts\ServerApi\ServerApiEnumInterface;
 use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
-use Charcoal\Contracts\Enums\SapiType;
-use Charcoal\Contracts\ServerApi\ServerApiEnumInterface;
+use Charcoal\Contracts\Sapi\SapiType;
 use Charcoal\Http\Server\Config\ServerConfig;
 
 /**

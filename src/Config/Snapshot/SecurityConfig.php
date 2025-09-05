@@ -10,10 +10,10 @@ namespace Charcoal\App\Kernel\Config\Snapshot;
 
 use Charcoal\App\Kernel\Enums\SemaphoreType;
 use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
-use Charcoal\Base\Traits\NoDumpTrait;
+use Charcoal\Base\Objects\Traits\NoDumpTrait;
 use Charcoal\Filesystem\Enums\PathType;
 use Charcoal\Filesystem\Path\DirectoryPath;
-use Charcoal\Semaphore\Filesystem\FilesystemSemaphore;
+use Charcoal\Filesystem\Semaphore\SemaphoreDirectory;
 
 /**
  * Represents a configuration object for managing security-related settings.
@@ -40,7 +40,7 @@ final readonly class SecurityConfig implements ConfigSnapshotInterface
                 }
 
                 try {
-                    new FilesystemSemaphore($this->$prop);
+                    new SemaphoreDirectory($this->$prop);
                 } catch (\Exception $e) {
                     throw new \DomainException(sprintf("Semaphore[%s] directory has permission error",
                         $semaphoreProvider->name), previous: $e);

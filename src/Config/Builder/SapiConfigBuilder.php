@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Config\Builder;
 
 use Charcoal\App\Kernel\Config\Snapshot\SapiConfigBundle;
+use Charcoal\App\Kernel\Contracts\ServerApi\ServerApiEnumInterface;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
-use Charcoal\Contracts\ServerApi\ServerApiEnumInterface;
 
 /**
  * Responsible for building and managing the configuration of Server Application Programming Interface (SAPI) interfaces.

@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Config\Builder;
 
 use Charcoal\App\Kernel\Config\Snapshot\HttpServerConfig;
+use Charcoal\App\Kernel\Contracts\ServerApi\ServerApiEnumInterface;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
-use Charcoal\Contracts\ServerApi\ServerApiEnumInterface;
 use Charcoal\Http\Commons\Enums\HeaderKeyValidation;
 use Charcoal\Http\Commons\Enums\ParamKeyValidation;
 use Charcoal\Http\Commons\Support\CorsPolicy;
