@@ -8,16 +8,16 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Stubs;
 
-use Charcoal\Cache\CacheClient;
-use Charcoal\Cache\Contracts\CacheDriverInterface;
+use Charcoal\Contracts\Storage\Cache\CacheAdapterInterface;
+use Charcoal\Contracts\Storage\Cache\CacheClientInterface;
 
 /**
  * Class NullCache
  * @package Charcoal\App\Kernel\Stubs
  */
-final class NullCache implements CacheDriverInterface
+final class NullCache implements CacheAdapterInterface
 {
-    public function createLink(CacheClient $cache): void
+    public function createLink(CacheClientInterface $cache): void
     {
     }
 
@@ -34,12 +34,12 @@ final class NullCache implements CacheDriverInterface
     {
     }
 
-    public function metaUniqueId(): string
+    public function getId(): string
     {
         return self::class;
     }
 
-    public function metaPingSupported(): bool
+    public function supportsPing(): bool
     {
         return false;
     }
@@ -49,16 +49,16 @@ final class NullCache implements CacheDriverInterface
         return false;
     }
 
-    public function store(string $key, int|string $value, ?int $ttl = null): void
+    public function set(string $key, int|string $value, ?int $ttl = null): void
     {
     }
 
-    public function resolve(string $key): int|string|null|bool
+    public function get(string $key): int|string|null|bool
     {
         return null;
     }
 
-    public function isStored(string $key): bool
+    public function has(string $key): bool
     {
         return false;
     }
