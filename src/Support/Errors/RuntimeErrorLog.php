@@ -10,7 +10,7 @@ namespace Charcoal\App\Kernel\Support\Errors;
 
 use Charcoal\App\Kernel\Contracts\Errors\ErrorLoggerInterface;
 use Charcoal\App\Kernel\Errors\ErrorEntry;
-use Charcoal\Base\Vectors\ExceptionVector;
+use Charcoal\Vectors\Support\ExceptionBag;
 
 /**
  * This class implements the ErrorLoggerInterface and provides functionality
@@ -22,12 +22,12 @@ final class RuntimeErrorLog implements ErrorLoggerInterface
 {
     /** @var array<ErrorEntry> $errors */
     private array $errors;
-    private ExceptionVector $exceptions;
+    private ExceptionBag $exceptions;
 
     public function __construct()
     {
         $this->errors = [];
-        $this->exceptions = new ExceptionVector();
+        $this->exceptions = new ExceptionBag();
     }
 
     /**
@@ -59,10 +59,10 @@ final class RuntimeErrorLog implements ErrorLoggerInterface
     }
 
     /**
-     * @return ExceptionVector
+     * @return ExceptionBag
      * @api
      */
-    public function getExceptions(): ExceptionVector
+    public function getExceptions(): ExceptionBag
     {
         return $this->exceptions;
     }
@@ -116,6 +116,6 @@ final class RuntimeErrorLog implements ErrorLoggerInterface
      */
     public function clearExceptions(): void
     {
-        $this->exceptions = new ExceptionVector();
+        $this->exceptions = new ExceptionBag();
     }
 }

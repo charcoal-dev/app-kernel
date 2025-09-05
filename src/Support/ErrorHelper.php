@@ -14,7 +14,7 @@ use Charcoal\App\Kernel\Errors\ErrorEntry;
  * This class provides helper methods for handling and formatting error information.
  * It extends the base ErrorHelper class to include additional functionality.
  */
-abstract readonly class ErrorHelper extends \Charcoal\Base\Support\Helpers\ErrorHelper
+abstract readonly class ErrorHelper extends \Charcoal\Base\Support\ErrorHelper
 {
     /**
      * Converts and sanitizes \Throwable object to a DTO

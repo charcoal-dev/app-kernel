@@ -16,7 +16,7 @@ namespace Charcoal\App\Kernel\Support;
  * It ensures sensitive information is sanitized and provides additional tools
  * for customization and optimization of data output.
  */
-abstract readonly class DtoHelper extends \Charcoal\Base\Support\Helpers\DtoHelper
+abstract readonly class DtoHelper extends \Charcoal\Base\Arrays\DtoHelper
 {
     /**
      * Converts and sanitizes \Throwable object to a DTO
