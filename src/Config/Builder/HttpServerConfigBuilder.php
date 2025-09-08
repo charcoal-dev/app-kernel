@@ -17,6 +17,7 @@ use Charcoal\Http\Commons\Support\CorsPolicy;
 use Charcoal\Http\Server\Config\RequestConstraints;
 use Charcoal\Http\Server\Config\ServerConfig;
 use Charcoal\Http\Server\Config\VirtualHost;
+use Charcoal\Http\Server\Enums\ForwardingMode;
 use Charcoal\Http\TrustProxy\Config\TrustedProxy;
 
 /**
@@ -46,10 +47,10 @@ class HttpServerConfigBuilder implements ConfigBuilderInterface
      * Adds a new server instance to the hostname list.
      * @api
      */
-    public function addServer(string $hostname, bool $tls, int ...$ports): self
+    public function addServer(string $hostname, int $port, bool $tls, ForwardingMode $forwarding): self
     {
         try {
-            $this->hostnames[] = new VirtualHost($hostname, $tls, ...$ports);
+            $this->hostnames[] = new VirtualHost($hostname, $port, $tls, $forwarding);
         } catch (\Exception $e) {
             throw new \InvalidArgumentException(sprintf("Http [%s]: %s",
                 $this->interface->name, $e->getMessage()),
