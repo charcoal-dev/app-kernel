@@ -12,7 +12,6 @@ use Charcoal\App\Kernel\Contracts\Enums\TableRegistryEnumInterface;
 use Charcoal\App\Kernel\Domain\DomainBundle;
 use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
 use Charcoal\App\Kernel\Orm\Module\OrmModuleBase;
-use Charcoal\Base\Objects\Traits\ControlledSerializableTrait;
 use Charcoal\Database\DatabaseClient;
 
 /**
@@ -21,8 +20,6 @@ use Charcoal\Database\DatabaseClient;
  */
 abstract class OrmTableBase extends \Charcoal\Database\Orm\AbstractOrmTable
 {
-    use ControlledSerializableTrait;
-
     public readonly TableRegistryEnumInterface $enum;
     public readonly OrmModuleBase $module;
     private readonly string $moduleFqcn;
@@ -71,7 +68,7 @@ abstract class OrmTableBase extends \Charcoal\Database\Orm\AbstractOrmTable
      */
     protected function collectSerializableData(): array
     {
-        $data = [];
+        $data = parent::collectSerializableData();
         $data["module"] = $this->moduleFqcn;
         $data["enum"] = $this->enum;
         $data["entityClass"] = $this->entityClass;

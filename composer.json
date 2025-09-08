@@ -24,7 +24,7 @@
     "charcoal-dev/events": "^0.2.0",
     "charcoal-dev/cache": "^0.2.5",
     "charcoal-dev/database": "^0.2.7",
-    "charcoal-dev/db-orm": "^0.2.9",
+    "charcoal-dev/db-orm": "^0.2.10",
     "charcoal-dev/cli": "^0.2.6",
     "charcoal-dev/http-trust-proxy": "^0.1.1",
     "charcoal-dev/http-commons": "^0.2.30",
