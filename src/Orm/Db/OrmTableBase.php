@@ -9,8 +9,10 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Orm\Db;
 
 use Charcoal\App\Kernel\Contracts\Enums\TableRegistryEnumInterface;
+use Charcoal\App\Kernel\Domain\DomainBundle;
 use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
 use Charcoal\App\Kernel\Orm\Module\OrmModuleBase;
+use Charcoal\Base\Objects\Traits\ControlledSerializableTrait;
 use Charcoal\Database\DatabaseClient;
 
 /**
@@ -19,7 +21,11 @@ use Charcoal\Database\DatabaseClient;
  */
 abstract class OrmTableBase extends \Charcoal\Database\Orm\AbstractOrmTable
 {
+    use ControlledSerializableTrait;
+
     public readonly TableRegistryEnumInterface $enum;
+    public readonly OrmModuleBase $module;
+    private readonly string $moduleFqcn;
 
     /**
      * @param OrmModuleBase $module
@@ -27,18 +33,19 @@ abstract class OrmTableBase extends \Charcoal\Database\Orm\AbstractOrmTable
      * @param class-string<OrmEntityBase>|null $entityClass
      */
     public function __construct(
-        public readonly OrmModuleBase $module,
-        TableRegistryEnumInterface    $dbTableEnum,
-        public readonly ?string       $entityClass
+        OrmModuleBase              $module,
+        TableRegistryEnumInterface $dbTableEnum,
+        public readonly ?string    $entityClass
     )
     {
         $this->enum = $dbTableEnum;
+        $this->module = $module;
+        $this->moduleFqcn = $module::class;
         parent::__construct($this->enum->getTableName(), $this->enum->getDriver());
     }
 
     /**
-     * @param int|string $uniqueId
-     * @return string
+     * @api
      */
     public function suggestEntityId(int|string $uniqueId): string
     {
@@ -62,10 +69,10 @@ abstract class OrmTableBase extends \Charcoal\Database\Orm\AbstractOrmTable
     /**
      * @return array
      */
-    public function __serialize(): array
+    protected function collectSerializableData(): array
     {
-        $data = parent::__serialize();
-        $data["module"] = $this->module;
+        $data = [];
+        $data["module"] = $this->moduleFqcn;
         $data["enum"] = $this->enum;
         $data["entityClass"] = $this->entityClass;
         return $data;
@@ -77,10 +84,20 @@ abstract class OrmTableBase extends \Charcoal\Database\Orm\AbstractOrmTable
      */
     public function __unserialize(array $object): void
     {
-        $this->module = $object["module"];
         $this->enum = $object["enum"];
         $this->entityClass = $object["entityClass"];
+        $this->moduleFqcn = $object["module"];
         parent::__unserialize($object);
+    }
+
+    /**
+     * @param DomainBundle $modules
+     * @return void
+     * @noinspection PhpSecondWriteToReadonlyPropertyInspection
+     */
+    public function bootstrap(DomainBundle $modules): void
+    {
+        $this->module = $modules->searchFqcn($this->moduleFqcn);
     }
 
     /**

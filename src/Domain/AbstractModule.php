@@ -64,20 +64,24 @@ abstract class AbstractModule implements AppBindableInterface, AppBootstrappable
         }
 
         foreach ($this->moduleChildren as $childPropertyKey) {
-            if (isset($this->$childPropertyKey)) {
-                $this->bootstrapChildren($childPropertyKey);
+            if (isset($this->$childPropertyKey) && is_object($this->$childPropertyKey)) {
+                $this->bootstrapChildren($this->$childPropertyKey);
             }
         }
     }
 
     /**
-     * @param string $childPropertyKey
+     * @param object $childObject
      * @return void
      */
-    protected function bootstrapChildren(string $childPropertyKey): void
+    protected function bootstrapChildren(object $childObject): void
     {
-        if ($this->$childPropertyKey instanceof AppBootstrappableInterface) {
-            $this->$childPropertyKey->bootstrap($this->app);
+        if ($childObject instanceof AppBootstrappableInterface) {
+            $childObject->bootstrap($this->app);
+        }
+
+        if ($childObject instanceof ModuleBindableInterface) {
+            $childObject->bootstrap($this);
         }
     }
 
@@ -115,6 +119,7 @@ abstract class AbstractModule implements AppBindableInterface, AppBootstrappable
 
     /**
      * @return array<string>
+     * @api
      */
     public function getModuleComponents(): array
     {

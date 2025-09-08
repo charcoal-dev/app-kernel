@@ -15,8 +15,8 @@ use Charcoal\App\Kernel\Contracts\Orm\Entity\StorageHooksInterface;
 use Charcoal\App\Kernel\Entity\ChecksumAwareEntityTrait;
 use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
 use Charcoal\App\Kernel\Orm\Entity\CacheableEntityTrait;
-use Charcoal\Base\Enums\FetchOrigin;
-use Charcoal\Buffers\Frames\Bytes20;
+use Charcoal\Buffers\Types\Bytes20;
+use Charcoal\Contracts\Storage\Enums\FetchOrigin;
 
 class ExampleEntity extends OrmEntityBase implements
     ChecksumAwareEntityInterface,

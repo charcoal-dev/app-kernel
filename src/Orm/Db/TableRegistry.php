@@ -10,6 +10,7 @@ namespace Charcoal\App\Kernel\Orm\Db;
 
 use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
 use Charcoal\App\Kernel\Contracts\Enums\TableRegistryEnumInterface;
+use Charcoal\App\Kernel\Domain\DomainBundle;
 
 /**
  * Class TableRegistry
@@ -19,6 +20,37 @@ class TableRegistry
 {
     /** @var array<string,array<string, OrmTableBase> */
     protected array $map = [];
+
+    /**
+     * @return array
+     */
+    public function __serialize(): array
+    {
+        return $this->map;
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->map = $data;
+    }
+
+    /**
+     * @param DomainBundle $modules
+     * @return void
+     */
+    public function bootstrap(DomainBundle $modules): void
+    {
+        foreach($this->map as $tables) {
+            /** @var OrmTableBase $table */
+            foreach($tables as $table) {
+                $table->bootstrap($modules);
+            }
+        }
+    }
 
     /**
      * Registers an AbstractOrmTable instance in DatabaseTableRegistry

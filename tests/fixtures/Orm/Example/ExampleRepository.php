@@ -16,8 +16,7 @@ use Charcoal\App\Kernel\Orm\Repository\Traits\EntitySemaphoreLockTrait;
 use Charcoal\App\Kernel\Orm\Repository\Traits\EntityUpdatableTrait;
 use Charcoal\App\Kernel\Orm\Repository\Traits\EntityUpsertTrait;
 use Charcoal\App\Kernel\Orm\Repository\Traits\StorageHooksInvokerTrait;
-use Charcoal\Buffers\Frames\Bytes20;
-use Charcoal\Tests\App\Fixtures\Enums\DbTables;
+use Charcoal\Buffers\Types\Bytes20;
 
 /**
  * Class ExampleRepository
@@ -31,11 +30,6 @@ class ExampleRepository extends OrmRepositoryBase implements ChecksumAwareReposi
     use EntityUpdatableTrait;
     use EntityUpsertTrait;
     use StorageHooksInvokerTrait;
-
-    public function __construct(ExampleModule $module)
-    {
-        parent::__construct($module, DbTables::Example);
-    }
 
     public function calculateChecksum(ExampleEntity $entity = null): Bytes20
     {

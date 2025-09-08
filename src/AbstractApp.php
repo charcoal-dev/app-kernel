@@ -257,6 +257,10 @@ abstract readonly class AbstractApp extends AppSerializable
         $this->security = $data["security"];
         $this->domain = $data["domain"];
         $this->sapi = $data["sapi"];
+
+        // Rehydrate ORM tables
+        $this->database->tables->bootstrap($this->domain);
+
         $this->isReady("Restore app states successful");
     }
 

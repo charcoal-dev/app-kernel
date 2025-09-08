@@ -11,7 +11,6 @@ namespace Charcoal\Tests\App\Unit\Config;
 use Charcoal\App\Kernel\Config\Builder\AbstractConfigObjectsCollector;
 use Charcoal\App\Kernel\Config\Builder\CacheConfigObjectsBuilder;
 use Charcoal\App\Kernel\Config\Builder\DbConfigObjectsBuilder;
-use Charcoal\App\Kernel\Config\Snapshot\CacheManagerConfig;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
 use PHPUnit\Framework\TestCase;
 

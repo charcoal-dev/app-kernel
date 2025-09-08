@@ -8,7 +8,9 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Orm\Repository;
 
+use Charcoal\App\Kernel\Contracts\Domain\ModuleBindableInterface;
 use Charcoal\App\Kernel\Contracts\Enums\TableRegistryEnumInterface;
+use Charcoal\App\Kernel\Domain\AbstractModule;
 use Charcoal\App\Kernel\Orm\Db\OrmTableBase;
 use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
 use Charcoal\App\Kernel\Orm\Module\OrmModuleBase;
@@ -19,31 +21,27 @@ use Charcoal\Cache\Exceptions\CacheStoreOpException;
 use Charcoal\Contracts\Errors\ExceptionAction;
 
 /**
- * Class OrmRepositoryBase
- * @package Charcoal\App\Kernel\Orm\Repository
+ * Abstract base class for ORM repository implementations.
  */
-abstract class OrmRepositoryBase
+abstract class OrmRepositoryBase implements ModuleBindableInterface
 {
     public readonly OrmTableBase $table;
+    public readonly OrmModuleBase $module;
 
     protected int $entityCacheTtl = 86400;
     protected int $entityChecksumIterations = 0x64;
 
-    use StorageHooksInvokerTrait;
     use ControlledSerializableTrait;
+    use StorageHooksInvokerTrait;
     use EntityFetchTrait;
 
     /**
-     * @param OrmModuleBase $module
      * @param TableRegistryEnumInterface $dbTableEnum
      * @param ExceptionAction $onCacheException
-     * @param bool $serializeTable
      */
     public function __construct(
-        protected readonly OrmModuleBase              $module,
         protected readonly TableRegistryEnumInterface $dbTableEnum,
         public readonly ExceptionAction               $onCacheException = ExceptionAction::Log,
-        public readonly bool                          $serializeTable = true,
     )
     {
     }
@@ -52,11 +50,9 @@ abstract class OrmRepositoryBase
      * Repository specific serialization data
      * @return array
      */
-    protected function collectSerializableData(): array
+    public function collectSerializableData(): array
     {
-        $data["table"] = $this->serializeTable ? $this->table : null;
         $data["dbTableEnum"] = $this->dbTableEnum;
-        $data["module"] = $this->module;
         $data["entityCacheTtl"] = $this->entityCacheTtl;
         $data["entityChecksumIterations"] = $this->entityChecksumIterations;
         $data["onCacheException"] = $this->onCacheException;
@@ -69,12 +65,15 @@ abstract class OrmRepositoryBase
      */
     public function __unserialize(array $data): void
     {
-        $this->module = $data["module"];
-        $this->table = $data["table"];
         $this->dbTableEnum = $data["dbTableEnum"];
         $this->entityChecksumIterations = $data["entityChecksumIterations"];
         $this->entityCacheTtl = $data["entityCacheTtl"];
         $this->onCacheException = $data["onCacheException"];
+    }
+
+    public function bootstrap(AbstractModule $module): void
+    {
+        $this->module = $module;
     }
 
     /**

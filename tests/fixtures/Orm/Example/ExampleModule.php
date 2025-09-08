@@ -15,8 +15,9 @@ use Charcoal\App\Kernel\Orm\Module\CacheStoreAwareTrait;
 use Charcoal\App\Kernel\Orm\Repository\OrmRepositoryBase;
 use Charcoal\Cache\CacheClient;
 use Charcoal\Cipher\Cipher;
-use Charcoal\Semaphore\Filesystem\FilesystemSemaphore;
+use Charcoal\Semaphore\Contracts\SemaphoreProviderInterface;
 use Charcoal\Tests\App\Fixtures\Enums\CacheStore;
+use Charcoal\Tests\App\Fixtures\Enums\DbTables;
 use Charcoal\Tests\App\Sandbox\TestApp\TestApp;
 
 /**
@@ -33,7 +34,7 @@ final class ExampleModule extends OrmModuleBase implements CacheStoreAwareInterf
     {
         parent::__construct($app);
 
-        $this->repository = new ExampleRepository($this);
+        $this->repository = new ExampleRepository(DbTables::Example);
     }
 
     public function normalizeStorageKey(string $key): string
@@ -48,7 +49,7 @@ final class ExampleModule extends OrmModuleBase implements CacheStoreAwareInterf
 
     protected function declareDatabaseTables(TableRegistry $tables): void
     {
-        $tables->register(new ExampleTableBase($this));
+        $tables->register(new ExampleTable($this));
     }
 
     public function getCipherFor(OrmRepositoryBase $resolveFor): ?Cipher
@@ -56,7 +57,7 @@ final class ExampleModule extends OrmModuleBase implements CacheStoreAwareInterf
         return null;
     }
 
-    public function getSemaphore(): FilesystemSemaphore
+    public function getSemaphore(): SemaphoreProviderInterface
     {
         throw new \Exception("Not implemented");
     }

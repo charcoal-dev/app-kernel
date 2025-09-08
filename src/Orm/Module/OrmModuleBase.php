@@ -80,16 +80,15 @@ abstract class OrmModuleBase extends AbstractModule implements
 
     /**
      * Modify parents method to provide support for OrmRepositoryBase
-     * @param string $childPropertyKey
+     * @param object $childObject
      * @return void
      */
-    final protected function bootstrapChildren(string $childPropertyKey): void
+    final protected function bootstrapChildren(object $childObject): void
     {
-        if ($this->$childPropertyKey instanceof OrmRepositoryBase) {
-            $this->$childPropertyKey->resolveDatabaseTable();
-            return;
-        }
+        parent::bootstrapChildren($childObject);
 
-        parent::bootstrapChildren($childPropertyKey);
+        if ($childObject instanceof OrmRepositoryBase) {
+            $childObject->resolveDatabaseTable();
+        }
     }
 }

@@ -61,8 +61,13 @@ final readonly class DomainBundle implements AppBootstrappableInterface
                 ));
             }
 
+            $moduleFqcn = get_class($bindable);
+            if (isset($this->map[$moduleFqcn])) {
+                throw new \DomainException(sprintf('Module class "%s" already registered', $moduleFqcn));
+            }
+
             $resolved[$name->name] = $bindable;
-            $map[$name->name] = get_class($bindable);
+            $map[$moduleFqcn] = $name->name;
         }
 
         $this->modules = $resolved;
@@ -101,5 +106,19 @@ final readonly class DomainBundle implements AppBootstrappableInterface
         }
 
         return $this->modules[$module->name];
+    }
+
+    /**
+     * @param class-string<AppBindableInterface> $fqcn
+     * @return AppBindableInterface
+     */
+    public function searchFqcn(string $fqcn): AppBindableInterface
+    {
+        $key = $this->map[$fqcn] ?? null;
+        if (!$key) {
+            throw new \DomainException(sprintf('Module class "%s" not registered', $fqcn));
+        }
+
+        return $this->modules[$key];
     }
 }
