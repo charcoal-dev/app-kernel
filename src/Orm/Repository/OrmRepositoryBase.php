@@ -71,9 +71,15 @@ abstract class OrmRepositoryBase implements ModuleBindableInterface
         $this->onCacheException = $data["onCacheException"];
     }
 
+    /**
+     * @param AbstractModule $module
+     * @return void
+     */
     public function bootstrap(AbstractModule $module): void
     {
-        $this->module = $module;
+        if(!isset($this->module)) {
+            $this->module = $module;
+        }
     }
 
     /**
