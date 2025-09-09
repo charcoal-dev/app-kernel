@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Support;
 
+use Charcoal\Contracts\Errors\ExceptionTraceContextInterface;
+
 /**
  * Provides utility methods for handling Data Transfer Objects (DTOs).
  *
@@ -58,6 +60,10 @@ abstract readonly class DtoHelper extends \Charcoal\Base\Arrays\DtoHelper
                 unset($trace["args"], $trace["object"]);
                 return $trace;
             }, $t->getTrace());
+
+            if ($t instanceof ExceptionTraceContextInterface) {
+                $dto["context"] = $t->getTraceContext();
+            }
         }
 
         return $dto;
