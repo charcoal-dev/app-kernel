@@ -126,7 +126,6 @@ final class Diagnostics implements ErrorLoggerInterface
     /**
      * Take a runtime metrics snapshot for runtime execution debugging/inspection.
      * Provides memory/CPU usage metrics.
-     * @api
      */
     public function metricsSnapshot(bool $log = false): ExecutionMetrics
     {
@@ -140,7 +139,6 @@ final class Diagnostics implements ErrorLoggerInterface
 
     /**
      * Take an immutable snapshot of the diagnostics for runtime execution debugging/inspection.
-     * @api
      */
     public function snapshot(bool $metrics = true, bool $clean = true): ExecutionSnapshot
     {
@@ -176,7 +174,6 @@ final class Diagnostics implements ErrorLoggerInterface
 
     /**
      * Logs a verbose/internal/arbitrary message with the specified context.
-     * @api
      */
     public function verbose(string $message, array $context = [], ?\Throwable $exception = null): void
     {
@@ -185,7 +182,6 @@ final class Diagnostics implements ErrorLoggerInterface
 
     /**
      * Logs a debugging message with the specified context.
-     * @api
      */
     public function debug(string $message, array $context = [], ?\Throwable $exception = null): void
     {
@@ -194,7 +190,6 @@ final class Diagnostics implements ErrorLoggerInterface
 
     /**
      * Logs an informational message with the specified context.
-     * @api
      */
     public function info(string $message, array $context = []): void
     {
@@ -203,7 +198,6 @@ final class Diagnostics implements ErrorLoggerInterface
 
     /**
      * Logs a notice message with the specified context.
-     * @api
      */
     public function notice(string $message, array $context = []): void
     {
@@ -212,7 +206,6 @@ final class Diagnostics implements ErrorLoggerInterface
 
     /**
      * Logs a warning message with the specified context and optional exception.
-     * @api
      */
     public function warning(
         string                       $message,
@@ -225,7 +218,6 @@ final class Diagnostics implements ErrorLoggerInterface
 
     /**
      * Logs an error message with the specified context and optional exception.
-     * @api
      */
     public function error(
         string                       $message,
@@ -238,7 +230,6 @@ final class Diagnostics implements ErrorLoggerInterface
 
     /**
      * Logs a critical message with the specified context and optional exception.
-     * @api
      */
     public function critical(
         string                       $message,
