@@ -13,7 +13,7 @@ use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Internal\Exceptions\AppCrashException;
 use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
-use Charcoal\App\Kernel\Support\Errors\ErrorBoundary;
+use Charcoal\App\Kernel\Support\ErrorBoundary;
 use Charcoal\Base\Objects\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Objects\Traits\InstanceOnStaticScopeTrait;
 use Charcoal\Base\Objects\Traits\NoDumpTrait;

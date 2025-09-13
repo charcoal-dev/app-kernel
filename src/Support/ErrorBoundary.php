@@ -6,10 +6,9 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Support\Errors;
+namespace Charcoal\App\Kernel\Support;
 
 use Charcoal\App\Kernel\Internal\Exceptions\AppCrashException;
-use Charcoal\App\Kernel\Support\ErrorHelper;
 
 /**
  * ErrorBoundary is an abstract class designed to serve as a mechanism for capturing and handling errors

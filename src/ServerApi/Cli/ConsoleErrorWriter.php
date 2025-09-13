@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Support\Errors;
+namespace Charcoal\App\Kernel\ServerApi\Cli;
 
 use Charcoal\App\Kernel\Errors\AnsiErrorDecorator;
 use Charcoal\App\Kernel\Errors\ErrorEntry;

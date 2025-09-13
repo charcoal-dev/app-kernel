@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\ServerApi\Cli;
 
 use Charcoal\App\Kernel\AbstractApp;
-use Charcoal\App\Kernel\Support\Errors\RuntimeErrorLog;
+use Charcoal\App\Kernel\Errors\Loggers\RuntimeErrorLog;
 use Charcoal\Base\Objects\ObjectHelper;
 use Charcoal\Base\Objects\Traits\NoDumpTrait;
 use Charcoal\Base\Objects\Traits\NotCloneableTrait;
