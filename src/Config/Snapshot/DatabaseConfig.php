@@ -8,41 +8,38 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Config\Snapshot;
 
+use Charcoal\App\Kernel\Security\Secrets\SecretRef;
 use Charcoal\Database\Config\DbCredentials;
 use Charcoal\Database\Enums\DbConnectionStrategy;
 use Charcoal\Database\Enums\DbDriver;
-use Charcoal\Security\Secrets\SecretsKms;
 
 /**
  * Represents the configuration for a database connection.
  */
 final readonly class DatabaseConfig extends DbCredentials
 {
+    public ?SecretRef $passwordRef;
+
     public function __construct(
-        DbDriver             $driver,
-        string               $dbName,
+        DbDriver              $driver,
+        string                $dbName,
         #[\SensitiveParameter]
-        string               $host = "localhost",
-        ?int                 $port = null,
+        string                $host = "localhost",
+        ?int                  $port = null,
         #[\SensitiveParameter]
-        ?string              $username = null,
+        ?string               $username = null,
         #[\SensitiveParameter]
-        ?string              $password = null,
-        #[\SensitiveParameter]
-        public ?string       $passwordRef = null,
-        DbConnectionStrategy $strategy = DbConnectionStrategy::Lazy,
+        null|string|SecretRef $password = null,
+        DbConnectionStrategy  $strategy = DbConnectionStrategy::Lazy,
     )
     {
-        parent::__construct($driver, $dbName, $host, $port, $username, $password, $strategy);
-
-        if ($this->passwordRef) {
-            if ($password) {
-                throw new \LogicException("Cannot set both password and passwordRef");
-            }
-
-            if(!preg_match(SecretsKms::REF_REGEXP, $this->passwordRef)) {
-                throw new \InvalidArgumentException("Invalid password reference for database: " . $this->dbName);
-            }
+        if ($password instanceof SecretRef) {
+            $this->passwordRef = $password;
+            $password = null;
+        } else {
+            $this->passwordRef = null;
         }
+
+        parent::__construct($driver, $dbName, $host, $port, $username, $password, $strategy);
     }
 }
