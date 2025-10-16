@@ -33,11 +33,9 @@ final readonly class DatabaseConfig extends DbCredentials
         DbConnectionStrategy  $strategy = DbConnectionStrategy::Lazy,
     )
     {
-        if ($password instanceof SecretRef) {
-            $this->passwordRef = $password;
+        $this->passwordRef = $password instanceof SecretRef ? $password : null;
+        if ($this->passwordRef) {
             $password = null;
-        } else {
-            $this->passwordRef = null;
         }
 
         parent::__construct($driver, $dbName, $host, $port, $username, $password, $strategy);
