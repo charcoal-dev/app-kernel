@@ -9,9 +9,9 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Config\Builder;
 
 use Charcoal\App\Kernel\Config\Snapshot\SecurityConfig;
-use Charcoal\App\Kernel\Enums\SemaphoreType;
+use Charcoal\App\Kernel\Contracts\Enums\SecretsStoreEnumInterface;
+use Charcoal\App\Kernel\Contracts\Enums\SemaphoreProviderEnumInterface;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
-use Charcoal\Filesystem\Exceptions\FilesystemException;
 use Charcoal\Filesystem\Path\DirectoryPath;
 
 /**
@@ -20,29 +20,30 @@ use Charcoal\Filesystem\Path\DirectoryPath;
  */
 final class SecurityConfigBuilder implements ConfigBuilderInterface
 {
-    protected ?DirectoryPath $semaphorePrivate = null;
-    protected ?DirectoryPath $semaphoreShared = null;
+    /** @var array<string, array{SemaphoreProviderEnumInterface, string}> */
+    protected array $semaphores = [];
+    /** @var array<string, array{SecretsStoreEnumInterface, string}> */
+    protected array $secretsStores = [];
 
     public function __construct(protected DirectoryPath $root)
     {
     }
 
     /**
-     * @api
+     * @api Declare a semaphore provider.
      */
-    public function setSemaphoreDirectory(SemaphoreType $type, string $dir): self
+    public function declareSemaphore(SemaphoreProviderEnumInterface $provider, string $pathOrNode): self
     {
-        $prop = match ($type) {
-            SemaphoreType::Filesystem_Private => "semaphorePrivate",
-            SemaphoreType::Filesystem_Shared => "semaphoreShared",
-        };
+        $this->semaphores[$provider->name] = [$provider, $pathOrNode];
+        return $this;
+    }
 
-        try {
-            $this->$prop = $this->root->join($dir)->isDirectory();
-        } catch (FilesystemException $e) {
-            throw new \DomainException("Failed to load semaphore directory " . $type->name, previous: $e);
-        }
-
+    /**
+     * @api Declare a secret store provider.
+     */
+    public function declareSecretStore(SecretsStoreEnumInterface $provider, string $pathOrNode): self
+    {
+        $this->secretsStores[$provider->name] = [$provider, $pathOrNode];
         return $this;
     }
 
@@ -51,6 +52,6 @@ final class SecurityConfigBuilder implements ConfigBuilderInterface
      */
     public function build(): SecurityConfig
     {
-        return new SecurityConfig($this->semaphorePrivate, $this->semaphoreShared);
+        return new SecurityConfig($this->semaphores, $this->secretsStores);
     }
 }
