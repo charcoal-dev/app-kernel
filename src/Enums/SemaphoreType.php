@@ -15,6 +15,6 @@ namespace Charcoal\App\Kernel\Enums;
  */
 enum SemaphoreType
 {
-    case Filesystem_Private;
-    case Filesystem_Shared;
+    case LFS;
+    case Redis;
 }

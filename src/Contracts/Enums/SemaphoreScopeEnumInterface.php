@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Contracts\Enums;
 
-use Charcoal\App\Kernel\Enums\SemaphoreType;
 use Charcoal\App\Kernel\Internal\Config\ConfigEnumInterface;
 
 /**
@@ -17,5 +16,5 @@ use Charcoal\App\Kernel\Internal\Config\ConfigEnumInterface;
  */
 interface SemaphoreScopeEnumInterface extends ConfigEnumInterface
 {
-    public function getType(): SemaphoreType;
+    public function provider(): SemaphoreProviderEnumInterface;
 }
