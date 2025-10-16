@@ -21,11 +21,16 @@ final readonly class SecretRef
     public function __construct(
         public SecretsStoreEnumInterface $store,
         public string                    $ref,
+        public int                       $version,
         public ?string                   $namespace = null,
     )
     {
         if (!$this->ref || !preg_match(SecretsKms::REF_REGEXP, $this->ref)) {
             throw new \InvalidArgumentException("Invalid secret reference");
+        }
+
+        if ($this->version < 1 || $this->version > 65535) {
+            throw new \InvalidArgumentException("Invalid secret version");
         }
 
         if ($this->namespace) {
