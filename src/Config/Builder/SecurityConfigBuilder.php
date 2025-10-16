@@ -11,7 +11,9 @@ namespace Charcoal\App\Kernel\Config\Builder;
 use Charcoal\App\Kernel\Config\Snapshot\SecurityConfig;
 use Charcoal\App\Kernel\Contracts\Enums\SecretsStoreEnumInterface;
 use Charcoal\App\Kernel\Contracts\Enums\SemaphoreProviderEnumInterface;
+use Charcoal\App\Kernel\Enums\SemaphoreType;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
+use Charcoal\Filesystem\Exceptions\InvalidPathException;
 use Charcoal\Filesystem\Path\DirectoryPath;
 
 /**
@@ -30,19 +32,28 @@ final class SecurityConfigBuilder implements ConfigBuilderInterface
     }
 
     /**
-     * @api Declare a semaphore provider.
+     * Declare a semaphore provider.
+     * @throws InvalidPathException
+     * @api
      */
     public function declareSemaphore(SemaphoreProviderEnumInterface $provider, string $pathOrNode): self
     {
+        if ($provider->getType() === SemaphoreType::LFS) {
+            $pathOrNode = $this->checkPrefixDirectoryPath($pathOrNode);
+        }
+
         $this->semaphores[$provider->name] = [$provider, $pathOrNode];
         return $this;
     }
 
     /**
-     * @api Declare a secret store provider.
+     * Declare a secret store provider.
+     * @throws InvalidPathException
+     * @api
      */
     public function declareSecretStore(SecretsStoreEnumInterface $provider, string $pathOrNode): self
     {
+        $pathOrNode = $this->checkPrefixDirectoryPath($pathOrNode);
         $this->secretsStores[$provider->name] = [$provider, $pathOrNode];
         return $this;
     }
@@ -53,5 +64,25 @@ final class SecurityConfigBuilder implements ConfigBuilderInterface
     public function build(): SecurityConfig
     {
         return new SecurityConfig($this->semaphores, $this->secretsStores);
+    }
+
+    /**
+     * @param string $path
+     * @return string
+     * @throws \Charcoal\Filesystem\Exceptions\InvalidPathException
+     */
+    private function checkPrefixDirectoryPath(string $path): string
+    {
+        if (DIRECTORY_SEPARATOR === "\\") {
+            if (!preg_match("/^[a-zA-Z]:/", $path)) {
+                return $this->root->join($path)->path;
+            }
+        }
+
+        if (!str_starts_with($path, "/")) {
+            return $this->root->join($path)->path;
+        }
+
+        return $path;
     }
 }
