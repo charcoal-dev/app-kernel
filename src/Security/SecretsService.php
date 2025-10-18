@@ -33,11 +33,20 @@ final class SecretsService extends AbstractFactoryRegistry
     {
     }
 
+    /**
+     * @param SecretsStoreEnumInterface $scope
+     * @return SecretStorageInterface
+     */
     public function get(SecretsStoreEnumInterface $scope): SecretStorageInterface
     {
         return $this->getExistingOrCreate($scope->getConfigKey());
     }
 
+    /**
+     * @param string $key
+     * @return SecretStorageInterface
+     * @throws WrappedException
+     */
     protected function create(string $key): SecretStorageInterface
     {
         $secretConfig = $this->securityService->config->secretsStores[$key] ?? null;
