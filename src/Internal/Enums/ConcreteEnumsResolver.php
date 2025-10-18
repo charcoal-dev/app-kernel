@@ -58,7 +58,12 @@ final class ConcreteEnumsResolver
         }
 
         $enumClass = $this->declared[$enumContract->name];
-        return $enumClass::find($case);
+        $enumCase = $enumClass::find($case);
+        if (!$enumCase) {
+            throw new \LogicException(sprintf('Enum case "%s" not found in enum "%s"', $case, $enumClass));
+        }
+
+        return $enumCase;
     }
 
     /**

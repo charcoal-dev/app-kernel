@@ -16,5 +16,5 @@ interface ConfigEnumInterface extends \UnitEnum
 {
     public function getConfigKey(): string;
 
-    public static function find(string $key): self;
+    public static function find(string $key): ?self;
 }
