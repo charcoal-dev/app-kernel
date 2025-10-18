@@ -55,7 +55,7 @@ class AppManifest
             $this->resolveEventsManager($app),
             $this->resolveDatabaseManager($app),
             $this->resolveCacheManager($app),
-            new SecurityService($app)
+            new SecurityService()
         );
     }
 

@@ -13,6 +13,8 @@ use Charcoal\App\Kernel\Contracts\Enums\SemaphoreProviderEnumInterface;
 use Charcoal\App\Kernel\Enums\SecretsStoreType;
 use Charcoal\App\Kernel\Enums\SemaphoreType;
 use Charcoal\App\Kernel\Internal\Config\ConfigSnapshotInterface;
+use Charcoal\App\Kernel\Internal\Security\SecretsConfig;
+use Charcoal\App\Kernel\Internal\Security\SemaphoreConfig;
 use Charcoal\Base\Objects\Traits\NoDumpTrait;
 use Charcoal\Filesystem\Path\DirectoryPath;
 
@@ -23,9 +25,9 @@ final readonly class SecurityConfig implements ConfigSnapshotInterface
 {
     use NoDumpTrait;
 
-    /** @var array<string, string|DirectoryPath> */
+    /** @var array<string, SemaphoreConfig> */
     public array $semaphores;
-    /** @var array<string, DirectoryPath|mixed> */
+    /** @var array<string, SecretsConfig> */
     public array $secretsStores;
 
     /**
@@ -71,11 +73,11 @@ final readonly class SecurityConfig implements ConfigSnapshotInterface
                         . $semaphoreDirectory->absolute);
                 }
 
-                $semaphoreProviders[$providerEnum->getConfigKey()] = $semaphoreDirectory;
+                $semaphoreProviders[$providerEnum->getConfigKey()] = new SemaphoreConfig($providerEnum, $semaphoreDirectory);
                 unset($semaphoreDirectory, $semaphoreDirectoryWritable);
             } else {
                 // Store string pointer as-is
-                $semaphoreProviders[$providerEnum->getConfigKey()] = $pathOrNode;
+                $semaphoreProviders[$providerEnum->getConfigKey()] = new SemaphoreConfig($providerEnum, $pathOrNode);
             }
         }
 
@@ -113,7 +115,7 @@ final readonly class SecurityConfig implements ConfigSnapshotInterface
                         . $secretsDirectory->absolute);
                 }
 
-                $secretsProviders[$storeEnum->getConfigKey()] = $secretsDirectory;
+                $secretsProviders[$storeEnum->getConfigKey()] = new SecretsConfig($storeEnum, $secretsDirectory);
                 unset($secretsDirectory);
             } else {
                 throw new \DomainException("Secrets store type not supported: " . $storeEnum->getStoreType()->name);

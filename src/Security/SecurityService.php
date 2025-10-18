@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Security;
 
 use Charcoal\App\Kernel\AbstractApp;
-use Charcoal\App\Kernel\Contracts\Enums\SemaphoreScopeEnumInterface;
-use Charcoal\App\Kernel\Enums\SemaphoreType;
+use Charcoal\App\Kernel\Config\Snapshot\SecurityConfig;
+use Charcoal\App\Kernel\Contracts\Domain\AppBootstrappableInterface;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\Base\Objects\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Objects\Traits\NoDumpTrait;
@@ -20,42 +20,29 @@ use Charcoal\Base\Objects\Traits\NotCloneableTrait;
  * Represents a security service implementation within the application.
  * This final, readonly class ensures that its instances are immutable and cannot be cloned or dumped.
  */
-readonly class SecurityService implements AppServiceInterface
+readonly class SecurityService implements AppServiceInterface, AppBootstrappableInterface
 {
     use ControlledSerializableTrait;
     use NotCloneableTrait;
     use NoDumpTrait;
 
-    /** @var array{string, SemaphoreService} $semaphore } */
-    private array $semaphore;
+    public AbstractApp $app;
+    public SecurityConfig $config;
+    public SemaphoreService $semaphore;
 
-    public function __construct(AbstractApp $app)
+    public function __construct()
     {
-        $this->semaphore = [
-            SemaphoreType::Filesystem_Private->name => new SemaphoreService(
-                SemaphoreType::Filesystem_Private,
-                $app->config->security->semaphorePrivate
-            ),
-
-            SemaphoreType::Filesystem_Shared->name => new SemaphoreService(
-                SemaphoreType::Filesystem_Shared,
-                $app->config->security->semaphoreShared
-            )
-        ];
+        $this->semaphore = new SemaphoreService($this);
     }
 
     /**
-     * @param SemaphoreType|SemaphoreScopeEnumInterface $enum
-     * @return SemaphoreService
+     * @param AbstractApp $app
+     * @return void
      */
-    public function semaphore(SemaphoreType|SemaphoreScopeEnumInterface $enum): SemaphoreService
+    public function bootstrap(AbstractApp $app): void
     {
-        $enum = $enum instanceof SemaphoreScopeEnumInterface ? $enum->getType() : $enum;
-        if (!isset($this->semaphore[$enum->name])) {
-            throw new \InvalidArgumentException("Semaphore scope was not registered: " . $enum->name);
-        }
-
-        return $this->semaphore[$enum->name];
+        $this->app = $app;
+        $this->config = $app->config->security;
     }
 
     /**
@@ -64,6 +51,8 @@ readonly class SecurityService implements AppServiceInterface
     protected function collectSerializableData(): array
     {
         return [
+            "app" => null,
+            "config" => null,
             "semaphore" => $this->semaphore,
         ];
     }

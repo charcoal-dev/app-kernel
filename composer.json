@@ -21,7 +21,7 @@
     "charcoal-dev/ansi": "^0.1.0",
     "charcoal-dev/base": "^0.2.0",
     "charcoal-dev/buffers": "^0.2.4",
-    "charcoal-dev/cache-redis-client": "^0.2.4",
+    "charcoal-dev/cache-redis-client": "^0.2.5",
     "charcoal-dev/filesystem": "^0.2.14",
     "charcoal-dev/events": "^0.2.0",
     "charcoal-dev/cache": "^0.2.5",

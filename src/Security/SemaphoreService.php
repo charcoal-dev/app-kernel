@@ -16,6 +16,9 @@ use Charcoal\Base\Objects\Traits\NoDumpTrait;
 use Charcoal\Base\Objects\Traits\NotCloneableTrait;
 use Charcoal\Base\Registry\Abstracts\AbstractFactoryRegistry;
 use Charcoal\Base\Registry\Traits\RegistryKeysLowercaseTrimmed;
+use Charcoal\Cache\Adapters\Redis\Internal\RedisClientInterface;
+use Charcoal\Cache\Adapters\Redis\Semaphore\SemaphoreRedis;
+use Charcoal\Contracts\Storage\Cache\Adapter\LocksInterface;
 use Charcoal\Filesystem\Enums\PathContext;
 use Charcoal\Filesystem\Enums\PathType;
 use Charcoal\Filesystem\Path\DirectoryPath;
@@ -37,10 +40,7 @@ final class SemaphoreService extends AbstractFactoryRegistry
     use NoDumpTrait;
     use NotCloneableTrait;
 
-    public function __construct(
-        public readonly SemaphoreType $type,
-        private DirectoryPath         $path
-    )
+    public function __construct(private readonly SecurityService $securityService)
     {
     }
 
@@ -73,11 +73,44 @@ final class SemaphoreService extends AbstractFactoryRegistry
      */
     protected function create(string $key): SemaphoreProviderInterface
     {
-        try {
-            return new SemaphoreDirectory(new DirectoryPath($this->path->join($key)));
-        } catch (\Exception $e) {
-            throw new WrappedException($e, "Failed to resolve directory for semaphore scope: " . $key);
+        $semaphoreConfig = $this->securityService->config->semaphores[$key] ?? null;
+        if (!$semaphoreConfig) {
+            throw new \InvalidArgumentException("No semaphore config found for key: " . $key);
         }
+
+        // Semaphore Type resolution
+        // LFS:
+        if ($semaphoreConfig->ref instanceof DirectoryPath) {
+            try {
+                return new SemaphoreDirectory($semaphoreConfig);
+            } catch (\Exception $e) {
+                throw new WrappedException($e, "Failed to resolve directory for semaphore scope: " . $key);
+            }
+        }
+
+        // Redis
+        if ($semaphoreConfig->provider->getType() === SemaphoreType::Redis) {
+            try {
+                $cacheEnum = $this->securityService->app->enums->cacheStore($semaphoreConfig->ref);
+                $cacheClient = $this->securityService->app->cache->getStore($cacheEnum)->store;
+                if (!$cacheClient instanceof RedisClientInterface) {
+                    throw new \InvalidArgumentException(
+                        sprintf('Cache store "%s" is not a Redis client', $cacheEnum->name));
+                }
+
+                if (!$cacheClient instanceof LocksInterface) {
+                    throw new \InvalidArgumentException(
+                        sprintf('Cache store "%s" does not implement "%s"', $cacheEnum->name, LocksInterface::class));
+                }
+
+                /** @var RedisClientInterface&LocksInterface $cacheClient */
+                return new SemaphoreRedis($cacheClient);
+            } catch (\Throwable $t) {
+                throw new WrappedException($t, "Failed to resolve Redis semaphore scope: " . $key);
+            }
+        }
+
+        throw new \InvalidArgumentException("Unsupported semaphore type: " . $semaphoreConfig->provider->name);
     }
 
     /**
@@ -86,8 +119,7 @@ final class SemaphoreService extends AbstractFactoryRegistry
     protected function collectSerializableData(): array
     {
         return [
-            "type" => $this->type,
-            "path" => $this->path
+            "instances" => null,
         ];
     }
 
@@ -97,8 +129,7 @@ final class SemaphoreService extends AbstractFactoryRegistry
      */
     public function __unserialize(array $data): void
     {
-        $this->type = $data["type"];
-        $this->path = $data["path"];
+        $this->instances = [];
     }
 
     /**
@@ -109,6 +140,8 @@ final class SemaphoreService extends AbstractFactoryRegistry
         return [
             self::class,
             SemaphoreType::class,
+            SemaphoreRedis::class,
+            SemaphoreDirectory::class,
             DirectoryPath::class,
             PathInfo::class,
             PathContext::class,
