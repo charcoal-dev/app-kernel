@@ -8,7 +8,9 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Database;
 
+use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Config\Snapshot\DatabaseManagerConfig;
+use Charcoal\App\Kernel\Contracts\Domain\AppBootstrappableInterface;
 use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\App\Kernel\Orm\Db\TableRegistry;
@@ -24,8 +26,9 @@ use Charcoal\Database\DatabaseClient;
  * @package Charcoal\App\Kernel
  * @template-extends AbstractFactoryRegistry<DatabaseClient>
  */
- class DatabaseManager extends AbstractFactoryRegistry implements AppServiceInterface
+class DatabaseManager extends AbstractFactoryRegistry implements AppServiceInterface, AppBootstrappableInterface
 {
+    private readonly AbstractApp $app;
     public readonly TableRegistry $tables;
 
     use ControlledSerializableTrait;
@@ -36,6 +39,15 @@ use Charcoal\Database\DatabaseClient;
     public function __construct(public readonly ?DatabaseManagerConfig $config)
     {
         $this->tables = new TableRegistry();
+    }
+
+    /**
+     * @param AbstractApp $app
+     * @return void
+     */
+    public function bootstrap(AbstractApp $app): void
+    {
+        $this->app = $app;
     }
 
     /**
@@ -59,9 +71,25 @@ use Charcoal\Database\DatabaseClient;
             throw new \DomainException("Database config not found for key: " . $key);
         }
 
-        // Todo: resolve secret as per reference
+        $dbPassword = null;
+        if ($config->passwordRef) {
+            try {
+                $secretKey = $this->app->security->secrets->get($config->passwordRef->store)
+                    ->load($config->passwordRef->ref, $config->passwordRef->version, $config->passwordRef->namespace);
 
-        return new DatabaseClient($config);
+                $secretKey->useSecretEntropy(function (string $entropy) use (&$dbPassword) {
+                    $dbPassword = $entropy;
+                });
+            } catch (\Throwable $t) {
+                throw new \RuntimeException("Failed to load database password from secrets: " . $key, 0, $t);
+            }
+
+            if (!$dbPassword) {
+                throw new \RuntimeException("No database password recovered: " . $key);
+            }
+        }
+
+        return new DatabaseClient($config, $dbPassword);
     }
 
     /**
@@ -71,6 +99,7 @@ use Charcoal\Database\DatabaseClient;
      */
     public function collectSerializableData(): array
     {
+        $data["app"] = null;
         $data["config"] = $this->config;
         $data["tables"] = $this->tables;
         $data["instances"] = null;

@@ -210,6 +210,8 @@ abstract readonly class AbstractApp extends AppSerializable
         $this->diagnostics->setStartupTime($this->clock, $startTime);
 
         // All declared services and modules:
+        $this->security->bootstrap($this);
+        $this->database->bootstrap($this);
         $this->domain->bootstrap($this);
         $this->diagnostics->verbose(ObjectHelper::baseClassName(static::class) . " bootstrapped");
 
