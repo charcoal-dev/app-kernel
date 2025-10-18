@@ -27,4 +27,9 @@ enum DbConfig: string implements DatabaseEnumInterface
     {
         return $this->value;
     }
+
+    public static function find(string $key): self
+    {
+        return self::from($key);
+    }
 }

@@ -15,4 +15,6 @@ namespace Charcoal\App\Kernel\Internal\Config;
 interface ConfigEnumInterface extends \UnitEnum
 {
     public function getConfigKey(): string;
+
+    public static function find(string $key): self;
 }
