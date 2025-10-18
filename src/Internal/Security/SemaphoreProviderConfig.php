@@ -14,8 +14,9 @@ use Charcoal\Filesystem\Path\DirectoryPath;
 /**
  * Class SemaphoreConfig
  * @package Charcoal\App\Kernel\Internal\Security
+ * @internal
  */
-final readonly class SemaphoreConfig
+final readonly class SemaphoreProviderConfig
 {
     public function __construct(
         public SemaphoreProviderEnumInterface $provider,

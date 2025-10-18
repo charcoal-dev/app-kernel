@@ -15,6 +15,7 @@ use Charcoal\App\Kernel\Enums\SemaphoreType;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
 use Charcoal\Filesystem\Exceptions\InvalidPathException;
 use Charcoal\Filesystem\Path\DirectoryPath;
+use Charcoal\Security\Secrets\Enums\KeySize;
 
 /**
  * Represents a builder class for constructing security configuration instances.
@@ -51,10 +52,10 @@ final class SecurityConfigBuilder implements ConfigBuilderInterface
      * @throws InvalidPathException
      * @api
      */
-    public function declareSecretStore(SecretsStoreEnumInterface $provider, string $pathOrNode): self
+    public function declareSecretStore(SecretsStoreEnumInterface $provider, string $pathOrNode, KeySize $keySize): self
     {
         $pathOrNode = $this->checkPrefixDirectoryPath($pathOrNode);
-        $this->secretsStores[$provider->name] = [$provider, $pathOrNode];
+        $this->secretsStores[$provider->name] = [$provider, $pathOrNode, $keySize];
         return $this;
     }
 
