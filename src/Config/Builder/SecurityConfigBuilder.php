@@ -13,7 +13,6 @@ use Charcoal\App\Kernel\Contracts\Enums\SecretsStoreEnumInterface;
 use Charcoal\App\Kernel\Contracts\Enums\SemaphoreProviderEnumInterface;
 use Charcoal\App\Kernel\Enums\SemaphoreType;
 use Charcoal\App\Kernel\Internal\Config\ConfigBuilderInterface;
-use Charcoal\Filesystem\Exceptions\InvalidPathException;
 use Charcoal\Filesystem\Path\DirectoryPath;
 use Charcoal\Security\Secrets\Enums\KeySize;
 
@@ -34,7 +33,6 @@ final class SecurityConfigBuilder implements ConfigBuilderInterface
 
     /**
      * Declare a semaphore provider.
-     * @throws InvalidPathException
      * @api
      */
     public function declareSemaphore(SemaphoreProviderEnumInterface $provider, string $pathOrNode): self
@@ -49,7 +47,6 @@ final class SecurityConfigBuilder implements ConfigBuilderInterface
 
     /**
      * Declare a secret store provider.
-     * @throws InvalidPathException
      * @api
      */
     public function declareSecretStore(SecretsStoreEnumInterface $provider, string $pathOrNode, KeySize $keySize): self
@@ -70,18 +67,21 @@ final class SecurityConfigBuilder implements ConfigBuilderInterface
     /**
      * @param string $path
      * @return string
-     * @throws \Charcoal\Filesystem\Exceptions\InvalidPathException
      */
     private function checkPrefixDirectoryPath(string $path): string
     {
-        if (DIRECTORY_SEPARATOR === "\\") {
-            if (!preg_match("/^[a-zA-Z]:/", $path)) {
+        try {
+            if (DIRECTORY_SEPARATOR === "\\") {
+                if (!preg_match("/^[a-zA-Z]:/", $path)) {
+                    return $this->root->join($path)->path;
+                }
+            }
+
+            if (!str_starts_with($path, "/")) {
                 return $this->root->join($path)->path;
             }
-        }
-
-        if (!str_starts_with($path, "/")) {
-            return $this->root->join($path)->path;
+        } catch (\Exception $e) {
+            throw new \InvalidArgumentException("Failed to prefix security config directory", previous: $e);
         }
 
         return $path;
