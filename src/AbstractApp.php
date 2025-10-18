@@ -23,6 +23,7 @@ use Charcoal\App\Kernel\Errors\ErrorManager;
 use Charcoal\App\Kernel\Events\EventsManager;
 use Charcoal\App\Kernel\Internal\AppContext;
 use Charcoal\App\Kernel\Internal\AppSerializable;
+use Charcoal\App\Kernel\Internal\Enums\ConcreteEnumsResolver;
 use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Security\SecurityService;
 use Charcoal\App\Kernel\ServerApi\SapiBundle;
@@ -51,6 +52,7 @@ abstract readonly class AbstractApp extends AppSerializable
     public Clock $clock;
     public AppConfig $config;
     public DatabaseManager $database;
+    public ConcreteEnumsResolver $enums;
     public ErrorManager $errors;
     public EventsManager $events;
     public PathRegistry $paths;
@@ -68,6 +70,7 @@ abstract readonly class AbstractApp extends AppSerializable
 
         // Error service and configurator may require paths to be defined first
         $this->paths = $manifest->resolvePathsRegistry($env, $root);
+        $this->enums = $manifest->resolveConcreteEnums();
         $this->errors = new ErrorManager($env, $this->paths);
         $this->initializeErrorService();
         $this->paths->acceptPathsDeclaration($this);
@@ -224,6 +227,7 @@ abstract readonly class AbstractApp extends AppSerializable
             "config" => $this->config,
             "clock" => $this->clock,
             "database" => $this->database,
+            "enums" => $this->enums,
             "errors" => $this->errors,
             "events" => $this->events,
             "paths" => $this->paths,
@@ -243,6 +247,7 @@ abstract readonly class AbstractApp extends AppSerializable
     {
         $this->context = $data["context"];
         $this->paths = $data["paths"];
+        $this->enums = $data["enums"];
         $this->errors = $data["errors"];
         $this->initializeDiagnostics(null)
             ->initializeErrorService();

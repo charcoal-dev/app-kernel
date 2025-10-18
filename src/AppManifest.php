@@ -17,6 +17,7 @@ use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
 use Charcoal\App\Kernel\Domain\DomainBundle;
 use Charcoal\App\Kernel\Enums\AppEnv;
 use Charcoal\App\Kernel\Events\EventsManager;
+use Charcoal\App\Kernel\Internal\Enums\ConcreteEnumsResolver;
 use Charcoal\App\Kernel\Internal\PathRegistry;
 use Charcoal\App\Kernel\Internal\Services\ServicesBundle;
 use Charcoal\App\Kernel\Security\SecurityService;
@@ -34,6 +35,12 @@ class AppManifest
     private array $domain = [];
     /** @var array<string,ServerApiContextInterface> */
     private array $sapiContexts = [];
+    protected readonly ConcreteEnumsResolver $enums;
+
+    public function __construct()
+    {
+        $this->enums = new ConcreteEnumsResolver();
+    }
 
     /**
      * @param AbstractApp $app
@@ -124,5 +131,13 @@ class AppManifest
     protected function resolveCacheManager(AbstractApp $app): CacheManager
     {
         return new CacheManager($app->config->cache);
+    }
+
+    /**
+     * Resolves instance of the ConcreteEnumsResolver configured with the application's enum contracts.
+     */
+    public function resolveConcreteEnums(): ConcreteEnumsResolver
+    {
+        return $this->enums;
     }
 }
