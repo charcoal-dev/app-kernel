@@ -19,10 +19,7 @@ use Charcoal\Base\Registry\Traits\RegistryKeysLowercaseTrimmed;
 use Charcoal\Cache\Adapters\Redis\Internal\RedisClientInterface;
 use Charcoal\Cache\Adapters\Redis\Semaphore\SemaphoreRedis;
 use Charcoal\Contracts\Storage\Cache\Adapter\LocksInterface;
-use Charcoal\Filesystem\Enums\PathContext;
-use Charcoal\Filesystem\Enums\PathType;
 use Charcoal\Filesystem\Path\DirectoryPath;
-use Charcoal\Filesystem\Path\PathInfo;
 use Charcoal\Filesystem\Semaphore\FileLock;
 use Charcoal\Filesystem\Semaphore\SemaphoreDirectory;
 use Charcoal\Semaphore\Contracts\SemaphoreProviderInterface;
@@ -139,13 +136,6 @@ final class SemaphoreService extends AbstractFactoryRegistry
     {
         return [
             self::class,
-            SemaphoreType::class,
-            SemaphoreRedis::class,
-            SemaphoreDirectory::class,
-            DirectoryPath::class,
-            PathInfo::class,
-            PathContext::class,
-            PathType::class
         ];
     }
 }
