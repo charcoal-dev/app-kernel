@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Security;
 
 use Charcoal\App\Kernel\Contracts\Enums\SemaphoreScopeEnumInterface;
+use Charcoal\App\Kernel\Contracts\Security\SecurityModuleInterface;
 use Charcoal\App\Kernel\Enums\SemaphoreType;
 use Charcoal\Base\Exceptions\WrappedException;
 use Charcoal\Base\Objects\Traits\ControlledSerializableTrait;
@@ -30,15 +31,23 @@ use Charcoal\Semaphore\Contracts\SemaphoreProviderInterface;
  * Ensures certain traits like no cloning and no dumping are enforced.
  * @template-extends AbstractFactoryRegistry<SemaphoreProviderInterface>
  */
-final class SemaphoreService extends AbstractFactoryRegistry
+final class SemaphoreService extends AbstractFactoryRegistry implements SecurityModuleInterface
 {
     use RegistryKeysLowercaseTrimmed;
     use ControlledSerializableTrait;
     use NoDumpTrait;
     use NotCloneableTrait;
 
-    public function __construct(private readonly SecurityService $securityService)
+    private readonly SecurityService $securityService;
+
+    /**
+     * @param SecurityService $securityService
+     * @return void
+     * @internal
+     */
+    public function bootstrap(SecurityService $securityService): void
     {
+        $this->securityService = $securityService;
     }
 
     /**

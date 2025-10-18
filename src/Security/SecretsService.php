@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Security;
 
 use Charcoal\App\Kernel\Contracts\Enums\SecretsStoreEnumInterface;
+use Charcoal\App\Kernel\Contracts\Security\SecurityModuleInterface;
 use Charcoal\Base\Exceptions\WrappedException;
 use Charcoal\Base\Objects\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Objects\Traits\NoDumpTrait;
@@ -22,15 +23,23 @@ use Charcoal\Security\Secrets\Filesystem\SecretsDirectory;
 /**
  * @template-extends AbstractFactoryRegistry<SecretStorageInterface>
  */
-final class SecretsService extends AbstractFactoryRegistry
+final class SecretsService extends AbstractFactoryRegistry implements SecurityModuleInterface
 {
     use RegistryKeysLowercaseTrimmed;
     use ControlledSerializableTrait;
     use NoDumpTrait;
     use NotCloneableTrait;
 
-    public function __construct(private readonly SecurityService $securityService)
+    private readonly SecurityService $securityService;
+
+    /**
+     * @param SecurityService $securityService
+     * @return void
+     * @internal
+     */
+    public function bootstrap(SecurityService $securityService): void
     {
+        $this->securityService = $securityService;
     }
 
     /**
