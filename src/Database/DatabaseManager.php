@@ -81,7 +81,8 @@ class DatabaseManager extends AbstractFactoryRegistry implements AppServiceInter
                 $secretKey = $secretStore->load(
                     $config->passwordRef->ref,
                     $config->passwordRef->version,
-                    $namespace
+                    $namespace,
+                    allowNullPadding: true
                 );
 
                 $secretKey->useSecretEntropy(function (string $entropy) use (&$dbPassword) {
