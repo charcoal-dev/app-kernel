@@ -74,8 +74,15 @@ class DatabaseManager extends AbstractFactoryRegistry implements AppServiceInter
         $dbPassword = null;
         if ($config->passwordRef) {
             try {
-                $secretKey = $this->app->security->secrets->get($config->passwordRef->store)
-                    ->load($config->passwordRef->ref, $config->passwordRef->version, $config->passwordRef->namespace);
+                $secretStore = $this->app->security->secrets->get($config->passwordRef->store);
+                $namespace = $config->passwordRef->namespace ?
+                    $secretStore->namespace($config->passwordRef->namespace) : null;
+
+                $secretKey = $secretStore->load(
+                    $config->passwordRef->ref,
+                    $config->passwordRef->version,
+                    $namespace
+                );
 
                 $secretKey->useSecretEntropy(function (string $entropy) use (&$dbPassword) {
                     $dbPassword = $entropy;
