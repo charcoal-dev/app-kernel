@@ -19,7 +19,7 @@
     "ext-ctype": "*",
     "charcoal-dev/contracts": "^0.1.18",
     "charcoal-dev/ansi": "^0.1.0",
-    "charcoal-dev/base": "^0.2.3",
+    "charcoal-dev/base": "^0.2.4",
     "charcoal-dev/buffers": "^0.2.4",
     "charcoal-dev/cache-redis-client": "^0.2.5",
     "charcoal-dev/filesystem": "^0.2.14",
