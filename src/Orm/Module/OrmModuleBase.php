@@ -18,6 +18,7 @@ use Charcoal\App\Kernel\Contracts\Orm\Module\CacheStoreAwareInterface;
 use Charcoal\App\Kernel\Orm\Db\TableRegistry;
 use Charcoal\App\Kernel\Orm\Repository\OrmRepositoryBase;
 use Charcoal\Cipher\Cipher;
+use Charcoal\Cipher\Support\CipherKeyRef;
 use Charcoal\Semaphore\Contracts\SemaphoreProviderInterface;
 
 /**
@@ -47,7 +48,7 @@ abstract class OrmModuleBase extends AbstractModule implements
 
     abstract protected function declareDatabaseTables(TableRegistry $tables): void;
 
-    abstract public function getCipherFor(OrmRepositoryBase $resolveFor): ?Cipher;
+    abstract public function getCipherFor(OrmRepositoryBase $resolveFor): ?CipherKeyRef;
 
     abstract public function getSemaphore(): SemaphoreProviderInterface;
 
