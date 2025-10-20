@@ -11,6 +11,7 @@ namespace Charcoal\App\Kernel\Orm\Module;
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Cache\Traits\CacheStoreOperationsTrait;
 use Charcoal\App\Kernel\Cache\Traits\RuntimeCacheOwnerTrait;
+use Charcoal\App\Kernel\Contracts\Enums\SemaphoreProviderEnumInterface;
 use Charcoal\App\Kernel\Domain\AbstractModule;
 use Charcoal\App\Kernel\Contracts\Cache\CacheStoreOperationsInterface;
 use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
@@ -18,7 +19,6 @@ use Charcoal\App\Kernel\Contracts\Orm\Module\CacheStoreAwareInterface;
 use Charcoal\App\Kernel\Orm\Db\TableRegistry;
 use Charcoal\App\Kernel\Orm\Repository\OrmRepositoryBase;
 use Charcoal\Cipher\Support\CipherKeyRef;
-use Charcoal\Semaphore\Contracts\SemaphoreProviderInterface;
 
 /**
  * Class OrmModuleBase
@@ -49,7 +49,7 @@ abstract class OrmModuleBase extends AbstractModule implements
 
     abstract public function getCipherFor(OrmRepositoryBase $resolveFor): ?CipherKeyRef;
 
-    abstract public function getSemaphore(): SemaphoreProviderInterface;
+    abstract public function getSemaphore(): SemaphoreProviderEnumInterface;
 
     /**
      * @param array $data
