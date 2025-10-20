@@ -55,7 +55,7 @@ class AppManifest
             $this->resolveEventsManager($app),
             $this->resolveDatabaseManager($app),
             $this->resolveCacheManager($app),
-            new SecurityService()
+            $this->createSecurityService(),
         );
     }
 
@@ -139,5 +139,13 @@ class AppManifest
     public function resolveConcreteEnums(): ConcreteEnumsResolver
     {
         return $this->enums;
+    }
+
+    /**
+     * Returns a new instance of SecurityService module class.
+     */
+    protected function createSecurityService(): SecurityService
+    {
+        return new SecurityService();
     }
 }
