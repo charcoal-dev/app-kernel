@@ -74,7 +74,7 @@ class DatabaseManager extends AbstractFactoryRegistry implements AppServiceInter
         $dbPassword = null;
         if ($config->passwordRef) {
             try {
-                $secretStore = $this->app->security->secrets->get($config->passwordRef->store);
+                $secretStore = $this->app->security->secrets->getStore($config->passwordRef->store);
                 $namespace = $config->passwordRef->namespace ?
                     $secretStore->namespace($config->passwordRef->namespace) : null;
 

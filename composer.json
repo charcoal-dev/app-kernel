@@ -32,7 +32,7 @@
     "charcoal-dev/http-commons": "^0.2.31",
     "charcoal-dev/http-server": "dev-main",
     "charcoal-dev/cipher": "^0.2.7",
-    "charcoal-dev/secrets-kms": "^0.1.11"
+    "charcoal-dev/secrets-kms": "^0.1.14"
   },
   "autoload": {
     "psr-4": {
