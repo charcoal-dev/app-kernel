@@ -30,11 +30,13 @@ readonly class SecurityService implements AppServiceInterface, AppBootstrappable
     public SecurityConfig $config;
     public SemaphoreService $semaphore;
     public SecretsService $secrets;
+    public DigestService $digest;
 
     public function __construct()
     {
         $this->semaphore = new SemaphoreService();
         $this->secrets = new SecretsService();
+        $this->digest = new DigestService();
     }
 
     /**
@@ -59,6 +61,7 @@ readonly class SecurityService implements AppServiceInterface, AppBootstrappable
             "config" => null,
             "semaphore" => $this->semaphore,
             "secrets" => $this->secrets,
+            "digest" => null,
         ];
     }
 
@@ -70,5 +73,6 @@ readonly class SecurityService implements AppServiceInterface, AppBootstrappable
     {
         $this->semaphore = $data["semaphore"];
         $this->secrets = $data["secrets"];
+        $this->digest = new DigestService();
     }
 }
