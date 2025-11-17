@@ -86,7 +86,7 @@ class DatabaseManager extends AbstractFactoryRegistry implements AppServiceInter
                 );
 
                 $secretKey->useSecretEntropy(function (string $entropy) use (&$dbPassword) {
-                    $dbPassword = $entropy;
+                    $dbPassword = trim($entropy);
                 });
             } catch (\Throwable $t) {
                 throw new \RuntimeException("Failed to load database password from secrets: " . $key, 0, $t);
