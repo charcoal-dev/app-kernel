@@ -25,15 +25,17 @@ use Charcoal\Contracts\Errors\ExceptionAction;
  */
 abstract class OrmRepositoryBase implements ModuleBindableInterface
 {
+    use ControlledSerializableTrait;
+    use StorageHooksInvokerTrait;
+    use EntityFetchTrait;
+
     public readonly OrmTableBase $table;
     public readonly OrmModuleBase $module;
 
     protected int $entityCacheTtl = 86400;
     protected int $entityChecksumIterations = 0x64;
 
-    use ControlledSerializableTrait;
-    use StorageHooksInvokerTrait;
-    use EntityFetchTrait;
+    private ?RepositoryCipherRef $cipherRef = null;
 
     /**
      * @param TableRegistryEnumInterface $dbTableEnum
@@ -44,6 +46,23 @@ abstract class OrmRepositoryBase implements ModuleBindableInterface
         public readonly ExceptionAction               $onCacheException = ExceptionAction::Log,
     )
     {
+    }
+
+    /**
+     * @return RepositoryCipherRef
+     */
+    protected function ensureCipher(): RepositoryCipherRef
+    {
+        if ($this->cipherRef) {
+            return $this->cipherRef;
+        }
+
+        $this->cipherRef = $this->module->getCipherFor($this);
+        if (!$this->cipherRef) {
+            throw new \LogicException("No RepositoryCipherRef resolved for: " . static::class);
+        }
+
+        return $this->cipherRef;
     }
 
     /**
@@ -65,6 +84,7 @@ abstract class OrmRepositoryBase implements ModuleBindableInterface
      */
     public function __unserialize(array $data): void
     {
+        $this->cipherRef = null;
         $this->dbTableEnum = $data["dbTableEnum"];
         $this->entityChecksumIterations = $data["entityChecksumIterations"];
         $this->entityCacheTtl = $data["entityCacheTtl"];
@@ -77,7 +97,7 @@ abstract class OrmRepositoryBase implements ModuleBindableInterface
      */
     public function bootstrap(AbstractModule $module): void
     {
-        if(!isset($this->module)) {
+        if (!isset($this->module)) {
             $this->module = $module;
         }
     }

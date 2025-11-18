@@ -8,14 +8,15 @@ declare(strict_types=1);
 
 namespace Charcoal\Tests\App\Fixtures\Orm\Example;
 
+use Charcoal\App\Kernel\Contracts\Enums\SemaphoreProviderEnumInterface;
 use Charcoal\App\Kernel\Contracts\Orm\Module\CacheStoreAwareInterface;
+use Charcoal\App\Kernel\Domain\ModuleSecurityBindings;
 use Charcoal\App\Kernel\Orm\Db\TableRegistry;
 use Charcoal\App\Kernel\Orm\Module\OrmModuleBase;
 use Charcoal\App\Kernel\Orm\Module\CacheStoreAwareTrait;
 use Charcoal\App\Kernel\Orm\Repository\OrmRepositoryBase;
+use Charcoal\App\Kernel\Orm\Repository\RepositoryCipherRef;
 use Charcoal\Cache\CacheClient;
-use Charcoal\Cipher\Cipher;
-use Charcoal\Semaphore\Contracts\SemaphoreProviderInterface;
 use Charcoal\Tests\App\Fixtures\Enums\CacheStore;
 use Charcoal\Tests\App\Fixtures\Enums\DbTables;
 use Charcoal\Tests\App\Sandbox\TestApp\TestApp;
@@ -52,12 +53,12 @@ final class ExampleModule extends OrmModuleBase implements CacheStoreAwareInterf
         $tables->register(new ExampleTable($this));
     }
 
-    public function getCipherFor(OrmRepositoryBase $resolveFor): ?Cipher
+    public function getCipherFor(OrmRepositoryBase $repo): ?RepositoryCipherRef
     {
         return null;
     }
 
-    public function getSemaphore(): SemaphoreProviderInterface
+    public function getSemaphore(): SemaphoreProviderEnumInterface
     {
         throw new \Exception("Not implemented");
     }
@@ -65,5 +66,10 @@ final class ExampleModule extends OrmModuleBase implements CacheStoreAwareInterf
     public function declareCacheStoreEnum(): ?CacheStore
     {
         return CacheStore::Secondary;
+    }
+
+    protected function declareSecurityBindings(): ?ModuleSecurityBindings
+    {
+        return null;
     }
 }

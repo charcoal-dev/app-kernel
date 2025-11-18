@@ -11,7 +11,6 @@ namespace Charcoal\App\Kernel\Contracts\Orm\Repository;
 use Charcoal\App\Kernel\Entity\Exceptions\ChecksumComputeException;
 use Charcoal\App\Kernel\Entity\Exceptions\ChecksumMismatchException;
 use Charcoal\Buffers\Types\Bytes20;
-use Charcoal\Cipher\Cipher;
 
 /**
  * Interface ChecksumAwareRepositoryInterface
@@ -20,20 +19,10 @@ use Charcoal\Cipher\Cipher;
 interface ChecksumAwareRepositoryInterface
 {
     /**
-     * @return Cipher
-     */
-    public function getCipher(): Cipher;
-
-    /**
      * @return Bytes20
      * @throws ChecksumComputeException
      */
     public function calculateChecksum(): Bytes20;
-
-    /**
-     * @return string
-     */
-    public function entityChecksumRawString(): string;
 
     /**
      * @return bool
