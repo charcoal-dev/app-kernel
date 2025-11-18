@@ -13,6 +13,7 @@ use Charcoal\App\Kernel\Contracts\Enums\DatabaseEnumInterface;
 use Charcoal\App\Kernel\Contracts\Enums\SecretsStoreEnumInterface;
 use Charcoal\App\Kernel\Contracts\Enums\SemaphoreProviderEnumInterface;
 use Charcoal\App\Kernel\Contracts\Enums\SemaphoreScopeEnumInterface;
+use Charcoal\App\Kernel\Contracts\Enums\TableRegistryEnumInterface;
 
 /**
  * Class EnumContracts
@@ -35,6 +36,7 @@ enum EnumContract
             self::SecretsStoreEnum => SecretsStoreEnumInterface::class,
             self::SemaphoreProviderEnum => SemaphoreProviderEnumInterface::class,
             self::SemaphoreScopeEnum => SemaphoreScopeEnumInterface::class,
+            self::TableRegistryEnum => TableRegistryEnumInterface::class,
         };
     }
 }
