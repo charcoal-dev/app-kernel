@@ -14,6 +14,7 @@ use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
 use Charcoal\App\Kernel\Contracts\Domain\AppBootstrappableInterface;
 use Charcoal\App\Kernel\Contracts\Domain\ModuleBindableInterface;
 use Charcoal\Base\Objects\Traits\ControlledSerializableTrait;
+use Charcoal\Security\Secrets\Types\AbstractSecretKey;
 
 /**
  * Class AbstractModule
@@ -24,6 +25,9 @@ abstract class AbstractModule implements AppBindableInterface, AppBootstrappable
     use ControlledSerializableTrait;
 
     public readonly AbstractApp $app;
+    public readonly ?ModuleSecurityBindings $security;
+
+    private ?AbstractSecretKey $secretKey = null;
 
     /** @var string[] property keys to be automatically serialized and bootstrapped */
     private array $moduleChildren = [];
@@ -33,7 +37,36 @@ abstract class AbstractModule implements AppBindableInterface, AppBootstrappable
         if ($this instanceof RuntimeCacheOwnerInterface) {
             $this->initializePrivateRuntimeCache();
         }
+
+        $this->security = $this->declareSecurityBindings();
     }
+
+    /**
+     * Resolves and returns the secret key configured in ModuleSecurityBindings
+     * @api
+     */
+    public function getSecretKey(): ?AbstractSecretKey
+    {
+        if ($this->secretKey) {
+            return $this->secretKey;
+        }
+
+        if ($this->security) {
+            if ($this->security->secretsStore && $this->security->secretKeyRef) {
+                $this->secretKey = $this->app->security->secrets->resolveSecretKey(
+                    $this->security->secretsStore,
+                    $this->security->secretKeyRef
+                );
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return ModuleSecurityBindings|null
+     */
+    abstract protected function declareSecurityBindings(): ?ModuleSecurityBindings;
 
     /**
      * @param mixed $value
@@ -96,6 +129,8 @@ abstract class AbstractModule implements AppBindableInterface, AppBootstrappable
         }
 
         $data["app"] = null;
+        $data["security"] = null;
+        $data["secretKey"] = null;
         return $data;
     }
 
@@ -109,7 +144,9 @@ abstract class AbstractModule implements AppBindableInterface, AppBootstrappable
             $this->initializePrivateRuntimeCache();
         }
 
+        $this->security = $this->declareSecurityBindings();
         $this->moduleChildren = $data["moduleChildren"];
+        $this->secretKey = null;
         foreach ($this->moduleChildren as $child) {
             if (!isset($this->$child) && isset($data[$child])) {
                 $this->$child = $data[$child];
