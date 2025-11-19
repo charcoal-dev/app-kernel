@@ -23,7 +23,7 @@ abstract class ContactHelper
     public static function isValidPhoneNumber(mixed $input, string $delimiter = "."): bool
     {
         if (is_string($input) && NumberHelper::inRange(strlen($input), 5, 20)) {
-            if (preg_match('/a\+\d{1,6}(' . preg_quote($delimiter) . '\d{1,14})+Z/', $input)) {
+            if (preg_match('/\A\+\d{1,6}(' . preg_quote($delimiter) . '\d{1,14})+\z/', $input)) {
                 return static::phoneToE164($input) !== false;
             }
         }
@@ -40,7 +40,7 @@ abstract class ContactHelper
     {
         if (is_string($input)) {
             $input = "+" . preg_replace('/\D/', "", $input);
-            if (preg_match('/a\+[1-9][0-9]{4,14}Z/', $input)) {
+            if (preg_match('/\A\+[1-9][0-9]{4,14}\z/', $input)) {
                 return $input;
             }
         }
@@ -59,7 +59,7 @@ abstract class ContactHelper
     {
         if (is_string($input) && NumberHelper::inRange(strlen($input), 6, $maxLength)) {
             if ($onlyAscii) {
-                if (!preg_match('/a[\w@\-._+]+Z/', $input)) {
+                if (!preg_match('/\A[\w@\-._+]+\z/', $input)) {
                     return false;
                 }
             }
@@ -79,7 +79,7 @@ abstract class ContactHelper
     public static function isValidUsername(mixed $input, int $maxLength = 20): bool
     {
         if (is_string($input) && NumberHelper::inRange(strlen($input), 4, $maxLength)) {
-            return preg_match('/a[a-zA-Z0-9]+[a-zA-Z0-9\-_]?[a-zA-Z0-9]+Z/', $input);
+            return preg_match('/\A[a-zA-Z0-9]+[a-zA-Z0-9\-_]?[a-zA-Z0-9]+\z/', $input);
         }
 
         return false;
