@@ -55,7 +55,7 @@ trait ChecksumAwareRepositoryTrait
     protected function entityChecksumCalculate(OrmEntityBase $entity): Bytes20
     {
         return new Bytes20($this->module->app->security->digest->hmac(
-            DigestAlgo::SHA256,
+            DigestAlgo::SHA1,
             $this->ensureCipher()->secretKey,
             $this->entityChecksumRawString($entity),
             iterations: 1
