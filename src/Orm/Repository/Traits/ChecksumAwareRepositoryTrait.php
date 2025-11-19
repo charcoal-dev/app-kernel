@@ -69,7 +69,7 @@ trait ChecksumAwareRepositoryTrait
      */
     protected function entityChecksumVerify(OrmEntityBase $entity): bool
     {
-        /** @var ChecksumAwareEntityInterface $entity */
+        /** @var OrmEntityBase&ChecksumAwareEntityInterface $entity */
         $matches = $this->entityChecksumCalculate($entity)
             ->equals($entity->getChecksum() ?? "\0");
         $entity->setChecksumValidation($matches);
