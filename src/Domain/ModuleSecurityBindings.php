@@ -8,9 +8,8 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Domain;
 
-use Charcoal\App\Kernel\Contracts\Enums\SecretsStoreEnumInterface;
+use Charcoal\App\Kernel\Contracts\Enums\SecretKeysEnumInterface;
 use Charcoal\Cipher\Cipher;
-use Charcoal\Security\Secrets\Support\SecretKeyRef;
 
 /**
  * Class ModuleSecurityBindings
@@ -19,13 +18,9 @@ use Charcoal\Security\Secrets\Support\SecretKeyRef;
 final readonly class ModuleSecurityBindings
 {
     public function __construct(
-        public ?Cipher                    $cipherAlgo,
-        public ?SecretsStoreEnumInterface $secretsStore = null,
-        public ?SecretKeyRef              $secretKeyRef = null,
+        public ?Cipher                  $cipherAlgo,
+        public ?SecretKeysEnumInterface $secretKeyEnum,
     )
     {
-        if ($this->secretsStore && !$this->secretKeyRef || $this->secretKeyRef && !$this->secretsStore) {
-            throw new \LogicException("Secret key ref and store must BOTH be provided or neither");
-        }
     }
 }

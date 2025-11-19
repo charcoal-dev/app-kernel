@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Security;
 
+use Charcoal\App\Kernel\Contracts\Enums\SecretKeysEnumInterface;
 use Charcoal\App\Kernel\Contracts\Enums\SecretsStoreEnumInterface;
 use Charcoal\App\Kernel\Contracts\Security\SecurityModuleInterface;
 use Charcoal\Base\Exceptions\WrappedException;
@@ -57,6 +58,16 @@ final class SecretsService extends AbstractFactoryRegistry implements SecurityMo
     }
 
     /**
+     * @param SecretKeysEnumInterface $secretEnum
+     * @return AbstractSecretKey
+     * @api
+     */
+    public function resolveSecretEnum(SecretKeysEnumInterface $secretEnum): AbstractSecretKey
+    {
+        return $this->resolveSecretKey($secretEnum->getStore(), $secretEnum->getKeyRef());
+    }
+
+    /**
      * @param SecretsStoreEnumInterface $store
      * @param SecretKeyRef $keyRef
      * @return AbstractSecretKey
@@ -83,7 +94,7 @@ final class SecretsService extends AbstractFactoryRegistry implements SecurityMo
         $secretKey = $secretStore->load(
             $keyRef->ref,
             $keyRef->version,
-            $keyRef->namespace,
+            $secretStore->namespace($keyRef->namespace),
             allowNullPadding: false
         );
 
