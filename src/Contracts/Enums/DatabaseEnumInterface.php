@@ -16,4 +16,5 @@ use Charcoal\App\Kernel\Internal\Config\ConfigEnumInterface;
  */
 interface DatabaseEnumInterface extends ConfigEnumInterface
 {
+    public function getDatabaseName(): string;
 }
