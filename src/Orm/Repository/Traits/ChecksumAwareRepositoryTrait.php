@@ -26,8 +26,6 @@ use Charcoal\Contracts\Vectors\StringVectorInterface;
  */
 trait ChecksumAwareRepositoryTrait
 {
-    abstract protected function getSecretKeyStore();
-
     /**
      * @param OrmEntityBase $entity
      * @return string
