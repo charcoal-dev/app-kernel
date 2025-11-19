@@ -66,7 +66,7 @@ class DatabaseManager extends AbstractFactoryRegistry implements AppServiceInter
      */
     protected function create(string $key): DatabaseClient
     {
-        $config = $this->config?->databases[$key];
+        $config = $this->config?->databases[$key] ?? null;
         if (!$config) {
             throw new \DomainException("Database config not found for key: " . $key);
         }
