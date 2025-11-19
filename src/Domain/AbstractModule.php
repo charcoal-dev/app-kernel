@@ -54,6 +54,7 @@ abstract class AbstractModule implements AppBindableInterface, AppBootstrappable
         if ($this->security) {
             if ($this->security->secretKeyEnum) {
                 $this->secretKey = $this->app->security->secrets->resolveSecretEnum($this->security->secretKeyEnum);
+                return $this->secretKey;
             }
         }
 
