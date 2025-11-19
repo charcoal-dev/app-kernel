@@ -60,19 +60,23 @@ final class SecretsService extends AbstractFactoryRegistry implements SecurityMo
     /**
      * @param SecretKeysEnumInterface $secretEnum
      * @return AbstractSecretKey
-     * @api
      */
     public function resolveSecretEnum(SecretKeysEnumInterface $secretEnum): AbstractSecretKey
     {
-        return $this->resolveSecretKey($secretEnum->getStore(), $secretEnum->getKeyRef());
+        return $this->resolveSecretKey($secretEnum->getStore(), $secretEnum->getKeyRef(), true);
     }
 
     /**
      * @param SecretsStoreEnumInterface $store
      * @param SecretKeyRef $keyRef
+     * @param bool $suffixAppEnv
      * @return AbstractSecretKey
      */
-    public function resolveSecretKey(SecretsStoreEnumInterface $store, SecretKeyRef $keyRef): AbstractSecretKey
+    public function resolveSecretKey(
+        SecretsStoreEnumInterface $store,
+        SecretKeyRef              $keyRef,
+        bool                      $suffixAppEnv
+    ): AbstractSecretKey
     {
         $normalized = $this->normalizeSecretKeyId($store, $keyRef->toString());
         if (isset($this->loadedSecrets[$normalized])) {
@@ -83,16 +87,21 @@ final class SecretsService extends AbstractFactoryRegistry implements SecurityMo
 
         // Remixed Key?
         if ($keyRef->remixMessage) {
-            $parentKey = $this->resolveSecretKey($store, $keyRef->withRemixing(null, null));
+            $parentKey = $this->resolveSecretKey($store, $keyRef->withRemixing(null, null), $suffixAppEnv);
             $remixedSecret = $parentKey->remixEntropy($keyRef->remixMessage, $keyRef->remixIterations);
             $this->loadedSecrets[$normalized] = $remixedSecret;
             return $remixedSecret;
         }
 
         // Normal Secret Key
+        $secretKeyFilename = $keyRef->ref;
+        if ($suffixAppEnv) {
+            $secretKeyFilename .= "_" . $this->securityService->app->context->env->value;
+        }
+
         /** @var AbstractSecretKey $secretKey */
         $secretKey = $secretStore->load(
-            $keyRef->ref,
+            $secretKeyFilename,
             $keyRef->version,
             $secretStore->namespace($keyRef->namespace),
             allowNullPadding: false
