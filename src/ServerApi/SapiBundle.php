@@ -131,8 +131,8 @@ final readonly class SapiBundle
      */
     private function createHttpServer(AbstractApp $app, ServerApiEnumInterface $sapi): HttpServer
     {
-        $sapiContext = $this->sapiContexts[$sapi->name] ?? null;
-        if (!$sapiContext instanceof AppRouter) {
+        $appRouter = $this->sapiContexts[$sapi->name] ?? null;
+        if (!$appRouter instanceof AppRouter) {
             throw new \RuntimeException("No SAPI context found for SAPI \"" . $sapi->name . "\"");
         }
 
@@ -142,10 +142,13 @@ final readonly class SapiBundle
         }
 
         return new HttpServer($sapiConfig->routerConfig,
-            $sapiContext->routes,
-            function (MiddlewareRegistry $mw) use ($app, $sapi, $sapiContext) {
-                $app->setupHttpPipelinesHook($sapi, $mw);
-                $sapiContext->onServerConstruct($mw);
+            $appRouter->routes,
+            function (MiddlewareRegistry $middleware) use ($app, $sapi, $appRouter) {
+                // Global-scope middleware:
+                $app->setupHttpPipelinesHook($sapi, $middleware);
+
+                // Router-specific middleware:
+                $appRouter->onServerConstruct($app, $middleware);
             });
     }
 }
