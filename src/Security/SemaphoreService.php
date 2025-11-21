@@ -100,7 +100,7 @@ final class SemaphoreService extends AbstractFactoryRegistry implements Security
         // LFS:
         if ($semaphoreConfig->ref instanceof DirectoryPath) {
             try {
-                return new SemaphoreDirectory($semaphoreConfig);
+                return new SemaphoreDirectory($semaphoreConfig->ref);
             } catch (\Exception $e) {
                 throw new WrappedException($e, "Failed to resolve directory for semaphore scope: " . $key);
             }
