@@ -75,11 +75,6 @@ final class SemaphoreService extends AbstractFactoryRegistry implements Security
     ): SemaphoreLockInterface
     {
         $provider = $scope instanceof SemaphoreScopeEnumInterface ? $scope->provider() : $scope;
-        $scopePrefix = $scope instanceof SemaphoreScopeEnumInterface ? $scope->getConfigKey() : null;
-        $prefixSeparator = $provider->getType() === SemaphoreType::LFS ? DIRECTORY_SEPARATOR : ":";
-        if ($scopePrefix) {
-            $lockId = $scopePrefix . $prefixSeparator . $lockId;
-        }
 
         return $this->get($provider)->obtainLock($lockId, $checkInterval, max($maximumWait, 0));
     }
