@@ -51,16 +51,19 @@ abstract class OrmModuleBase extends AbstractModule implements
 
     abstract public function getCipherFor(OrmRepositoryBase $repo): ?RepositoryCipherRef;
 
-    abstract public function getSemaphore(): SemaphoreScopeEnumInterface;
+    abstract public function getSemaphore(): SemaphoreScopeEnumInterface|SemaphoreProviderEnumInterface;
 
     /**
      * @param string $lockId
      * @param float|null $checkInterval
      * @param int $waitTimeout
      * @return SemaphoreLockInterface
-     * @throws \Charcoal\Semaphore\Exceptions\SemaphoreLockException
      */
-    public function getSemaphoreLock(string $lockId, ?float $checkInterval, int $waitTimeout): SemaphoreLockInterface
+    public function getSemaphoreLock(
+        string $lockId,
+        ?float $checkInterval,
+        int $waitTimeout
+    ): SemaphoreLockInterface
     {
         return $this->app->security->semaphore->lock(
             $this->getSemaphore(),

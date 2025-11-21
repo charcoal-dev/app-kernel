@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Security;
 
+use Charcoal\App\Kernel\Contracts\Enums\SemaphoreProviderEnumInterface;
 use Charcoal\App\Kernel\Contracts\Enums\SemaphoreScopeEnumInterface;
 use Charcoal\App\Kernel\Contracts\Security\SecurityModuleInterface;
 use Charcoal\App\Kernel\Enums\SemaphoreType;
@@ -51,25 +52,36 @@ final class SemaphoreService extends AbstractFactoryRegistry implements Security
     }
 
     /**
-     * @param SemaphoreScopeEnumInterface $scope
-     * @return SemaphoreDirectory
+     * @param SemaphoreProviderEnumInterface $scope
+     * @return SemaphoreProviderInterface
      */
-    public function get(SemaphoreScopeEnumInterface $scope): SemaphoreProviderInterface
+    public function get(SemaphoreProviderEnumInterface $scope): SemaphoreProviderInterface
     {
         return $this->getExistingOrCreate($scope->getConfigKey());
     }
 
     /**
-     * @throws \Charcoal\Semaphore\Exceptions\SemaphoreLockException
+     * @param SemaphoreProviderEnumInterface|SemaphoreScopeEnumInterface $scope
+     * @param string $lockId
+     * @param float|null $checkInterval
+     * @param int $maximumWait
+     * @return SemaphoreLockInterface
      */
     public function lock(
-        SemaphoreScopeEnumInterface $scope,
-        string                      $lockId,
-        ?float                      $checkInterval = null,
-        int                         $maximumWait = 0
+        SemaphoreProviderEnumInterface|SemaphoreScopeEnumInterface $scope,
+        string                                                     $lockId,
+        ?float                                                     $checkInterval = null,
+        int                                                        $maximumWait = 0
     ): SemaphoreLockInterface
     {
-        return $this->get($scope)->obtainLock($lockId, $checkInterval, max($maximumWait, 0));
+        $provider = $scope instanceof SemaphoreScopeEnumInterface ? $scope->provider() : $scope;
+        $scopePrefix = $scope instanceof SemaphoreScopeEnumInterface ? $scope->getConfigKey() : null;
+        $prefixSeparator = $provider->getType() === SemaphoreType::LFS ? DIRECTORY_SEPARATOR : ":";
+        if ($scopePrefix) {
+            $lockId = $scopePrefix . $prefixSeparator . $lockId;
+        }
+
+        return $this->get($provider)->obtainLock($lockId, $checkInterval, max($maximumWait, 0));
     }
 
     /**
