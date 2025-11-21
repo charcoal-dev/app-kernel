@@ -42,7 +42,7 @@ trait EntitySemaphoreLockTrait
     ): LockedEntity
     {
         try {
-            $lock = $this->module->getSemaphore()->obtainLock(
+            $lock = $this->module->getSemaphoreLock(
                 $entityLockId,
                 $lockTimeout > 0 ? $lockCheckEvery : null,
                 $lockTimeout
