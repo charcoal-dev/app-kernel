@@ -21,8 +21,8 @@ use Charcoal\Cache\Adapters\Redis\Internal\RedisClientInterface;
 use Charcoal\Cache\Adapters\Redis\Semaphore\SemaphoreRedis;
 use Charcoal\Contracts\Storage\Cache\Adapter\LocksInterface;
 use Charcoal\Filesystem\Path\DirectoryPath;
-use Charcoal\Filesystem\Semaphore\FileLock;
 use Charcoal\Filesystem\Semaphore\SemaphoreDirectory;
+use Charcoal\Semaphore\Contracts\SemaphoreLockInterface;
 use Charcoal\Semaphore\Contracts\SemaphoreProviderInterface;
 
 /**
@@ -67,7 +67,7 @@ final class SemaphoreService extends AbstractFactoryRegistry implements Security
         string                      $lockId,
         ?float                      $checkInterval = null,
         int                         $maximumWait = 0
-    ): FileLock
+    ): SemaphoreLockInterface
     {
         return $this->get($scope)->obtainLock($lockId, $checkInterval, max($maximumWait, 0));
     }

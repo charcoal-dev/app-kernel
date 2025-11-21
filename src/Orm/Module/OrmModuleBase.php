@@ -12,6 +12,7 @@ use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Cache\Traits\CacheStoreOperationsTrait;
 use Charcoal\App\Kernel\Cache\Traits\RuntimeCacheOwnerTrait;
 use Charcoal\App\Kernel\Contracts\Enums\SemaphoreProviderEnumInterface;
+use Charcoal\App\Kernel\Contracts\Enums\SemaphoreScopeEnumInterface;
 use Charcoal\App\Kernel\Domain\AbstractModule;
 use Charcoal\App\Kernel\Contracts\Cache\CacheStoreOperationsInterface;
 use Charcoal\App\Kernel\Contracts\Cache\RuntimeCacheOwnerInterface;
@@ -19,6 +20,7 @@ use Charcoal\App\Kernel\Contracts\Orm\Module\CacheStoreAwareInterface;
 use Charcoal\App\Kernel\Orm\Db\TableRegistry;
 use Charcoal\App\Kernel\Orm\Repository\OrmRepositoryBase;
 use Charcoal\App\Kernel\Orm\Repository\RepositoryCipherRef;
+use Charcoal\Semaphore\Contracts\SemaphoreLockInterface;
 
 /**
  * Class OrmModuleBase
@@ -49,7 +51,24 @@ abstract class OrmModuleBase extends AbstractModule implements
 
     abstract public function getCipherFor(OrmRepositoryBase $repo): ?RepositoryCipherRef;
 
-    abstract public function getSemaphore(): SemaphoreProviderEnumInterface;
+    abstract public function getSemaphore(): SemaphoreScopeEnumInterface;
+
+    /**
+     * @param string $lockId
+     * @param float|null $checkInterval
+     * @param int $waitTimeout
+     * @return SemaphoreLockInterface
+     * @throws \Charcoal\Semaphore\Exceptions\SemaphoreLockException
+     */
+    public function getSemaphoreLock(string $lockId, ?float $checkInterval, int $waitTimeout): SemaphoreLockInterface
+    {
+        return $this->app->security->semaphore->lock(
+            $this->getSemaphore(),
+            $lockId,
+            $checkInterval,
+            $waitTimeout
+        );
+    }
 
     /**
      * @param array $data
