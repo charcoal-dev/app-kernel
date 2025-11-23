@@ -95,7 +95,7 @@ abstract readonly class AbstractApp extends AppSerializable
 
         // Instantiate all domain defined modules and services
         Clock::initializeStatic($this->clock);
-        $this->beforeDomainBundlesHook();
+        $this->beforeDomainBundlesHook(false);
         $this->domain = $manifest->getDomain($this);
 
         // Check Server API Bundle...
@@ -107,9 +107,10 @@ abstract readonly class AbstractApp extends AppSerializable
     }
 
     /**
+     * @param bool $restore
      * @return void
      */
-    protected function beforeDomainBundlesHook(): void
+    protected function beforeDomainBundlesHook(bool $restore): void
     {
     }
 
@@ -270,6 +271,7 @@ abstract readonly class AbstractApp extends AppSerializable
 
         Clock::initializeStatic($this->clock);
         $this->security = $data["security"];
+        $this->beforeDomainBundlesHook(true);
         $this->domain = $data["domain"];
         $this->sapi = $data["sapi"];
 
