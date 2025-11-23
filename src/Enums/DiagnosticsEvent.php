@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Enums;
 
 use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
-use Charcoal\App\Kernel\Diagnostics\Events\LogEntryBroadcast;
+use Charcoal\App\Kernel\Diagnostics\LogEntry;
 
 /**
  * Represents various types of diagnostic events that can occur in the application.
@@ -26,7 +26,7 @@ enum DiagnosticsEvent: int
     {
         return match ($this) {
             self::BuildStage => BuildStageEvents::class,
-            self::LogEntry => LogEntryBroadcast::class
+            self::LogEntry => LogEntry::class
         };
     }
 }

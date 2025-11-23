@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\Diagnostics;
 
-use Charcoal\App\Kernel\Diagnostics\Events\LogEntryBroadcast;
+use Charcoal\App\Kernel\Diagnostics\Events\DiagnosticsEventsContext;
 use Charcoal\App\Kernel\Enums\LogLevel;
 
 /**
@@ -16,7 +16,7 @@ use Charcoal\App\Kernel\Enums\LogLevel;
  * message, additional context, associated exception (if any), and the timestamp for
  * when the log event occurred.
  */
-final readonly class LogEntry implements LogEntryBroadcast
+final readonly class LogEntry implements DiagnosticsEventsContext
 {
     /**
      * @internal
