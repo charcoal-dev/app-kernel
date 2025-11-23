@@ -30,7 +30,7 @@
     "charcoal-dev/cli": "^0.2.6",
     "charcoal-dev/http-trust-proxy": "^0.1.1",
     "charcoal-dev/http-commons": "^0.2.31",
-    "charcoal-dev/http-server": "^0.2.26",
+    "charcoal-dev/http-server": "^0.2.43",
     "charcoal-dev/cipher": "^0.2.8",
     "charcoal-dev/secrets-kms": "^0.1.14"
   },
