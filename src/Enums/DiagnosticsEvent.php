@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Enums;
 
 use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
-use Charcoal\App\Kernel\Diagnostics\Events\ExceptionCaughtBroadcast;
 use Charcoal\App\Kernel\Diagnostics\Events\LogEntryBroadcast;
 
 /**
@@ -19,7 +18,6 @@ enum DiagnosticsEvent: int
 {
     case BuildStage = 0;
     case LogEntry = 1;
-    case ExceptionCaught = 2;
 
     /**
      * @return string
@@ -28,8 +26,7 @@ enum DiagnosticsEvent: int
     {
         return match ($this) {
             self::BuildStage => BuildStageEvents::class,
-            self::LogEntry => LogEntryBroadcast::class,
-            self::ExceptionCaught => ExceptionCaughtBroadcast::class,
+            self::LogEntry => LogEntryBroadcast::class
         };
     }
 }

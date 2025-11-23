@@ -18,6 +18,5 @@ readonly class ExceptionCaughtBroadcast implements DiagnosticsEventsContext
         public \Throwable $caught,
     )
     {
-
     }
 }
