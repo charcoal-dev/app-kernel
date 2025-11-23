@@ -95,6 +95,7 @@ abstract readonly class AbstractApp extends AppSerializable
 
         // Instantiate all domain defined modules and services
         Clock::initializeStatic($this->clock);
+        $this->beforeDomainBundlesHook();
         $this->domain = $manifest->getDomain($this);
 
         // Check Server API Bundle...
@@ -103,6 +104,13 @@ abstract readonly class AbstractApp extends AppSerializable
         // Set context and invoke isReady > onReady hooks
         $this->context = new AppContext($env, $this->clock->getImmutable(), $this->domain->inspect());
         $this->isReady("New app instance initialized");
+    }
+
+    /**
+     * @return void
+     */
+    protected function beforeDomainBundlesHook(): void
+    {
     }
 
     /**
