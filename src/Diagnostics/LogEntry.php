@@ -18,9 +18,6 @@ use Charcoal\App\Kernel\Enums\LogLevel;
  */
 final readonly class LogEntry implements DiagnosticsEventsContext
 {
-    /**
-     * @internal
-     */
     public function __construct(
         public \DateTimeImmutable $timestamp,
         public LogLevel           $level,
