@@ -79,7 +79,7 @@ abstract class ContactHelper
     public static function isValidUsername(mixed $input, int $maxLength = 20): bool
     {
         if (is_string($input) && NumberHelper::inRange(strlen($input), 4, $maxLength)) {
-            return preg_match('/\A[a-zA-Z0-9]+[a-zA-Z0-9\-_]?[a-zA-Z0-9]+\z/', $input);
+            return (bool)preg_match('/\A[a-zA-Z0-9]+[a-zA-Z0-9\-_]?[a-zA-Z0-9]+\z/', $input);
         }
 
         return false;
