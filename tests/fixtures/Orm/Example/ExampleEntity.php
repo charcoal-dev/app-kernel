@@ -12,9 +12,9 @@ use Charcoal\App\Kernel\Contracts\Orm\Entity\CacheableEntityInterface;
 use Charcoal\App\Kernel\Contracts\Orm\Entity\ChecksumAwareEntityInterface;
 use Charcoal\App\Kernel\Contracts\Orm\Entity\SemaphoreLockHooksInterface;
 use Charcoal\App\Kernel\Contracts\Orm\Entity\StorageHooksInterface;
-use Charcoal\App\Kernel\Entity\ChecksumAwareEntityTrait;
-use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
+use Charcoal\App\Kernel\Entity\Traits\ChecksumAwareEntityTrait;
 use Charcoal\App\Kernel\Orm\Entity\CacheableEntityTrait;
+use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
 use Charcoal\Buffers\Types\Bytes20;
 use Charcoal\Contracts\Storage\Enums\FetchOrigin;
 

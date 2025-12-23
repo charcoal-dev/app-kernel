@@ -6,14 +6,12 @@
 
 declare(strict_types=1);
 
-namespace Charcoal\App\Kernel\Entity;
+namespace Charcoal\App\Kernel\Entity\Traits;
 
 use Charcoal\Buffers\Types\Bytes20;
 
 /**
- * Trait ChecksumAwareTrait
- * @package Charcoal\App\Kernel\Entity
- * @mixin AbstractEntity
+ * Trait for entities that can be validated against a checksum hash.
  */
 trait ChecksumAwareEntityTrait
 {
@@ -32,7 +30,7 @@ trait ChecksumAwareEntityTrait
     abstract public function getChecksum(): ?Bytes20;
 
     /**
-     * Sets current validation state for entity checksum
+     * Sets the current validation state for entity checksum
      * @param bool $state
      * @return void
      */
