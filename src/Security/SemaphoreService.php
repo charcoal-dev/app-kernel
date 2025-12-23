@@ -25,6 +25,7 @@ use Charcoal\Filesystem\Path\DirectoryPath;
 use Charcoal\Filesystem\Semaphore\SemaphoreDirectory;
 use Charcoal\Semaphore\Contracts\SemaphoreLockInterface;
 use Charcoal\Semaphore\Contracts\SemaphoreProviderInterface;
+use Charcoal\Semaphore\Exceptions\SemaphoreLockException;
 
 /**
  * Provides management for filesystem-based semaphores using a directory-based structure.
@@ -66,6 +67,7 @@ final class SemaphoreService extends AbstractFactoryRegistry implements Security
      * @param float|null $checkInterval
      * @param int $maximumWait
      * @return SemaphoreLockInterface
+     * @throws SemaphoreLockException
      */
     public function lock(
         SemaphoreProviderEnumInterface|SemaphoreScopeEnumInterface $scope,
