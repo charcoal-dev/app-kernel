@@ -21,6 +21,7 @@ use Charcoal\App\Kernel\Orm\Db\TableRegistry;
 use Charcoal\App\Kernel\Orm\Repository\OrmRepositoryBase;
 use Charcoal\App\Kernel\Orm\Repository\RepositoryCipherRef;
 use Charcoal\Semaphore\Contracts\SemaphoreLockInterface;
+use Charcoal\Semaphore\Exceptions\SemaphoreLockException;
 
 /**
  * Class OrmModuleBase
@@ -58,6 +59,7 @@ abstract class OrmModuleBase extends AbstractModule implements
      * @param float|null $checkInterval
      * @param int $waitTimeout
      * @return SemaphoreLockInterface
+     * @throws SemaphoreLockException
      */
     public function getSemaphoreLock(
         string $lockId,

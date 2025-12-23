@@ -71,7 +71,7 @@ trait EntitySemaphoreLockTrait
             } catch (\Exception) {
             }
 
-            throw $e;
+            throw new EntityLockedException($this->table->entityClass, previous: $e);
         }
     }
 }
