@@ -14,7 +14,7 @@ namespace Charcoal\App\Kernel\Orm\Entity;
  */
 trait CacheableEntityTrait
 {
-    protected int $entityCachedOn;
+    protected ?int $entityCachedOn = null;
 
     /**
      * Default behavior implementing CacheableEntityInterface interface, allowing it to be overridden
@@ -49,7 +49,7 @@ trait CacheableEntityTrait
      */
     public function getCachedOn(): ?int
     {
-        return $this->entityCachedOn ?? null;
+        return $this->entityCachedOn;
     }
 
     /**
@@ -57,6 +57,6 @@ trait CacheableEntityTrait
      */
     public function isFromCache(): bool
     {
-        return isset($this->entityCachedOn) && $this->entityCachedOn > 0;
+        return is_int($this->entityCachedOn) && $this->entityCachedOn > 0;
     }
 }
