@@ -93,7 +93,7 @@ trait ChecksumAwareRepositoryTrait
      * @param OrmEntityBase|null $entity
      * @return ChecksumAwareEntityInterface
      */
-    private function isChecksumAware(OrmEntityBase $entity = null): ChecksumAwareEntityInterface
+    private function isChecksumAware(?OrmEntityBase $entity = null): ChecksumAwareEntityInterface
     {
         if (!$entity instanceof ChecksumAwareEntityInterface) {
             throw new \LogicException(static::class . " does not implement ChecksumAwareEntityInterface");
