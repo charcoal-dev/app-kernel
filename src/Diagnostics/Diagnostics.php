@@ -242,8 +242,8 @@ final class Diagnostics implements ErrorLoggerInterface
     private function logFromError(ErrorEntry $errorEntry): void
     {
         $local = match ($errorEntry->errno) {
-            E_NOTICE, E_USER_NOTICE, E_DEPRECATED, E_USER_DEPRECATED => LogLevel::Notice,
-            E_WARNING, E_USER_WARNING => LogLevel::Warning,
+            E_NOTICE, E_USER_NOTICE => LogLevel::Notice,
+            E_WARNING, E_USER_WARNING, E_DEPRECATED, E_USER_DEPRECATED => LogLevel::Warning,
             E_ERROR, E_USER_ERROR => LogLevel::Error,
             default => LogLevel::Debug,
         };
