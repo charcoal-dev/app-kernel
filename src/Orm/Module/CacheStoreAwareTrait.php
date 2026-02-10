@@ -18,7 +18,7 @@ use Charcoal\Cache\CacheClient;
 trait CacheStoreAwareTrait
 {
     private ?CacheClient $cacheStore = null;
-    public readonly ?CacheStoreEnumInterface $cacheStoreEnum;
+    private(set) ?CacheStoreEnumInterface $cacheStoreEnum;
 
     abstract public function declareCacheStoreEnum(): ?CacheStoreEnumInterface;
 

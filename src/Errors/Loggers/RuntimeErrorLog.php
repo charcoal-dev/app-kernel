@@ -15,14 +15,14 @@ use Charcoal\Vectors\Support\ExceptionBag;
 /**
  * This class implements the ErrorLoggerInterface and provides functionality
  * for managing runtime errors and exceptions. It keeps a collection of
- * error entries and exceptions, and provides methods to handle, retrieve,
+ * error entries and exceptions and provides methods to handle, retrieve,
  * clear, and count these entries.
  */
 final class RuntimeErrorLog implements ErrorLoggerInterface
 {
-    /** @var array<ErrorEntry> $errors */
-    private array $errors;
-    private ExceptionBag $exceptions;
+    /** @var ErrorEntry[] $errors */
+    private(set) array $errors;
+    private(set) ExceptionBag $exceptions;
 
     public function __construct()
     {
@@ -48,23 +48,6 @@ final class RuntimeErrorLog implements ErrorLoggerInterface
     public function handleException(\Throwable $exception): void
     {
         $this->exceptions->append($exception);
-    }
-
-    /**
-     * @return array<ErrorEntry>
-     */
-    public function getErrors(): array
-    {
-        return $this->errors;
-    }
-
-    /**
-     * @return ExceptionBag
-     * @api
-     */
-    public function getExceptions(): ExceptionBag
-    {
-        return $this->exceptions;
     }
 
     /**

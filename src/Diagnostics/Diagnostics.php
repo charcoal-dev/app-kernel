@@ -35,8 +35,6 @@ final class Diagnostics implements ErrorLoggerInterface
     use NotSerializableTrait;
     use NoDumpTrait;
 
-    private static ?self $instance = null;
-
     private DiagnosticsEvents $events;
     private array $eventListeners = [];
     private array $logs = [];

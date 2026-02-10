@@ -84,7 +84,7 @@ class AppCliHandler extends Console
 
         $this->print("");
         $this->print($tabs . sprintf("{red}{b}%d{/}{red} errors caught!{/}", $errorsCount));
-        foreach ($this->errorLog->getErrors() as $errorMsg) {
+        foreach ($this->errorLog->errors as $errorMsg) {
             if ($displayCompact) {
                 $this->print($tabs . sprintf('[{red}{b}%s{/}]{red} %s{/}', $errorMsg->level, $errorMsg->message));
                 $this->print($tabs . sprintf('⮤ in {magenta}%s{/} on line {magenta}%d{/}', $errorMsg->filepath, $errorMsg->line));
