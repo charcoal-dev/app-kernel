@@ -37,6 +37,7 @@ class HttpServerConfigBuilder implements ConfigBuilderInterface
     protected ?RequestConstraints $requestConstraints = null;
     protected bool $corsEnforce = true;
     protected array $corsOrigins = [];
+    protected array $corsAllowHeaders = ["Content-Type", "Content-Length", "Authorization"];
     protected int $corsMaxAge = 0;
 
     public function __construct(public readonly ServerApiEnumInterface $interface)
@@ -113,6 +114,16 @@ class HttpServerConfigBuilder implements ConfigBuilderInterface
     }
 
     /**
+     * Adds a header to the list of allowed CORS headers.
+     * @api
+     */
+    public function corsAllowHeaders(string $header): self
+    {
+        $this->corsAllowHeaders[] = $header;
+        return $this;
+    }
+
+    /**
      * @return $this
      * @api
      */
@@ -171,6 +182,7 @@ class HttpServerConfigBuilder implements ConfigBuilderInterface
                 new CorsPolicy(
                     $this->corsEnforce,
                     $this->corsOrigins,
+                    allow: implode(",", $this->corsAllowHeaders),
                     maxAge: $this->corsMaxAge,
                     withCredentials: false
                 ),
