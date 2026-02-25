@@ -11,6 +11,7 @@ namespace Charcoal\App\Kernel;
 use Charcoal\App\Kernel\Cache\CacheManager;
 use Charcoal\App\Kernel\Clock\Clock;
 use Charcoal\App\Kernel\Clock\MonotonicTimestamp;
+use Charcoal\App\Kernel\Concurrency\ConcurrencyService;
 use Charcoal\App\Kernel\Config\Snapshot\AppConfig;
 use Charcoal\App\Kernel\Contracts\ServerApi\ServerApiEnumInterface;
 use Charcoal\App\Kernel\Database\DatabaseManager;
@@ -50,6 +51,7 @@ abstract readonly class AbstractApp extends AppSerializable
     public AppContext $context;
     public CacheManager $cache;
     public Clock $clock;
+    public ConcurrencyService $concurrency;
     public AppConfig $config;
     public DatabaseManager $database;
     public ConcreteEnumsResolver $enums;
@@ -85,6 +87,7 @@ abstract readonly class AbstractApp extends AppSerializable
         foreach ($manifest->appServices($this) as $service) {
             match (true) {
                 $service instanceof Clock => $this->clock = $service,
+                $service instanceof ConcurrencyService => $this->concurrency = $service,
                 $service instanceof CacheManager => $this->cache = $service,
                 $service instanceof DatabaseManager => $this->database = $service,
                 $service instanceof EventsManager => $this->events = $service,
@@ -220,6 +223,7 @@ abstract readonly class AbstractApp extends AppSerializable
 
         // All declared services and modules:
         $this->security->bootstrap($this);
+        $this->concurrency->bootstrap($this);
         $this->database->bootstrap($this);
         $this->domain->bootstrap($this);
         $this->diagnostics->verbose(ObjectHelper::baseClassName(static::class) . " bootstrapped");
@@ -247,6 +251,7 @@ abstract readonly class AbstractApp extends AppSerializable
             "sapi" => $this->sapi,
             "diagnostics" => null,
             "bootstrapped" => null,
+            "concurrency" => null,
         ];
     }
 
@@ -271,6 +276,7 @@ abstract readonly class AbstractApp extends AppSerializable
 
         Clock::initializeStatic($this->clock);
         $this->security = $data["security"];
+        $this->concurrency = new ConcurrencyService();
         $this->beforeDomainBundlesHook(true);
         $this->domain = $data["domain"];
         $this->sapi = $data["sapi"];

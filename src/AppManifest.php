@@ -10,6 +10,7 @@ namespace Charcoal\App\Kernel;
 
 use Charcoal\App\Kernel\Cache\CacheManager;
 use Charcoal\App\Kernel\Clock\Clock;
+use Charcoal\App\Kernel\Concurrency\ConcurrencyService;
 use Charcoal\App\Kernel\Contracts\Domain\AppBindableInterface;
 use Charcoal\App\Kernel\Contracts\ServerApi\ServerApiContextInterface;
 use Charcoal\App\Kernel\Database\DatabaseManager;
@@ -52,6 +53,7 @@ class AppManifest
         $app->diagnostics->buildStageStream(BuildStageEvents::ConfigLoaded);
         return new ServicesBundle(
             new Clock($app->config->timezone),
+            new ConcurrencyService(),
             $this->resolveEventsManager($app),
             $this->resolveDatabaseManager($app),
             $this->resolveCacheManager($app),
@@ -146,6 +148,6 @@ class AppManifest
      */
     protected function createSecurityService(): SecurityService
     {
-        return new SecurityService(concurrencyProvider: null);
+        return new SecurityService();
     }
 }

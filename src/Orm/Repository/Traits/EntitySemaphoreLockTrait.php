@@ -20,6 +20,7 @@ trait EntitySemaphoreLockTrait
 {
     /**
      * @throws EntityLockedException
+     * @deprecated
      */
     protected function getLockedEntity(
         string    $entityLockId,
