@@ -49,18 +49,19 @@ final class ConcurrencyLocks implements SecurityModuleInterface
         $lockId = $resource->concurrencyResourceLockId();
         $existing = $this->locks[$lockId] ?? null;
         if ($existing) {
-            if (!$existing->isLocked()) {
-                unset($this->locks[$lockId]);
+            if ($existing->isLocked()) {
+                return $existing;
             }
 
-            return $existing;
+            unset($this->locks[$lockId]);
         }
 
-        $resourceLock = $this->locks[$lockId] = $this->semaphore->lock($this->providerEnum, $lockId,
+        $resourceLock = $this->semaphore->lock($this->providerEnum, $lockId,
             checkInterval: $waitForLock ? $checkInterval : 0,
             maximumWait: $waitForLock ? $maxWaiting : 0
         );
 
+        $this->locks[$lockId] = $resourceLock;
         if ($setAutoRelease) {
             $resourceLock->setAutoRelease();
         }
