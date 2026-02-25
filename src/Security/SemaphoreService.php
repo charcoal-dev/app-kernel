@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Security;
 
 use Charcoal\App\Kernel\Contracts\Enums\SemaphoreProviderEnumInterface;
-use Charcoal\App\Kernel\Contracts\Enums\SemaphoreScopeEnumInterface;
 use Charcoal\App\Kernel\Contracts\Security\SecurityModuleInterface;
 use Charcoal\App\Kernel\Enums\SemaphoreType;
 use Charcoal\Base\Exceptions\WrappedException;
@@ -62,23 +61,21 @@ final class SemaphoreService extends AbstractFactoryRegistry implements Security
     }
 
     /**
-     * @param SemaphoreProviderEnumInterface|SemaphoreScopeEnumInterface $scope
-     * @param string $lockId
-     * @param float|null $checkInterval
-     * @param int $maximumWait
-     * @return SemaphoreLockInterface
      * @throws SemaphoreLockException
      */
-    public function lock(
-        SemaphoreProviderEnumInterface|SemaphoreScopeEnumInterface $scope,
-        string                                                     $lockId,
-        ?float                                                     $checkInterval = null,
-        int                                                        $maximumWait = 0
+    public function acquireLock(
+        SemaphoreProviderEnumInterface $provider,
+        string                         $resourceId,
+        bool                           $waitForLock = false,
+        float                          $checkInterval = 0.25,
+        int                            $maxWaiting = 6
     ): SemaphoreLockInterface
     {
-        $provider = $scope instanceof SemaphoreScopeEnumInterface ? $scope->provider() : $scope;
-        $namespace = $scope instanceof SemaphoreScopeEnumInterface ? $scope->getConfigKey() : null;
-        return $this->get($provider)->obtainLock($lockId, $checkInterval, max($maximumWait, 0), $namespace);
+        return $this->get($provider)->obtainLock(
+            lockId: $resourceId,
+            concurrentCheckEvery: $waitForLock ? $checkInterval : 0,
+            concurrentTimeout: $waitForLock ? max($maxWaiting, 0) : 0,
+        );
     }
 
     /**
