@@ -10,7 +10,6 @@ namespace Charcoal\Tests\App\Fixtures\Orm\Example;
 
 use Charcoal\App\Kernel\Contracts\Orm\Entity\CacheableEntityInterface;
 use Charcoal\App\Kernel\Contracts\Orm\Entity\ChecksumAwareEntityInterface;
-use Charcoal\App\Kernel\Contracts\Orm\Entity\SemaphoreLockHooksInterface;
 use Charcoal\App\Kernel\Contracts\Orm\Entity\StorageHooksInterface;
 use Charcoal\App\Kernel\Entity\Traits\ChecksumAwareEntityTrait;
 use Charcoal\App\Kernel\Orm\Entity\CacheableEntityTrait;
@@ -21,7 +20,6 @@ use Charcoal\Contracts\Storage\Enums\FetchOrigin;
 class ExampleEntity extends OrmEntityBase implements
     ChecksumAwareEntityInterface,
     CacheableEntityInterface,
-    SemaphoreLockHooksInterface,
     StorageHooksInterface
 {
     public int $id;
@@ -49,11 +47,6 @@ class ExampleEntity extends OrmEntityBase implements
     public function getChecksum(): ?Bytes20
     {
         return null;
-    }
-
-    public function onLockObtained(): ?string
-    {
-        return sprintf("ExampleEntity#%d Locked for Editing", $this->id);
     }
 
     public function onRetrieve(FetchOrigin $origin): ?string

@@ -21,6 +21,5 @@ readonly class LockedEntity
         public SemaphoreLockInterface $lock,
     )
     {
-
     }
 }
