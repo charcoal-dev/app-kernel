@@ -37,7 +37,9 @@ final class ConcurrencyLocks implements SecurityModuleInterface
     public function acquireLock(
         ConcurrencyResourceLockInterface $resource,
         bool                             $waitForLock = false,
-        bool                             $setAutoRelease = true
+        bool                             $setAutoRelease = true,
+        float                            $checkInterval = 0.25,
+        int                              $maxWaiting = 6
     ): SemaphoreLockInterface
     {
         if (!$this->providerEnum) {
@@ -55,8 +57,8 @@ final class ConcurrencyLocks implements SecurityModuleInterface
         }
 
         $resourceLock = $this->locks[$lockId] = $this->semaphore->lock($this->providerEnum, $lockId,
-            checkInterval: $waitForLock ? 0.25 : 0,
-            maximumWait: $waitForLock ? 6 : 0
+            checkInterval: $waitForLock ? $checkInterval : 0,
+            maximumWait: $waitForLock ? $maxWaiting : 0
         );
 
         if ($setAutoRelease) {
