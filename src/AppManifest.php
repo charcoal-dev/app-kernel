@@ -142,10 +142,10 @@ class AppManifest
     }
 
     /**
-     * Returns a new instance of SecurityService module class.
+     * Returns a new instance of the SecurityService module class.
      */
     protected function createSecurityService(): SecurityService
     {
-        return new SecurityService();
+        return new SecurityService(concurrencyProvider: null);
     }
 }
