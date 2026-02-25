@@ -11,9 +11,7 @@ namespace Charcoal\App\Kernel\Orm\Repository\Traits;
 use Charcoal\App\Kernel\Contracts\Orm\Entity\ChecksumAwareEntityInterface;
 use Charcoal\App\Kernel\Contracts\Orm\Repository\ChecksumAwareRepositoryInterface;
 use Charcoal\App\Kernel\Orm\Entity\OrmEntityBase;
-use Charcoal\App\Kernel\Orm\Entity\LockedEntity;
 use Charcoal\App\Kernel\Orm\Exceptions\EntityRepositoryException;
-use Charcoal\Base\Objects\ObjectHelper;
 use Charcoal\Vectors\Strings\StringVector;
 
 /**
@@ -22,51 +20,6 @@ use Charcoal\Vectors\Strings\StringVector;
  */
 trait EntityUpdatableTrait
 {
-    /**
-     * @param string $entityClass
-     * @return \LogicException
-     */
-    protected function dbUpdateOutOfScopeException(string $entityClass): \LogicException
-    {
-        return new \LogicException("Out of scope; Cannot update " .
-            ObjectHelper::baseClassName($entityClass) . " from " . ObjectHelper::baseClassName(static::class));
-    }
-
-    /**
-     * @param bool $isChecksumAware
-     * @param LockedEntity $lockedEntity
-     * @param StringVector $changeLog
-     * @param int|string $primaryColumnValue
-     * @param string $primaryColumnName
-     * @return void
-     * @throws EntityRepositoryException
-     * @throws \Charcoal\App\Kernel\Entity\Exceptions\ChecksumComputeException
-     */
-    protected function dbUpdateLockedEntity(
-        bool         $isChecksumAware,
-        LockedEntity $lockedEntity,
-        StringVector $changeLog,
-        int|string   $primaryColumnValue,
-        string       $primaryColumnName = "id",
-    ): void
-    {
-        if ($isChecksumAware) {
-            $this->dbUpdateChecksumAwareEntity(
-                $lockedEntity->entity,
-                $changeLog,
-                $primaryColumnValue,
-                $primaryColumnName
-            );
-        } else {
-            $this->dbUpdateEntity(
-                $lockedEntity->entity,
-                $changeLog,
-                $primaryColumnValue,
-                $primaryColumnName
-            );
-        }
-    }
-
     /**
      * @param OrmEntityBase $entity
      * @param StringVector $changeLog
