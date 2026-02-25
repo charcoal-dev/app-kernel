@@ -11,7 +11,6 @@ namespace Charcoal\App\Kernel\Security;
 use Charcoal\App\Kernel\AbstractApp;
 use Charcoal\App\Kernel\Config\Snapshot\SecurityConfig;
 use Charcoal\App\Kernel\Contracts\Domain\AppBootstrappableInterface;
-use Charcoal\App\Kernel\Contracts\Enums\SemaphoreProviderEnumInterface;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\Base\Objects\Traits\ControlledSerializableTrait;
 use Charcoal\Base\Objects\Traits\NoDumpTrait;
@@ -32,16 +31,12 @@ readonly class SecurityService implements AppServiceInterface, AppBootstrappable
     public SemaphoreService $semaphore;
     public SecretsService $secrets;
     public DigestService $digest;
-    public ConcurrencyLocks $resourceLocks;
 
-    public function __construct(
-        private ?SemaphoreProviderEnumInterface $concurrencyProvider
-    )
+    public function __construct()
     {
         $this->semaphore = new SemaphoreService();
         $this->secrets = new SecretsService();
         $this->digest = new DigestService();
-        $this->resourceLocks = new ConcurrencyLocks($this->concurrencyProvider);
     }
 
     /**
@@ -54,7 +49,6 @@ readonly class SecurityService implements AppServiceInterface, AppBootstrappable
         $this->config = $app->config->security;
         $this->semaphore->bootstrap($this);
         $this->secrets->bootstrap($this);
-        $this->resourceLocks->bootstrap($this);
     }
 
     /**
@@ -68,8 +62,6 @@ readonly class SecurityService implements AppServiceInterface, AppBootstrappable
             "semaphore" => $this->semaphore,
             "secrets" => $this->secrets,
             "digest" => null,
-            "resourceLocks" => null,
-            "concurrencyProvider" => $this->concurrencyProvider,
         ];
     }
 
@@ -79,10 +71,8 @@ readonly class SecurityService implements AppServiceInterface, AppBootstrappable
      */
     public function __unserialize(array $data): void
     {
-        $this->concurrencyProvider = $data["concurrencyProvider"];
         $this->semaphore = $data["semaphore"];
         $this->secrets = $data["secrets"];
         $this->digest = new DigestService();
-        $this->resourceLocks = new ConcurrencyLocks($this->concurrencyProvider);
     }
 }
