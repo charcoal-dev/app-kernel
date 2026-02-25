@@ -81,7 +81,7 @@ abstract readonly class AbstractApp extends AppSerializable
         // Resolve AppConfig object
         $this->config = $this->resolveAppConfig($env, $this->paths);
 
-        // Resolve AppManifest object, and declare services
+        // Resolve AppManifest object and declare services
         foreach ($manifest->appServices($this) as $service) {
             match (true) {
                 $service instanceof Clock => $this->clock = $service,
@@ -93,7 +93,7 @@ abstract readonly class AbstractApp extends AppSerializable
             };
         }
 
-        // Instantiate all domain defined modules and services
+        // Instantiate all domain-defined modules and services
         Clock::initializeStatic($this->clock);
         $this->beforeDomainBundlesHook(false);
         $this->domain = $manifest->getDomain($this);
