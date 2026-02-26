@@ -28,7 +28,7 @@ final class ConcurrencyService implements AppServiceInterface, AppBootstrappable
     private array $locks = [];
 
     /**
-     * @throws \Charcoal\Semaphore\Exceptions\SemaphoreLockException
+     * @throws ConcurrencyLockException
      */
     public function acquireLock(
         SemaphoreProviderEnumInterface $providerEnum,
@@ -50,12 +50,17 @@ final class ConcurrencyService implements AppServiceInterface, AppBootstrappable
         }
 
         // Create a new lock
-        $resourceLock = $this->semaphore->acquireLock($providerEnum, $resourceId,
-            $waitForLock, $checkInterval, $maxWaiting);
+        try {
+            $resourceLock = $this->semaphore->acquireLock($providerEnum, $resourceId,
+                $waitForLock, $checkInterval, $maxWaiting);
 
-        $this->locks[$resourceId] = $resourceLock;
-        if ($setAutoRelease) {
-            $resourceLock->setAutoRelease();
+            $this->locks[$resourceId] = $resourceLock;
+            if ($setAutoRelease) {
+                $resourceLock->setAutoRelease();
+            }
+        } catch (\Exception $e) {
+            throw new ConcurrencyLockException("Failed to acquire lock for resource: " . $resourceId,
+                previous: $e);
         }
 
         return $resourceLock;
