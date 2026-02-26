@@ -21,6 +21,7 @@ abstract readonly class AbstractLockHeld implements ConcurrencyLockInterface
     public function __construct(
         public LockAcquireOptions     $resource,
         public SemaphoreLockInterface $lock,
+        array                         $args = [],
     )
     {
     }
@@ -29,12 +30,13 @@ abstract readonly class AbstractLockHeld implements ConcurrencyLockInterface
      * @throws \Charcoal\App\Kernel\Concurrency\ConcurrencyLockException
      * @api
      */
-    public static function acquire(
+    protected static function acquire(
         ConcurrencyService $concurrency,
         LockAcquireOptions $resource,
+        array              $args = [],
     ): static
     {
         $lock = $concurrency->acquireLock($resource);
-        return new static($resource, $lock);
+        return new static($resource, $lock, $args);
     }
 }
