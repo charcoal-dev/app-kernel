@@ -14,6 +14,7 @@ use Charcoal\Semaphore\Contracts\SemaphoreLockInterface;
 
 /**
  * Represents an abstract, immutable action lock mechanism that uses semaphore for synchronization.
+ * @api
  */
 abstract readonly class AbstractLockHeld implements ConcurrencyLockInterface
 {
@@ -31,7 +32,7 @@ abstract readonly class AbstractLockHeld implements ConcurrencyLockInterface
     public static function acquire(
         ConcurrencyService $concurrency,
         LockAcquireOptions $resource,
-    ): self
+    ): static
     {
         $lock = $concurrency->acquireLock($resource);
         return new static($resource, $lock);

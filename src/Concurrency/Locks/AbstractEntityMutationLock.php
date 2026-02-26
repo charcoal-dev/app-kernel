@@ -20,6 +20,7 @@ use Charcoal\Semaphore\Contracts\SemaphoreLockInterface;
  * This class ensures safe access and modification of resources
  * in concurrent environments by acquiring and managing a lock in
  * conjunction with the provided entity or entities.
+ * @api
  */
 abstract readonly class AbstractEntityMutationLock implements ConcurrencyLockInterface
 {
@@ -39,7 +40,7 @@ abstract readonly class AbstractEntityMutationLock implements ConcurrencyLockInt
         ConcurrencyService $concurrency,
         LockAcquireOptions $resource,
         \Closure           $fetchEntity
-    ): self
+    ): static
     {
         $lock = $concurrency->acquireLock($resource);
 
