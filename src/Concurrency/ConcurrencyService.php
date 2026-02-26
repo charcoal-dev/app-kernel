@@ -29,6 +29,7 @@ final class ConcurrencyService implements AppServiceInterface, AppBootstrappable
 
     /**
      * @throws ConcurrencyLockException
+     * @api
      */
     public function acquireLock(
         SemaphoreProviderEnumInterface $providerEnum,
