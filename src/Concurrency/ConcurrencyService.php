@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace Charcoal\App\Kernel\Concurrency;
 
 use Charcoal\App\Kernel\AbstractApp;
+use Charcoal\App\Kernel\Concurrency\Locks\LockAcquireOptions;
 use Charcoal\App\Kernel\Contracts\Domain\AppBootstrappableInterface;
-use Charcoal\App\Kernel\Contracts\Enums\SemaphoreProviderEnumInterface;
 use Charcoal\App\Kernel\Internal\Services\AppServiceInterface;
 use Charcoal\App\Kernel\Security\SemaphoreService;
 use Charcoal\Base\Objects\Traits\NotSerializableTrait;
@@ -32,35 +32,35 @@ final class ConcurrencyService implements AppServiceInterface, AppBootstrappable
      * @api
      */
     public function acquireLock(
-        SemaphoreProviderEnumInterface $providerEnum,
-        string                         $resourceId,
-        bool                           $waitForLock = false,
-        bool                           $setAutoRelease = true,
-        float                          $checkInterval = 0.25,
-        int                            $maxWaiting = 6
+        LockAcquireOptions $lockOptions,
     ): SemaphoreLockInterface
     {
         // Check if the lock already exists
-        $existing = $this->locks[$resourceId] ?? null;
+        $existing = $this->locks[$lockOptions->resourceId] ?? null;
         if ($existing) {
             if ($existing->isLocked()) {
                 return $existing;
             }
 
-            unset($this->locks[$resourceId]);
+            unset($this->locks[$lockOptions->resourceId]);
         }
 
         // Create a new lock
         try {
-            $resourceLock = $this->semaphore->acquireLock($providerEnum, $resourceId,
-                $waitForLock, $checkInterval, $maxWaiting);
+            $resourceLock = $this->semaphore->acquireLock(
+                $lockOptions->providerEnum,
+                $lockOptions->resourceId,
+                $lockOptions->waitForLock,
+                $lockOptions->checkInterval,
+                $lockOptions->maxWaiting
+            );
 
-            $this->locks[$resourceId] = $resourceLock;
-            if ($setAutoRelease) {
+            $this->locks[$lockOptions->resourceId] = $resourceLock;
+            if ($lockOptions->setAutoRelease) {
                 $resourceLock->setAutoRelease();
             }
         } catch (\Exception $e) {
-            throw new ConcurrencyLockException("Failed to acquire lock for resource: " . $resourceId,
+            throw new ConcurrencyLockException("Failed to acquire lock for resource: " . $lockOptions->resourceId,
                 previous: $e);
         }
 
