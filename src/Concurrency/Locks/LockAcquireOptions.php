@@ -24,6 +24,5 @@ final readonly class LockAcquireOptions
         public int                            $maxWaiting = 6
     )
     {
-
     }
 }
