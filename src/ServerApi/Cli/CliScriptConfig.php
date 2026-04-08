@@ -13,10 +13,10 @@ namespace Charcoal\App\Kernel\ServerApi\Cli;
  * application class banners, script names, and triggered errors
  * during script execution.
  */
-class CliScriptConfig
+final class CliScriptConfig
 {
     public bool $displayHeaders = true;
     public bool $displayAppClassBanner = true;
     public bool $displayScriptName = true;
-    public bool $displayTriggeredErrors = true;
+    public bool $displayCaughtErrors = true;
 }

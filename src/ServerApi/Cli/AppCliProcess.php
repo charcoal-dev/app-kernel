@@ -8,26 +8,22 @@ declare(strict_types=1);
 
 namespace Charcoal\App\Kernel\ServerApi\Cli;
 
-use Charcoal\App\Kernel\Concurrency\ConcurrencyLockException;
 use Charcoal\App\Kernel\ServerApi\Cli\Traits\ProcessConcurrencyTrait;
 use Charcoal\App\Kernel\ServerApi\Cli\Traits\ProcessDefaultTrait;
-use Charcoal\Cli\Script\AbstractCliScript;
+use Charcoal\Cli\Process\AbstractCliProcess;
 
 /**
- * This abstract class extends the capabilities of Charcoal's AbstractCliScript
- * to include additional configuration and behavior specific to the application's
- * CLI implementation. It ensures that error handlers are properly set before
- * proceeding with the CLI operations.
- * @property AppCliHandler $cli
+ * Abstract class representing a Command Line Interface (CLI) process
+ * with default behaviors and concurrency handling mechanisms.
  */
-abstract class AppCliScript extends AbstractCliScript
+abstract class AppCliProcess extends AbstractCliProcess
 {
     use ProcessDefaultTrait;
     use ProcessConcurrencyTrait;
 
     /**
      * @param AppCliHandler $cli
-     * @throws ConcurrencyLockException
+     * @throws \Charcoal\App\Kernel\Concurrency\ConcurrencyLockException
      */
     public function __construct(AppCliHandler $cli)
     {
