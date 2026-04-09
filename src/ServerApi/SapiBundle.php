@@ -133,6 +133,8 @@ final readonly class SapiBundle
      */
     private function createCliHandler(AbstractApp $app): AppCliHandler
     {
+        global $argv;
+
         return new AppCliHandler($app,
             "App\\Sapi\\Engine\\Scripts",
             explode(";", substr($argv[1] ?? "", 1, -1)),
