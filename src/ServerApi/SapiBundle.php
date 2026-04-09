@@ -13,6 +13,7 @@ use Charcoal\App\Kernel\Config\Snapshot\HttpServerConfig;
 use Charcoal\App\Kernel\Contracts\ServerApi\ServerApiContextInterface;
 use Charcoal\App\Kernel\Contracts\ServerApi\ServerApiEnumInterface;
 use Charcoal\App\Kernel\Diagnostics\Events\BuildStageEvents;
+use Charcoal\App\Kernel\ServerApi\Cli\AppCliHandler;
 use Charcoal\App\Kernel\ServerApi\Events\ServerApiEvents;
 use Charcoal\App\Kernel\ServerApi\Http\AppRouter;
 use Charcoal\Contracts\Sapi\SapiType;
@@ -83,8 +84,10 @@ final readonly class SapiBundle
         }
 
         if ($sapi) {
+            /** @noinspection PhpUnusedMatchConditionInspection */
             $this->loaded = new SapiLoaded($sapi, match ($sapi->type()) {
                 SapiType::Http => $this->createHttpServer($app, $sapi),
+                SapiType::Cli => $this->createCliHandler($app),
                 default => throw new \RuntimeException("Invalid SAPI type: " . $sapi->type()->name),
             });
 
@@ -122,6 +125,19 @@ final readonly class SapiBundle
         $this->sapiContexts = $data["sapiContexts"];
         $this->httpCount = $data["httpCount"];
         $this->cliCount = $data["cliCount"];
+    }
+
+    /**
+     * @param AbstractApp $app
+     * @return AppCliHandler
+     */
+    private function createCliHandler(AbstractApp $app): AppCliHandler
+    {
+        return new AppCliHandler($app,
+            "App\\Sapi\\Engine\\Scripts",
+            explode(";", substr($argv[1] ?? "", 1, -1)),
+            "fallback"
+        );
     }
 
     /**
