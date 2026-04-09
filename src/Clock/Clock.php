@@ -57,12 +57,32 @@ final class Clock implements AppServiceInterface, ClockInterface
     }
 
     /**
+     * @return \DateTimeImmutable
+     */
+    public static function nowHighRes(): \DateTimeImmutable
+    {
+        return self::getInstance()->getImmutableHighRes();
+    }
+
+    /**
      * @param string $datetime
      * @return \DateTimeImmutable
      */
     public function getImmutable(string $datetime = "now"): \DateTimeImmutable
     {
         return new \DateTimeImmutable($datetime, $this->timezone);
+    }
+
+    /**
+     * @return \DateTimeImmutable
+     */
+    public function getImmutableHighRes(): \DateTimeImmutable
+    {
+        return \DateTimeImmutable::createFromFormat(
+            "U.u",
+            sprintf("%.6f", microtime(true)),
+            $this->timezone
+        );
     }
 
     /**

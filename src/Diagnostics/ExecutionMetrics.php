@@ -31,6 +31,6 @@ final readonly class ExecutionMetrics
         $this->cpuTimeUser = $cpuUsage["ru_utime.tv_sec"] + ($cpuUsage["ru_utime.tv_usec"] / 1e6);
         $this->cpuTimeSystem = $cpuUsage["ru_stime.tv_sec"] + ($cpuUsage["ru_stime.tv_usec"] / 1e6);
         $this->cpuTimeTotal = $this->cpuTimeUser + $this->cpuTimeSystem;
-        $this->timestamp = (float)Clock::now()->format("U.u");
+        $this->timestamp = (float)Clock::nowHighRes()->format("U.u");
     }
 }
