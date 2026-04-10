@@ -19,4 +19,12 @@ final class CliScriptConfig
     public bool $displayAppClassBanner = true;
     public bool $displayScriptName = true;
     public bool $displayCaughtErrors = true;
+
+    /**
+     * @return void
+     */
+    public function disableDecorators(): void
+    {
+        $this->displayHeaders = $this->displayAppClassBanner = $this->displayScriptName = false;
+    }
 }
